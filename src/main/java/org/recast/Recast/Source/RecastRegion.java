@@ -34,7 +34,7 @@ public class RecastRegion extends RecastImpl {
         short id = 1;
 
 //        rcScopedDelete<unsigned short> srcReg = (unsigned short*)rcAlloc(sizeof(unsigned short)*chf.spanCount, RC_ALLOC_TEMP);
-        short[] srcReg = new short[chf.spanCount];
+        int[] srcReg = new int[chf.spanCount];
 		int[] srcRegIndex = new int[]{0};
         /*if (!srcReg)
         {
@@ -93,7 +93,7 @@ public class RecastRegion extends RecastImpl {
                     if (chf.areas[i] == RC_NULL_AREA) continue;
 
                     // -x
-                    short previd = 0;
+					int previd = 0;
                     if (rcGetCon(s, 0) != RC_NOT_CONNECTED)
                     {
                         int ax = x + rcGetDirOffsetX(0);
@@ -119,7 +119,7 @@ public class RecastRegion extends RecastImpl {
                         int ai = (int)chf.cells[ax+ay*w].getIndex() + rcGetCon(s, 3);
                         if (srcReg[srcRegIndex[0]+ai] != 0 && (srcReg[srcRegIndex[0]+ai] & RC_BORDER_REG) == 0 && chf.areas[i] == chf.areas[ai])
                         {
-                            short nr = srcReg[srcRegIndex[0]+ai];
+							int nr = srcReg[srcRegIndex[0]+ai];
                             if (sweeps[previd].nei == 0 || sweeps[previd].nei == nr)
                             {
                                 sweeps[previd].nei = nr;
@@ -183,7 +183,7 @@ public class RecastRegion extends RecastImpl {
     }
 
     static void paintRectRegion(int minx, int maxx, int miny, int maxy, short regId,
-                                rcCompactHeightfield chf, short[] srcReg, int[] srcRegIndex)
+                                rcCompactHeightfield chf, int[] srcReg, int[] srcRegIndex)
     {
         int w = chf.width;
         for (int y = miny; y < maxy; ++y)
@@ -203,7 +203,7 @@ public class RecastRegion extends RecastImpl {
     public static boolean filterSmallRegions(rcContext ctx, int minRegionArea, int mergeRegionSize,
                                    short maxRegionId,
                                    rcCompactHeightfield chf,
-                                   short[] srcReg, int[] srcRegIndex)
+                                   int[] srcReg, int[] srcRegIndex)
     {
         int w = chf.width;
         int h = chf.height;
@@ -231,7 +231,7 @@ public class RecastRegion extends RecastImpl {
                 rcCompactCell c = chf.cells[x+y*w];
                 for (int i = (int)c.getIndex(), ni = (int)(c.getIndex()+c.getCount()); i < ni; ++i)
                 {
-                    short r = srcReg[srcRegIndex[0]+i];
+					int r = srcReg[srcRegIndex[0]+i];
                     if (r == 0 || r >= nreg)
                         continue;
 
@@ -243,7 +243,7 @@ public class RecastRegion extends RecastImpl {
                     for (int j = (int)c.getIndex(); j < ni; ++j)
                     {
                         if (i == j) continue;
-                        short floorId = srcReg[srcRegIndex[0]+j];
+						int floorId = srcReg[srcRegIndex[0]+j];
                         if (floorId == 0 || floorId >= nreg)
                             continue;
                         addUniqueFloorRegion(reg, floorId);
@@ -530,14 +530,14 @@ public class RecastRegion extends RecastImpl {
 
     static void walkContour(int x, int y, int i, int dir,
                             rcCompactHeightfield chf,
-                            short[] srcReg, int[] srcRegIndex,
+							int[] srcReg, int[] srcRegIndex,
                             rcIntArray cont)
     {
         int startDir = dir;
         int starti = i;
 
         rcCompactSpan ss = chf.spans[i];
-        short curReg = 0;
+		int curReg = 0;
         if (rcGetCon(ss, dir) != RC_NOT_CONNECTED)
         {
             int ax = x + rcGetDirOffsetX(dir);
@@ -555,7 +555,7 @@ public class RecastRegion extends RecastImpl {
             if (isSolidEdge(chf, srcReg, srcRegIndex, x, y, i, dir))
             {
                 // Choose the edge corner
-                short r = 0;
+				int r = 0;
                 if (rcGetCon(s, dir) != RC_NOT_CONNECTED)
                 {
                     int ax = x + rcGetDirOffsetX(dir);
@@ -618,7 +618,7 @@ public class RecastRegion extends RecastImpl {
 
 
 
-    public static final short RC_NULL_NEI = (short)0xffff;
+    public static final int RC_NULL_NEI = 0xffff;
 
     public static class rcRegion
     {
@@ -639,8 +639,8 @@ public class RecastRegion extends RecastImpl {
         public  char areaType = 0;			// Are type.
         public boolean remap;
         public boolean visited;
-        public rcIntArray connections;
-        public rcIntArray floors;
+        public rcIntArray connections = new rcIntArrayImpl(0);
+        public rcIntArray floors = new rcIntArrayImpl(0);
     }
 
     static void addUniqueFloorRegion(rcRegion reg, int n)
@@ -651,11 +651,11 @@ public class RecastRegion extends RecastImpl {
         reg.floors.push(n);
     }
 
-    static boolean isSolidEdge(rcCompactHeightfield chf, short[] srcReg, int[] srcRegIndex,
+    static boolean isSolidEdge(rcCompactHeightfield chf, int[] srcReg, int[] srcRegIndex,
                             int x, int y, int i, int dir)
     {
         rcCompactSpan s = chf.spans[i];
-        short r = 0;
+		int r = 0;
         if (rcGetCon(s, dir) != RC_NOT_CONNECTED)
         {
             int ax = x + rcGetDirOffsetX(dir);
@@ -742,14 +742,14 @@ public class RecastRegion extends RecastImpl {
         }*/
 
 //        unsigned short* src = (unsigned short*)rcAlloc(sizeof(unsigned short)*chf.spanCount, RC_ALLOC_TEMP);
-        short[] src = new short[chf.spanCount];
+        int[] src = new int[chf.spanCount];
         /*if (!src)
         {
             ctx.log(RC_LOG_ERROR, "rcBuildDistanceField: Out of memory 'src' (%d).", chf.spanCount);
             return false;
         }*/
 //        unsigned short* dst = (unsigned short*)rcAlloc(sizeof(unsigned short)*chf.spanCount, RC_ALLOC_TEMP);
-        short[] dst = new short[chf.spanCount];
+        int[] dst = new int[chf.spanCount];
         /*if (!dst)
         {
             ctx.log(RC_LOG_ERROR, "rcBuildDistanceField: Out of memory 'dst' (%d).", chf.spanCount);
@@ -771,7 +771,7 @@ public class RecastRegion extends RecastImpl {
         // Blur
         if (boxBlur(chf, 1, src, dst) != src) {
 //            rcSwap(src, dst);
-            short[] tmp = src;
+            int[] tmp = src;
             src = dst;
             dst = tmp;
         }
@@ -820,7 +820,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
         int h = chf.height;
 
 //        rcScopedDelete<unsigned short> buf = (unsigned short*)rcAlloc(sizeof(unsigned short)*chf.spanCount*4, RC_ALLOC_TEMP);
-        short[] buf = new short[chf.spanCount*4];
+		int[] buf = new int[chf.spanCount*4];
         /*if (!buf)
         {
             ctx.log(RC_LOG_ERROR, "rcBuildRegions: Out of memory 'tmp' (%d).", chf.spanCount*4);
@@ -832,13 +832,13 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
 		rcIntArray stack = new rcIntArrayImpl(1024);
 		rcIntArray visited = new rcIntArrayImpl(1024);
 
-        short[] srcReg = buf;
+		int[] srcReg = buf;
 		int[] srcRegIndex = new int[]{0};
-        short[] srcDist = buf;//createN(buf, chf.spanCount, chf.spanCount);//buf + chf.spanCount;
+		int[] srcDist = buf;//createN(buf, chf.spanCount, chf.spanCount);//buf + chf.spanCount;
 		int[] srcDistIndex = new int[]{chf.spanCount};
-        short[] dstReg = buf;//createN(buf, chf.spanCount*2, chf.spanCount);//buf + chf.spanCount * 2;
+		int[] dstReg = buf;//createN(buf, chf.spanCount*2, chf.spanCount);//buf + chf.spanCount * 2;
 		int[] dstRegIndex = new int[]{chf.spanCount*2};
-        short[] dstDist = buf;//createN(buf, chf.spanCount*3, chf.spanCount);//buf + chf.spanCount * 3;
+		int[] dstDist = buf;//createN(buf, chf.spanCount*3, chf.spanCount);//buf + chf.spanCount * 3;
 		int[] dstDistIndex = new int[]{chf.spanCount*3};
 
 //        memset(srcReg, 0, sizeof(unsigned short)*chf.spanCount);
@@ -933,19 +933,21 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
         ctx.startTimer(rcTimerLabel.RC_TIMER_BUILD_REGIONS_FILTER);
 
         // Filter out small regions.
+		//todo [IZ; - fix it
+//		assert  regionId == 25;
         chf.maxRegions = regionId;
         if (!filterSmallRegions(ctx, minRegionArea, mergeRegionArea, chf.maxRegions, chf, srcReg, srcRegIndex))
             return false;
 
         ctx.stopTimer(rcTimerLabel.RC_TIMER_BUILD_REGIONS_FILTER);
 
-		System.out.println("----");
-		for (int sR : srcReg) {
-			if (sR != 0) {
-				System.out.println(sR);
-			}
-		}
-		System.out.println("----");
+//		System.out.println("----");
+//		for (int sR : srcReg) {
+//			if (sR != 0) {
+//				System.out.println(sR);
+//			}
+//		}
+//		System.out.println("----");
         // Write the result out.
         for (int i = 0; i < chf.spanCount; ++i)
             chf.spans[i].reg = srcReg[srcRegIndex[0]+i];
@@ -958,8 +960,8 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
     static boolean floodRegion(int x, int y, int i,
                             short level, short r,
                             rcCompactHeightfield chf,
-                            short[] srcReg, int[] srcRegIndex,
-							short[] srcDist, int[] srcDistIndex,
+							int[] srcReg, int[] srcRegIndex,
+							int[] srcDist, int[] srcDistIndex,
                             rcIntArray stack)
     {
         int w = chf.width;
@@ -986,7 +988,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
             rcCompactSpan cs = chf.spans[ci];
 
             // Check if any of the neighbours already have a valid region set.
-            short ar = 0;
+			int ar = 0;
             for (int dir = 0; dir < 4; ++dir)
             {
                 // 8 connected
@@ -997,7 +999,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                     int ai = (int)chf.cells[ax+ay*w].getIndex() + rcGetCon(cs, dir);
                     if (chf.areas[ai] != area)
                         continue;
-                    short nr = srcReg[srcRegIndex[0]+ai];
+					int nr = srcReg[srcRegIndex[0]+ai];
                     if ((nr & RC_BORDER_REG) != 0) // Do not take borders into account.
                         continue;
                     if (nr != 0 && nr != r)
@@ -1013,7 +1015,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                         int ai2 = (int)chf.cells[ax2+ay2*w].getIndex() + rcGetCon(as, dir2);
                         if (chf.areas[ai2] != area)
                             continue;
-                        short nr2 = srcReg[srcRegIndex[0]+ai2];
+						int nr2 = srcReg[srcRegIndex[0]+ai2];
                         if (nr2 != 0 && nr2 != r)
                             ar = nr2;
                     }
@@ -1053,10 +1055,10 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
 
     public static int expandRegions(int maxIter, short level,
                                          rcCompactHeightfield chf,
-                                         short[] srcReg, int[] srcRegIndex,
-										 short[] srcDist, int[] srcDistIndex,
-                                         short[] dstReg, int[] dstRegIndex,
-										 short[] dstDist, int[] dstDistIndex,
+										 int[] srcReg, int[] srcRegIndex,
+										 int[] srcDist, int[] srcDistIndex,
+										 int[] dstReg, int[] dstRegIndex,
+										 int[] dstDist, int[] dstDistIndex,
 										 rcIntArray stack)
     {
         int w = chf.width;
@@ -1102,8 +1104,8 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                     continue;
                 }
 
-                short r = srcReg[srcRegIndex[0]+i];
-                short d2 = (short)0xffff;
+				int r = srcReg[srcRegIndex[0]+i];
+                int d2 = 0xffff;
                 char area = chf.areas[i];
                 rcCompactSpan s = chf.spans[i];
                 for (int dir = 0; dir < 4; ++dir)
@@ -1166,14 +1168,14 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
 
 
 
-    public static void calculateDistanceField(rcCompactHeightfield chf, short[] src, short[] maxDist)
+    public static void calculateDistanceField(rcCompactHeightfield chf, int[] src, short[] maxDist)
     {
         int w = chf.width;
         int h = chf.height;
 
         // Init distance and points.
         for (int i = 0; i < chf.spanCount; ++i)
-            src[i] = (short)0xffff;
+            src[i] = 0xffff;
 
         // Mark boundary cells.
         for (int y = 0; y < h; ++y)
@@ -1319,8 +1321,8 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
 		assert maxDist[0] == 52;
     }
 
-    static short[] boxBlur(rcCompactHeightfield chf, int thr,
-                                   short[] src, short[] dst)
+    static int[] boxBlur(rcCompactHeightfield chf, int thr,
+						   int[] src, int[] dst)
     {
         int w = chf.width;
         int h = chf.height;
@@ -1335,7 +1337,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                 for (int i = (int)c.getIndex(), ni = (int)(c.getIndex()+c.getCount()); i < ni; ++i)
                 {
                     rcCompactSpan s = chf.spans[i];
-                    short cd = src[i];
+					int cd = src[i];
                     if (cd <= thr)
                     {
                         dst[i] = cd;

@@ -15,6 +15,6 @@ public class rcCompactHeightfield {
     public float ch;					///< The height of each cell. (The minimum increment along the y-axis.)
     public rcCompactCell[] cells;		///< Array of cells. [Size: #width*#height]
     public rcCompactSpan[] spans;		///< Array of spans. [Size: #spanCount]
-    public short[] dist;		///< Array containing border distance data. [Size: #spanCount]
+    public int[] dist;		///< Array containing border distance data. [Size: #spanCount]
     public char[] areas;		///< Array containing area id data. [Size: #spanCount]
 }

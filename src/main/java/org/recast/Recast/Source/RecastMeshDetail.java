@@ -66,7 +66,7 @@ public class RecastMeshDetail extends RecastImpl {
             for (int j = 0; j < nvp; ++j)
             {
                 if(mesh.polys[i*nvp*2 + j] == RC_MESH_NULL_IDX) break;
-                short[] v = create3(mesh.verts, mesh.polys[i*nvp*2 + j]*3);
+				int[] v = create3(mesh.verts, mesh.polys[i*nvp*2 + j]*3);
                 xmin = rcMin(xmin, (int)v[0]);
                 xmax = rcMax(xmax, (int)v[0]);
                 ymin = rcMin(ymin, (int)v[2]);
@@ -120,14 +120,14 @@ public class RecastMeshDetail extends RecastImpl {
 
         for (int i = 0; i < mesh.npolys; ++i)
         {
-            short[] p = createN(mesh.polys, i*nvp*2, nvp);
+			int[] p = createN(mesh.polys, i*nvp*2, nvp);
 
             // Store polygon vertices for processing.
             int npoly = 0;
             for (int j = 0; j < nvp; ++j)
             {
                 if(mesh.polys[i*nvp*2+j] == RC_MESH_NULL_IDX) break;
-                short[] v = create3(mesh.verts, mesh.polys[i*nvp*2+j]*3);
+				int[] v = create3(mesh.verts, mesh.polys[i*nvp*2+j]*3);
                 poly[j*3+0] = v[0]*cs;
                 poly[j*3+1] = v[1]*ch;
                 poly[j*3+2] = v[2]*cs;
@@ -243,8 +243,8 @@ public class RecastMeshDetail extends RecastImpl {
     }
 
     static void getHeightData(rcCompactHeightfield chf,
-                              short[] poly, int npoly,
-                              short[] verts, int bs,
+							  int[] poly, int npoly,
+							  int[] verts, int bs,
                               rcHeightPatch hp, rcIntArray stack)
     {
         // Floodfill the heightfield to get 2D height data,

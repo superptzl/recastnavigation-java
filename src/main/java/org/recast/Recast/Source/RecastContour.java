@@ -656,6 +656,9 @@ return dx*dx + dy*dy + dz*dz;*/
 
         int maxContours = Math.max((int) chf.maxRegions, 8);
         cset.conts = new rcContour[maxContours];//(rcContour*)rcAlloc(sizeof(rcContour)*maxContours, RC_ALLOC_PERM);
+		for (int i = 0; i < maxContours; i++) {
+			cset.conts[i] = new rcContour();
+		}
         /*if (!cset.conts)
             return false;*/
         cset.nconts = 0;
@@ -688,7 +691,7 @@ return dx*dx + dy*dy + dz*dz;*/
                     }
                     for (int dir = 0; dir < 4; ++dir)
                     {
-                        short r = 0;
+						int r = 0;
                         if (Recast.rcGetCon(s, dir) != Recast.RC_NOT_CONNECTED)
                         {
                             int ax = x + Recast.rcGetDirOffsetX(dir);
@@ -721,7 +724,7 @@ return dx*dx + dy*dy + dz*dz;*/
                         flags[i] = 0;
                         continue;
                     }
-                    short reg = chf.spans[i].reg;
+					int reg = chf.spans[i].reg;
                     if (reg == 0 || (reg & Recast.RC_BORDER_REG) != 0)
                         continue;
                     char area = chf.areas[i];

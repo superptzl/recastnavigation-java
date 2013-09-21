@@ -33,7 +33,7 @@ public abstract class Recast {
     /// An value which indicates an invalid index within a mesh.
 /// @note This does not necessarily indicate an error.
 /// @see rcPolyMesh::polys
-    public final static short RC_MESH_NULL_IDX = (short)(0xffff);
+    public final static int RC_MESH_NULL_IDX = 0xffff;
 
     /// Defines the number of bits allocated to rcSpan::smin and rcSpan::smax.
     public final static int RC_SPAN_HEIGHT_BITS = 13;

@@ -3,9 +3,9 @@ package org.recast.Recast.Include;
 /// Represents a polygon mesh suitable for use in building a navigation mesh.
 /// @ingroup recast
 public class rcPolyMesh {
-    public short[] verts;	///< The mesh vertices. [Form: (x, y, z) * #nverts]
-    public short[] polys;	///< Polygon and neighbor data. [Length: #maxpolys * 2 * #nvp]
-    public short[] regs;	///< The region id assigned to each polygon. [Length: #maxpolys]
+    public int[] verts;	///< The mesh vertices. [Form: (x, y, z) * #nverts]
+    public int[] polys;	///< Polygon and neighbor data. [Length: #maxpolys * 2 * #nvp]
+    public int[] regs;	///< The region id assigned to each polygon. [Length: #maxpolys]
     public short[] flags;	///< The user defined flags for each polygon. [Length: #maxpolys]
     public char[] areas;	///< The area id assigned to each polygon. [Length: #maxpolys]
     public int nverts;				///< The number of vertices.

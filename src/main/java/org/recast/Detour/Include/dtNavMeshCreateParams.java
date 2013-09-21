@@ -6,9 +6,9 @@ public class dtNavMeshCreateParams {
     /// See #rcPolyMesh for details related to these attributes.
     /// @{
 
-    public short[] verts;			///< The polygon mesh vertices. [(x, y, z) * #vertCount] [Unit: vx]
+    public int[] verts;			///< The polygon mesh vertices. [(x, y, z) * #vertCount] [Unit: vx]
     public int vertCount;							///< The number vertices in the polygon mesh. [Limit: >= 3]
-    public short[] polys;			///< The polygon data. [Size: #polyCount * 2 * #nvp]
+    public int[] polys;			///< The polygon data. [Size: #polyCount * 2 * #nvp]
     public short[] polyFlags;		///< The user defined flags assigned to each polygon. [Size: #polyCount]
     public char[] polyAreas;			///< The user defined area ids assigned to each polygon. [Size: #polyCount]
     public int polyCount;							///< Number of polygons in the mesh. [Limit: >= 1]
