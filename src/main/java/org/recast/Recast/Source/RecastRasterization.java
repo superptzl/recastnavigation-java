@@ -10,29 +10,29 @@ public class RecastRasterization extends RecastImpl {
 ///
 /// @see rcHeightfield
 
-    public void rcRasterizeTriangles(rcContext ctx, float[] verts, int nv,
-                                     int[] tris, char[] areas, int nt,
-                                     rcHeightfield solid, int flagMergeThr) {
-//            rcAssert(ctx);
-
-        ctx.startTimer(rcTimerLabel.RC_TIMER_RASTERIZE_TRIANGLES);
-
-        float ics = 1.0f / solid.cs;
-        float ich = 1.0f / solid.ch;
-        // Rasterize triangles.
-        for (int i = 0; i < nt; ++i) {
-            float[] v0 = create3(verts, tris[i * 3 + 0] * 3);
-            float[] v1 = create3(verts, tris[i * 3 + 1] * 3);
-            float[] v2 = create3(verts, tris[i * 3 + 2] * 3);
-            // Rasterize.
-            rasterizeTri(v0, v1, v2, areas[i], solid, solid.bmin, solid.bmax, solid.cs, ics, ich, flagMergeThr);
-            System.arraycopy(v0, 0, verts, tris[i * 3 + 0] * 3, 3);
-            System.arraycopy(v1, 0, verts, tris[i * 3 + 1] * 3, 3);
-            System.arraycopy(v2, 0, verts, tris[i * 3 + 2] * 3, 3);
-        }
-
-        ctx.stopTimer(rcTimerLabel.RC_TIMER_RASTERIZE_TRIANGLES);
-    }
+//    public void rcRasterizeTriangles(rcContext ctx, float[] verts, int nv,
+//                                     int[] tris, char[] areas, int nt,
+//                                     rcHeightfield solid, int flagMergeThr) {
+////            rcAssert(ctx);
+//
+//        ctx.startTimer(rcTimerLabel.RC_TIMER_RASTERIZE_TRIANGLES);
+//
+//        float ics = 1.0f / solid.cs;
+//        float ich = 1.0f / solid.ch;
+//        // Rasterize triangles.
+//        for (int i = 0; i < nt; ++i) {
+//            float[] v0 = create3(verts, tris[i * 3 + 0] * 3);
+//            float[] v1 = create3(verts, tris[i * 3 + 1] * 3);
+//            float[] v2 = create3(verts, tris[i * 3 + 2] * 3);
+//            // Rasterize.
+//            rasterizeTri(v0, v1, v2, areas[i], solid, solid.bmin, solid.bmax, solid.cs, ics, ich, flagMergeThr);
+//            System.arraycopy(v0, 0, verts, tris[i * 3 + 0] * 3, 3);
+//            System.arraycopy(v1, 0, verts, tris[i * 3 + 1] * 3, 3);
+//            System.arraycopy(v2, 0, verts, tris[i * 3 + 2] * 3, 3);
+//        }
+//
+//        ctx.stopTimer(rcTimerLabel.RC_TIMER_RASTERIZE_TRIANGLES);
+//    }
 
     /// @par
 ///
@@ -40,7 +40,7 @@ public class RecastRasterization extends RecastImpl {
 ///
 /// @see rcHeightfield
     public void rcRasterizeTriangles(rcContext ctx, float[] verts, int nv,
-                                     short[] tris, char[] areas, int nt,
+                                     int[] tris, char[] areas, int nt,
                                      rcHeightfield solid, int flagMergeThr) {
 //            rcAssert(ctx);
 
@@ -181,8 +181,8 @@ public class RecastRasterization extends RecastImpl {
                 if (smax > by) smax = by;
 
                 // Snap the span to the heightfield height grid.
-                short ismin = (short)rcClamp((int)Math.floor(smin * ich), 0, RC_SPAN_MAX_HEIGHT).shortValue();
-                short ismax = (short)rcClamp((int)Math.ceil(smax * ich), (int)ismin+1, RC_SPAN_MAX_HEIGHT).shortValue();
+                int ismin = (int)rcClamp((int)Math.floor(smin * ich), 0, RC_SPAN_MAX_HEIGHT).intValue();
+                int ismax = (int)rcClamp((int)Math.ceil(smax * ich), (int)ismin+1, RC_SPAN_MAX_HEIGHT).intValue();
 
                 addSpan(hf, x, y, ismin, ismax, area, flagMergeThr);
             }
@@ -198,8 +198,8 @@ public class RecastRasterization extends RecastImpl {
         return overlap;
     }
 
-    /*public static boolean overlapInterval(unsigned short amin, unsigned short amax,
-                                unsigned short bmin, unsigned short bmax)
+    /*public static boolean overlapInterval(unsigned int amin, unsigned int amax,
+                                unsigned int bmin, unsigned int bmax)
     {
         if (amax < bmin) return false;
         if (amin > bmax) return false;
@@ -253,7 +253,7 @@ public class RecastRasterization extends RecastImpl {
     }
 
     public static void addSpan(rcHeightfield hf, int x, int y,
-                        short smin, short smax,
+                        int smin, int smax,
                         char area, int flagMergeThr)
     {
 
@@ -332,7 +332,7 @@ public class RecastRasterization extends RecastImpl {
 ///
 /// @see rcHeightfield, rcSpan.
     public void rcAddSpan(rcContext ctx, rcHeightfield hf, int x, int y,
-                   short smin, short smax,
+                   int smin, int smax,
                    char area, int flagMergeThr)
     {
 //	rcAssert(ctx);

@@ -31,9 +31,9 @@ public class RecastRegion extends RecastImpl {
 
         int w = chf.width;
         int h = chf.height;
-        short id = 1;
+        int id = 1;
 
-//        rcScopedDelete<unsigned short> srcReg = (unsigned short*)rcAlloc(sizeof(unsigned short)*chf.spanCount, RC_ALLOC_TEMP);
+//        rcScopedDelete<unsigned int> srcReg = (unsigned int*)rcAlloc(sizeof(unsigned int)*chf.spanCount, RC_ALLOC_TEMP);
         int[] srcReg = new int[chf.spanCount];
 		int[] srcRegIndex = new int[]{0};
         /*if (!srcReg)
@@ -41,7 +41,7 @@ public class RecastRegion extends RecastImpl {
             ctx.log(RC_LOG_ERROR, "rcBuildRegionsMonotone: Out of memory 'src' (%d).", chf.spanCount);
             return false;
         }
-        memset(srcReg,0,sizeof(unsigned short)*chf.spanCount);*/
+        memset(srcReg,0,sizeof(unsigned int)*chf.spanCount);*/
 
         int nsweeps = rcMax(chf.width,chf.height);
 //        rcScopedDelete<rcSweepSpan> sweeps = (rcSweepSpan*)rcAlloc(sizeof(rcSweepSpan)*nsweeps, RC_ALLOC_TEMP);
@@ -60,10 +60,10 @@ public class RecastRegion extends RecastImpl {
             int bw = rcMin(w, borderSize);
             int bh = rcMin(h, borderSize);
             // Paint regions
-            paintRectRegion(0, bw, 0, h, (short)(id|RC_BORDER_REG), chf, srcReg, srcRegIndex); id++;
-            paintRectRegion(w-bw, w, 0, h, (short)(id|RC_BORDER_REG), chf, srcReg, srcRegIndex); id++;
-            paintRectRegion(0, w, 0, bh, (short)(id|RC_BORDER_REG), chf, srcReg, srcRegIndex); id++;
-            paintRectRegion(0, w, h-bh, h, (short)(id|RC_BORDER_REG), chf, srcReg, srcRegIndex); id++;
+            paintRectRegion(0, bw, 0, h, (int)(id|RC_BORDER_REG), chf, srcReg, srcRegIndex); id++;
+            paintRectRegion(w-bw, w, 0, h, (int)(id|RC_BORDER_REG), chf, srcReg, srcRegIndex); id++;
+            paintRectRegion(0, w, 0, bh, (int)(id|RC_BORDER_REG), chf, srcReg, srcRegIndex); id++;
+            paintRectRegion(0, w, h-bh, h, (int)(id|RC_BORDER_REG), chf, srcReg, srcRegIndex); id++;
 
             chf.borderSize = borderSize;
         }
@@ -81,7 +81,7 @@ public class RecastRegion extends RecastImpl {
                 prev.set(i, 0);
             }
 //            prev
-            short rid = 1;
+            int rid = 1;
 
             for (int x = borderSize; x < w-borderSize; ++x)
             {
@@ -182,7 +182,7 @@ public class RecastRegion extends RecastImpl {
         return true;
     }
 
-    static void paintRectRegion(int minx, int maxx, int miny, int maxy, short regId,
+    static void paintRectRegion(int minx, int maxx, int miny, int maxy, int regId,
                                 rcCompactHeightfield chf, int[] srcReg, int[] srcRegIndex)
     {
         int w = chf.width;
@@ -201,7 +201,7 @@ public class RecastRegion extends RecastImpl {
     }
 
     public static boolean filterSmallRegions(rcContext ctx, int minRegionArea, int mergeRegionSize,
-                                   short maxRegionId,
+                                   int maxRegionId,
                                    rcCompactHeightfield chf,
                                    int[] srcReg, int[] srcRegIndex)
     {
@@ -219,8 +219,8 @@ public class RecastRegion extends RecastImpl {
 
         // Construct regions
         for (int i = 0; i < nreg; ++i) {
-            regions[i] = new rcRegion((short)i);
-//            new(&regions[i]) rcRegion((unsigned short)i);
+            regions[i] = new rcRegion((int)i);
+//            new(&regions[i]) rcRegion((unsigned int)i);
         }
 
         // Find edge of a region and find connections around the contour.
@@ -363,7 +363,7 @@ public class RecastRegion extends RecastImpl {
                 // Or region which is not connected to a border at all.
                 // Find smallest neighbour region that connects to this one.
                 int smallest = 0xfffffff;
-                short mergeId = reg.id;
+                int mergeId = reg.id;
                 for (int j = 0; j < reg.connections.size(); ++j)
                 {
                     if ((reg.connections.m_data[j] & RC_BORDER_REG) != 0) continue;
@@ -380,7 +380,7 @@ public class RecastRegion extends RecastImpl {
                 // Found new id.
                 if (mergeId != reg.id)
                 {
-                    short oldId = reg.id;
+                    int oldId = reg.id;
                     rcRegion target = regions[mergeId];
 
                     // Merge neighbours.
@@ -414,13 +414,13 @@ public class RecastRegion extends RecastImpl {
             regions[i].remap = true;
         }
 
-        short regIdGen = 0;
+        int regIdGen = 0;
         for (int i = 0; i < nreg; ++i)
         {
             if (!regions[i].remap)
                 continue;
-            short oldId = regions[i].id;
-            short newId = ++regIdGen;
+            int oldId = regions[i].id;
+            int newId = ++regIdGen;
             for (int j = i; j < nreg; ++j)
             {
                 if (regions[j].id == oldId)
@@ -449,8 +449,8 @@ public class RecastRegion extends RecastImpl {
 
     public static boolean mergeRegions(rcRegion rega, rcRegion regb)
     {
-        short aid = rega.id;
-        short bid = regb.id;
+        int aid = rega.id;
+        int bid = regb.id;
 
         // Duplicate current neighbourhood.
         rcIntArray acon = new rcIntArrayImpl();
@@ -508,7 +508,7 @@ public class RecastRegion extends RecastImpl {
         return true;
     }
 
-    static void replaceNeighbour(rcRegion reg, short oldId, short newId)
+    static void replaceNeighbour(rcRegion reg, int oldId, int newId)
     {
         boolean neiChanged = false;
         for (int i = 0; i < reg.connections.size(); ++i)
@@ -622,11 +622,11 @@ public class RecastRegion extends RecastImpl {
 
     public static class rcRegion
     {
-        public rcRegion(short id) {
+        public rcRegion(int id) {
             this.id = id;
         }
 
-        //        inline rcRegion(unsigned short i) :
+        //        inline rcRegion(unsigned int i) :
 //        spanCount(0),
 //                id(i),
 //                areaType(0),
@@ -635,7 +635,7 @@ public class RecastRegion extends RecastImpl {
 //        {}
 
         public int spanCount;					// Number of spans belonging to this region
-        public short id;				// ID of the region
+        public int id;				// ID of the region
         public  char areaType = 0;			// Are type.
         public boolean remap;
         public boolean visited;
@@ -741,14 +741,14 @@ public class RecastRegion extends RecastImpl {
             chf.dist = 0;
         }*/
 
-//        unsigned short* src = (unsigned short*)rcAlloc(sizeof(unsigned short)*chf.spanCount, RC_ALLOC_TEMP);
+//        unsigned int* src = (unsigned int*)rcAlloc(sizeof(unsigned int)*chf.spanCount, RC_ALLOC_TEMP);
         int[] src = new int[chf.spanCount];
         /*if (!src)
         {
             ctx.log(RC_LOG_ERROR, "rcBuildDistanceField: Out of memory 'src' (%d).", chf.spanCount);
             return false;
         }*/
-//        unsigned short* dst = (unsigned short*)rcAlloc(sizeof(unsigned short)*chf.spanCount, RC_ALLOC_TEMP);
+//        unsigned int* dst = (unsigned int*)rcAlloc(sizeof(unsigned int)*chf.spanCount, RC_ALLOC_TEMP);
         int[] dst = new int[chf.spanCount];
         /*if (!dst)
         {
@@ -757,7 +757,7 @@ public class RecastRegion extends RecastImpl {
             return false;
         }*/
 
-        short[] maxDist = new short[]{0};
+        int[] maxDist = new int[]{0};
 
         ctx.startTimer(rcTimerLabel.RC_TIMER_BUILD_DISTANCEFIELD_DIST);
 
@@ -819,7 +819,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
         int w = chf.width;
         int h = chf.height;
 
-//        rcScopedDelete<unsigned short> buf = (unsigned short*)rcAlloc(sizeof(unsigned short)*chf.spanCount*4, RC_ALLOC_TEMP);
+//        rcScopedDelete<unsigned int> buf = (unsigned int*)rcAlloc(sizeof(unsigned int)*chf.spanCount*4, RC_ALLOC_TEMP);
 		int[] buf = new int[chf.spanCount*4];
         /*if (!buf)
         {
@@ -841,11 +841,11 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
 		int[] dstDist = buf;//createN(buf, chf.spanCount*3, chf.spanCount);//buf + chf.spanCount * 3;
 		int[] dstDistIndex = new int[]{chf.spanCount*3};
 
-//        memset(srcReg, 0, sizeof(unsigned short)*chf.spanCount);
-//        memset(srcDist, 0, sizeof(unsigned short)*chf.spanCount);
+//        memset(srcReg, 0, sizeof(unsigned int)*chf.spanCount);
+//        memset(srcDist, 0, sizeof(unsigned int)*chf.spanCount);
 
-        short regionId = 1;
-        short level = (short)((chf.maxDistance+1) & ~1);
+        int regionId = 1;
+        int level = (int)((chf.maxDistance+1) & ~1);
 
         // TODO: Figure better formula, expandIters defines how much the 
         // watershed "overflows" and simplifies the regions. Tying it to
@@ -859,17 +859,17 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
             int bw = rcMin(w, borderSize);
             int bh = rcMin(h, borderSize);
             // Paint regions
-            paintRectRegion(0, bw, 0, h, (short)(regionId|RC_BORDER_REG), chf, srcReg, srcRegIndex); regionId++;
-            paintRectRegion(w-bw, w, 0, h, (short)(regionId|RC_BORDER_REG), chf, srcReg, srcRegIndex); regionId++;
-            paintRectRegion(0, w, 0, bh, (short)(regionId|RC_BORDER_REG), chf, srcReg, srcRegIndex); regionId++;
-            paintRectRegion(0, w, h-bh, h, (short)(regionId|RC_BORDER_REG), chf, srcReg, srcRegIndex); regionId++;
+            paintRectRegion(0, bw, 0, h, (int)(regionId|RC_BORDER_REG), chf, srcReg, srcRegIndex); regionId++;
+            paintRectRegion(w-bw, w, 0, h, (int)(regionId|RC_BORDER_REG), chf, srcReg, srcRegIndex); regionId++;
+            paintRectRegion(0, w, 0, bh, (int)(regionId|RC_BORDER_REG), chf, srcReg, srcRegIndex); regionId++;
+            paintRectRegion(0, w, h-bh, h, (int)(regionId|RC_BORDER_REG), chf, srcReg, srcRegIndex); regionId++;
 
             chf.borderSize = borderSize;
         }
 
         while (level > 0)
         {
-            level = (short)(level >= 2 ? level-2 : 0);
+            level = (int)(level >= 2 ? level-2 : 0);
 
             ctx.startTimer(rcTimerLabel.RC_TIMER_BUILD_REGIONS_EXPAND);
 
@@ -879,7 +879,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
 							  srcDistIndex, dstReg, dstRegIndex, dstDist, dstDistIndex, stack) != oldSrcRegIndex)
             {
 //                rcSwap(srcReg, dstReg);
-//                short[] tmp = srcReg;
+//                int[] tmp = srcReg;
 //				int tmpIndex = 0;
 				int tmpIndex = srcRegIndex[0];
                 srcRegIndex[0] = dstRegIndex[0];
@@ -915,10 +915,10 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
 
         // Expand current regions until no empty connected cells found.
 		int oldSrcRegIndex = srcRegIndex[0];
-        if (expandRegions(expandIters*8, (short)0, chf, srcReg, srcRegIndex, srcDist, srcDistIndex, dstReg, dstRegIndex, dstDist, dstDistIndex, stack) != oldSrcRegIndex)
+        if (expandRegions(expandIters*8, (int)0, chf, srcReg, srcRegIndex, srcDist, srcDistIndex, dstReg, dstRegIndex, dstDist, dstDistIndex, stack) != oldSrcRegIndex)
         {
 //            rcSwap(srcReg, dstReg);
-//            short[] tmp = srcReg;
+//            int[] tmp = srcReg;
             int tmpIndex = srcRegIndex[0];
             srcRegIndex[0] = dstRegIndex[0];
             dstRegIndex[0] = tmpIndex;
@@ -933,8 +933,8 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
         ctx.startTimer(rcTimerLabel.RC_TIMER_BUILD_REGIONS_FILTER);
 
         // Filter out small regions.
-		//todo [IZ; - fix it
-//		assert  regionId == 25;
+
+		assert  regionId == 25;
         chf.maxRegions = regionId;
         if (!filterSmallRegions(ctx, minRegionArea, mergeRegionArea, chf.maxRegions, chf, srcReg, srcRegIndex))
             return false;
@@ -958,7 +958,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
     }
 
     static boolean floodRegion(int x, int y, int i,
-                            short level, short r,
+                            int level, int r,
                             rcCompactHeightfield chf,
 							int[] srcReg, int[] srcRegIndex,
 							int[] srcDist, int[] srcDistIndex,
@@ -976,7 +976,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
         srcReg[srcRegIndex[0]+i] = r;
         srcDist[srcDistIndex[0]+i] = 0;
 
-        short lev = (short)(level >= 2 ? level-2 : 0);
+        int lev = (int)(level >= 2 ? level-2 : 0);
         int count = 0;
 
         while (stack.size() > 0)
@@ -1053,7 +1053,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
         return count > 0;
     }
 
-    public static int expandRegions(int maxIter, short level,
+    public static int expandRegions(int maxIter, int level,
                                          rcCompactHeightfield chf,
 										 int[] srcReg, int[] srcRegIndex,
 										 int[] srcDist, int[] srcDistIndex,
@@ -1088,9 +1088,9 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
         {
             int failed = 0;
 
-//            memcpy(dstReg, srcReg, sizeof(unsigned short)*chf.spanCount);
+//            memcpy(dstReg, srcReg, sizeof(unsigned int)*chf.spanCount);
             System.arraycopy(srcReg, srcRegIndex[0], dstReg, dstRegIndex[0], chf.spanCount);
-//            memcpy(dstDist, srcDist, sizeof(unsigned short)*chf.spanCount);
+//            memcpy(dstDist, srcDist, sizeof(unsigned int)*chf.spanCount);
             System.arraycopy(srcDist, srcDistIndex[0], dstDist, dstDistIndex[0], chf.spanCount);
 
             for (int j = 0; j < stack.size(); j += 3)
@@ -1120,7 +1120,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                         if ((int)srcDist[srcDistIndex[0]+ai]+2 < (int)d2)
                         {
                             r = srcReg[srcRegIndex[0]+ai];
-                            d2 = (short)(srcDist[srcDistIndex[0]+ai]+2);
+                            d2 = (int)(srcDist[srcDistIndex[0]+ai]+2);
                         }
                     }
                 }
@@ -1137,7 +1137,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
             }
 
             // rcSwap source and dest.
-//            short[] tmp = srcReg;
+//            int[] tmp = srcReg;
 			int tmpIndex = srcRegIndex[0];
 //            srcReg = dstReg;
 			srcRegIndex[0] = dstRegIndex[0];
@@ -1168,7 +1168,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
 
 
 
-    public static void calculateDistanceField(rcCompactHeightfield chf, int[] src, short[] maxDist)
+    public static void calculateDistanceField(rcCompactHeightfield chf, int[] src, int[] maxDist)
     {
         int w = chf.width;
         int h = chf.height;
@@ -1225,7 +1225,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                         int ai = (int)chf.cells[ax+ay*w].getIndex() + rcGetCon(s, 0);
                         rcCompactSpan as = chf.spans[ai];
                         if (src[ai]+2 < src[i])
-                            src[i] = (short)(src[ai]+2);
+                            src[i] = (int)(src[ai]+2);
 
                         // (-1,-1)
                         if (rcGetCon(as, 3) != RC_NOT_CONNECTED)
@@ -1234,7 +1234,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                             int aay = ay + rcGetDirOffsetY(3);
                             int aai = (int)chf.cells[aax+aay*w].getIndex() + rcGetCon(as, 3);
                             if (src[aai]+3 < src[i])
-                                src[i] = (short)(src[aai]+3);
+                                src[i] = (int)(src[aai]+3);
                         }
                     }
                     if (rcGetCon(s, 3) != RC_NOT_CONNECTED)
@@ -1245,7 +1245,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                         int ai = (int)chf.cells[ax+ay*w].getIndex() + rcGetCon(s, 3);
                         rcCompactSpan as = chf.spans[ai];
                         if (src[ai]+2 < src[i])
-                            src[i] = (short)(src[ai]+2);
+                            src[i] = (int)(src[ai]+2);
 
                         // (1,-1)
                         if (rcGetCon(as, 2) != RC_NOT_CONNECTED)
@@ -1254,7 +1254,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                             int aay = ay + rcGetDirOffsetY(2);
                             int aai = (int)chf.cells[aax+aay*w].getIndex() + rcGetCon(as, 2);
                             if (src[aai]+3 < src[i])
-                                src[i] = (short)(src[aai]+3);
+                                src[i] = (int)(src[aai]+3);
                         }
                     }
                 }
@@ -1279,7 +1279,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                         int ai = (int)chf.cells[ax+ay*w].getIndex() + rcGetCon(s, 2);
                         rcCompactSpan as = chf.spans[ai];
                         if (src[ai]+2 < src[i])
-                            src[i] = (short)(src[ai]+2);
+                            src[i] = (int)(src[ai]+2);
 
                         // (1,1)
                         if (rcGetCon(as, 1) != RC_NOT_CONNECTED)
@@ -1288,7 +1288,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                             int aay = ay + rcGetDirOffsetY(1);
                             int aai = (int)chf.cells[aax+aay*w].getIndex() + rcGetCon(as, 1);
                             if (src[aai]+3 < src[i])
-                                src[i] = (short)(src[aai]+3);
+                                src[i] = (int)(src[aai]+3);
                         }
                     }
                     if (rcGetCon(s, 1) != RC_NOT_CONNECTED)
@@ -1299,7 +1299,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                         int ai = (int)chf.cells[ax+ay*w].getIndex() + rcGetCon(s, 1);
                         rcCompactSpan as = chf.spans[ai];
                         if (src[ai]+2 < src[i])
-                            src[i] = (short)(src[ai]+2);
+                            src[i] = (int)(src[ai]+2);
 
                         // (-1,1)
                         if (rcGetCon(as, 0) != RC_NOT_CONNECTED)
@@ -1308,7 +1308,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                             int aay = ay + rcGetDirOffsetY(0);
                             int aai = (int)chf.cells[aax+aay*w].getIndex() + rcGetCon(as, 0);
                             if (src[aai]+3 < src[i])
-                                src[i] = (short)(src[aai]+3);
+                                src[i] = (int)(src[aai]+3);
                         }
                     }
                 }
@@ -1317,7 +1317,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
 
         maxDist[0] = 0;
         for (int i = 0; i < chf.spanCount; ++i)
-            maxDist[0] = (short)rcMax(src[i], maxDist[0]);
+            maxDist[0] = (int)rcMax(src[i], maxDist[0]);
 		assert maxDist[0] == 52;
     }
 
@@ -1373,7 +1373,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                             d += cd*2;
                         }
                     }
-                    dst[i] = (short)((d+5)/9);
+                    dst[i] = (int)((d+5)/9);
                 }
             }
         }

@@ -72,11 +72,11 @@ public class RecastImpl extends Recast {
         new RecastRasterization().rcRasterizeTriangles(ctx, verts, nv, tris, areas, nt, solid, flagMergeThr);
     }
 
-    public void rcRasterizeTriangles(rcContext ctx, float[] verts, int nv,
-                                     short[] tris, char[] areas, int nt,
-                                     rcHeightfield solid, int flagMergeThr) {
-        new RecastRasterization().rcRasterizeTriangles(ctx, verts, nv, tris, areas, nt, solid, flagMergeThr);
-    }
+//    public void rcRasterizeTriangles(rcContext ctx, float[] verts, int nv,
+//                                     int[] tris, char[] areas, int nt,
+//                                     rcHeightfield solid, int flagMergeThr) {
+//        new RecastRasterization().rcRasterizeTriangles(ctx, verts, nv, tris, areas, nt, solid, flagMergeThr);
+//    }
 
     public void rcRasterizeTriangles(rcContext ctx, float[] verts, char[] areas, int nt,
                                      rcHeightfield solid, int flagMergeThr) {
@@ -159,8 +159,8 @@ public class RecastImpl extends Recast {
                     if (s.getArea() != RC_NULL_AREA) {
                         int bot = (int) s.getSmax();
                         int top = s.next != null ? (int) s.next.getSmin() : MAX_HEIGHT;
-                        chf.spans[idx].y = (short) rcClamp(bot, 0, 0xffff).shortValue();
-                        chf.spans[idx].setH((char) rcClamp(top - bot, 0, 0xff).shortValue());
+                        chf.spans[idx].y = (int) rcClamp(bot, 0, 0xffff).intValue();
+                        chf.spans[idx].setH((char) rcClamp(top - bot, 0, 0xff).intValue());
                         chf.areas[idx] = (char) s.getArea();//area;
                         idx++;
                         c.setCount(c.getCount()+1);//count++;

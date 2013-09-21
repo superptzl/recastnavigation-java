@@ -7,8 +7,8 @@ public class rcCompactHeightfield {
     public int walkableHeight;			///< The walkable height used during the build of the field.  (See: rcConfig::walkableHeight)
     public int walkableClimb;			///< The walkable climb used during the build of the field. (See: rcConfig::walkableClimb)
     public int borderSize;				///< The AABB border size used during the build of the field. (See: rcConfig::borderSize)
-    public short maxDistance;	///< The maximum distance value of any span within the field.
-    public short maxRegions;	///< The maximum region id of any span within the field.
+    public int maxDistance;	///< The maximum distance value of any span within the field.
+    public int maxRegions;	///< The maximum region id of any span within the field.
     public float bmin[] = new float[3];				///< The minimum bounds in world space. [(x, y, z)]
     public float bmax[] = new float[3];				///< The maximum bounds in world space. [(x, y, z)]
     public float cs;					///< The size of each cell. (On the xz-plane.)

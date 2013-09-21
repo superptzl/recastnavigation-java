@@ -54,7 +54,7 @@ public abstract class InputGeom
 	public float m_offMeshConRads[] = new float[MAX_OFFMESH_CONNECTIONS];
 	public char m_offMeshConDirs[] = new char[MAX_OFFMESH_CONNECTIONS];
 	public char m_offMeshConAreas[] = new char[MAX_OFFMESH_CONNECTIONS];
-	public short m_offMeshConFlags[] = new short[MAX_OFFMESH_CONNECTIONS];
+	public int m_offMeshConFlags[] = new int[MAX_OFFMESH_CONNECTIONS];
 	public int m_offMeshConId[] = new int[MAX_OFFMESH_CONNECTIONS];
 	public int m_offMeshConCount;
 		///@}
@@ -89,10 +89,10 @@ public abstract class InputGeom
 	public float[] getOffMeshConnectionRads() { return m_offMeshConRads; }
 	public char[] getOffMeshConnectionDirs() { return m_offMeshConDirs; }
 	public char[] getOffMeshConnectionAreas() { return m_offMeshConAreas; }
-	public short[] getOffMeshConnectionFlags() { return m_offMeshConFlags; }
+	public int[] getOffMeshConnectionFlags() { return m_offMeshConFlags; }
 	public int[] getOffMeshConnectionId() { return m_offMeshConId; }
 	public abstract void addOffMeshConnection(float[] spos, float[] epos, float rad,
-								  char bidir, char area, short flags);
+								  char bidir, char area, int flags);
 	public abstract void deleteOffMeshConnection(int i);
 //	public abstract void drawOffMeshConnections(struct duDebugDraw* dd, bool hilight = false);
 		///@}

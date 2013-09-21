@@ -234,7 +234,7 @@ public class InputGeomImpl extends InputGeom
 //					m_offMeshConRads[m_offMeshConCount] = rad;
 //					m_offMeshConDirs[m_offMeshConCount] = (unsigned char)bidir;
 //					m_offMeshConAreas[m_offMeshConCount] = (unsigned char)area;
-//					m_offMeshConFlags[m_offMeshConCount] = (unsigned short)flags;
+//					m_offMeshConFlags[m_offMeshConCount] = (unsigned int)flags;
 //					m_offMeshConCount++;
 //				}
 //			}
@@ -382,7 +382,7 @@ public class InputGeomImpl extends InputGeom
 	}
 	
 	public void addOffMeshConnection( float[] spos,  float[] epos,  float rad,
-										  char bidir,  char area,  short flags)
+										  char bidir,  char area,  int flags)
 	{
 //		if (m_offMeshConCount >= MAX_OFFMESH_CONNECTIONS) return;
 //		float* v = &m_offMeshConVerts[m_offMeshConCount*3*2];

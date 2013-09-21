@@ -9,7 +9,7 @@ public class dtNavMeshCreateParams {
     public int[] verts;			///< The polygon mesh vertices. [(x, y, z) * #vertCount] [Unit: vx]
     public int vertCount;							///< The number vertices in the polygon mesh. [Limit: >= 3]
     public int[] polys;			///< The polygon data. [Size: #polyCount * 2 * #nvp]
-    public short[] polyFlags;		///< The user defined flags assigned to each polygon. [Size: #polyCount]
+    public int[] polyFlags;		///< The user defined flags assigned to each polygon. [Size: #polyCount]
     public char[] polyAreas;			///< The user defined area ids assigned to each polygon. [Size: #polyCount]
     public int polyCount;							///< Number of polygons in the mesh. [Limit: >= 1]
     public int nvp;								///< Number maximum number of vertices per polygon. [Limit: >= 3]
@@ -37,7 +37,7 @@ public class dtNavMeshCreateParams {
     /// Off-mesh connection radii. [Size: #offMeshConCount] [Unit: wu]
     public float[] offMeshConRad;
     /// User defined flags assigned to the off-mesh connections. [Size: #offMeshConCount]
-    public short[] offMeshConFlags;
+    public int[] offMeshConFlags;
     /// User defined area ids assigned to the off-mesh connections. [Size: #offMeshConCount]
     public char[] offMeshConAreas;
     /// The permitted travel direction of the off-mesh connections. [Size: #offMeshConCount]

@@ -6,7 +6,7 @@ public class rcPolyMesh {
     public int[] verts;	///< The mesh vertices. [Form: (x, y, z) * #nverts]
     public int[] polys;	///< Polygon and neighbor data. [Length: #maxpolys * 2 * #nvp]
     public int[] regs;	///< The region id assigned to each polygon. [Length: #maxpolys]
-    public short[] flags;	///< The user defined flags for each polygon. [Length: #maxpolys]
+    public int[] flags;	///< The user defined flags for each polygon. [Length: #maxpolys]
     public char[] areas;	///< The area id assigned to each polygon. [Length: #maxpolys]
     public int nverts;				///< The number of vertices.
     public int npolys;				///< The number of polygons.

@@ -54,36 +54,35 @@ public class RecastMeshDetail extends RecastImpl {
         // Find max size for a polygon area.
         for (int i = 0; i < mesh.npolys; ++i)
         {
-//            short* p = &mesh.polys[i*nvp*2];
-            int xmin = bounds[i*4+0];
-            int xmax = bounds[i*4+1];
-            int ymin = bounds[i*4+2];
-            int ymax = bounds[i*4+3];
-            xmin = chf.width;
-            xmax = 0;
-            ymin = chf.height;
-            ymax = 0;
+//            int* p = &mesh.polys[i*nvp*2];
+//            /*int xmin = */bounds[i*4+0];
+//            /*int xmax = */bounds[i*4+1];
+//            /*int ymin = */bounds[i*4+2];
+//            /*int ymax = */bounds[i*4+3];
+			bounds[i*4+0] = chf.width;
+			bounds[i*4+1] = 0;
+			bounds[i*4+2] = chf.height;
+			bounds[i*4+3] = 0;
             for (int j = 0; j < nvp; ++j)
             {
                 if(mesh.polys[i*nvp*2 + j] == RC_MESH_NULL_IDX) break;
-				int[] v = create3(mesh.verts, mesh.polys[i*nvp*2 + j]*3);
-                xmin = rcMin(xmin, (int)v[0]);
-                xmax = rcMax(xmax, (int)v[0]);
-                ymin = rcMin(ymin, (int)v[2]);
-                ymax = rcMax(ymax, (int)v[2]);
+				bounds[i*4+0] = rcMin(bounds[i*4+0], mesh.verts[mesh.polys[i*nvp*2 + j]*3+0]);
+				bounds[i*4+1] = rcMax(bounds[i*4+1], mesh.verts[mesh.polys[i*nvp*2 + j]*3+0]);
+				bounds[i*4+2] = rcMin(bounds[i*4+2], mesh.verts[mesh.polys[i*nvp*2 + j]*3+2]);
+				bounds[i*4+3] = rcMax(bounds[i*4+3], mesh.verts[mesh.polys[i*nvp*2 + j]*3+2]);
                 nPolyVerts++;
             }
-            xmin = rcMax(0,xmin-1);
-            xmax = rcMin(chf.width,xmax+1);
-            ymin = rcMax(0,ymin-1);
-            ymax = rcMin(chf.height,ymax+1);
-            if (xmin >= xmax || ymin >= ymax) continue;
-            maxhw = rcMax(maxhw, xmax-xmin);
-            maxhh = rcMax(maxhh, ymax-ymin);
+			bounds[i*4+0] = rcMax(0,bounds[i*4+0]-1);
+			bounds[i*4+1] = rcMin(chf.width,bounds[i*4+1]+1);
+			bounds[i*4+2] = rcMax(0,bounds[i*4+2]-1);
+			bounds[i*4+3] = rcMin(chf.height,bounds[i*4+3]+1);
+            if (bounds[i*4+0] >= bounds[i*4+1] || bounds[i*4+2] >= bounds[i*4+3]) continue;
+            maxhw = rcMax(maxhw, bounds[i*4+1]-bounds[i*4+0]);
+            maxhh = rcMax(maxhh, bounds[i*4+3]-bounds[i*4+1]);
         }
 
-//        hp.data = (unsigned short*)rcAlloc(sizeof(unsigned short)*maxhw*maxhh, RC_ALLOC_TEMP);
-        hp.data = new short[maxhw*maxhh];//(unsigned short*)rcAlloc(sizeof(unsigned short)*maxhw*maxhh, RC_ALLOC_TEMP);
+//        hp.data = (unsigned int*)rcAlloc(sizeof(unsigned int)*maxhw*maxhh, RC_ALLOC_TEMP);
+        hp.data = new int[maxhw*maxhh];//(unsigned int*)rcAlloc(sizeof(unsigned int)*maxhw*maxhh, RC_ALLOC_TEMP);
         /*if (!hp.data)
         {
             ctx.log(RC_LOG_ERROR, "rcBuildPolyMeshDetail: Out of memory 'hp.data' (%d).", maxhw*maxhh);
@@ -127,10 +126,10 @@ public class RecastMeshDetail extends RecastImpl {
             for (int j = 0; j < nvp; ++j)
             {
                 if(mesh.polys[i*nvp*2+j] == RC_MESH_NULL_IDX) break;
-				int[] v = create3(mesh.verts, mesh.polys[i*nvp*2+j]*3);
-                poly[j*3+0] = v[0]*cs;
-                poly[j*3+1] = v[1]*ch;
-                poly[j*3+2] = v[2]*cs;
+//				int[] v = create3(mesh.verts, mesh.polys[i*nvp*2+j]*3);
+                poly[j*3+0] = mesh.verts[mesh.polys[i*nvp*2+j]*3+0]*cs;
+                poly[j*3+1] = mesh.verts[mesh.polys[i*nvp*2+j]*3+1]*ch;
+                poly[j*3+2] = mesh.verts[mesh.polys[i*nvp*2+j]*3+2]*cs;
                 npoly++;
             }
 
@@ -253,8 +252,8 @@ public class RecastMeshDetail extends RecastImpl {
         // Note: Reads to the compact heightfield are offset by border size (bs)
         // since border size offset is already removed from the polymesh vertices.
 
-        Arrays.fill(hp.data, 0, hp.width*hp.height, (short)0);
-//        memset(hp.data, 0, sizeof(unsignedshort)*hp.width*hp.height);
+        Arrays.fill(hp.data, 0, hp.width*hp.height, (int)0);
+//        memset(hp.data, 0, sizeof(unsignedint)*hp.width*hp.height);
 
         stack.resize(0);
 
@@ -360,8 +359,8 @@ public class RecastMeshDetail extends RecastImpl {
             }
         }
 
-        Arrays.fill(hp.data, 0, hp.width*hp.height, (short)0xff);
-//        memset(hp.data, 0xff, sizeof(unsigned short)*hp.width*hp.height);
+        Arrays.fill(hp.data, 0, hp.width*hp.height, (int)0xff);
+//        memset(hp.data, 0xff, sizeof(unsigned int)*hp.width*hp.height);
 
         // Mark start locations.
         for (int i = 0; i < stack.size(); i += 3)
@@ -435,7 +434,7 @@ public class RecastMeshDetail extends RecastImpl {
     {
         //            inline rcHeightPatch() : data(0), xmin(0), ymin(0), width(0), height(0) {}
 //            inline ~rcHeightPatch() { rcFree(data); }
-        public short[] data;
+        public int[] data;
         int xmin, ymin, width, height;
     }
 
@@ -1140,7 +1139,7 @@ public class RecastMeshDetail extends RecastImpl {
     }
 
 
-    static short getHeight(float fx, float fy, float fz,
+    static int getHeight(float fx, float fy, float fz,
                                     float cs, float ics, float ch,
                                     rcHeightPatch hp)
     {
@@ -1148,7 +1147,7 @@ public class RecastMeshDetail extends RecastImpl {
         int iz = (int)Math.floor(fz * ics + 0.01f);
         ix = rcClamp(ix-hp.xmin, 0, hp.width);
         iz = rcClamp(iz-hp.ymin, 0, hp.height);
-        short h = hp.data[ix+iz*hp.width];
+        int h = hp.data[ix+iz*hp.width];
         if (h == RC_UNSET_HEIGHT)
         {
             // Special case when data might be bad.
@@ -1161,7 +1160,7 @@ public class RecastMeshDetail extends RecastImpl {
                 int nx = ix+off[i*2+0];
                 int nz = iz+off[i*2+1];
                 if (nx < 0 || nz < 0 || nx >= hp.width || nz >= hp.height) continue;
-                short nh = hp.data[nx+nz*hp.width];
+                int nh = hp.data[nx+nz*hp.width];
                 if (nh == RC_UNSET_HEIGHT) continue;
 
                 float d = Math.abs(nh * ch - fy);

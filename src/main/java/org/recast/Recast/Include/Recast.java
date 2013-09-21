@@ -83,15 +83,15 @@ public abstract class Recast {
 ///  @param[in,out]	solid		An initialized heightfield.
 ///  @param[in]		flagMergeThr	The distance where the walkable flag is favored over the non-walkable flag.
 ///  							[Limit: >= 0] [Units: vx]
-    public void rcRasterizeTriangles(rcContext ctx, float[] verts, int nv,
-                              short[] tris, char[] areas, int nt,
-                              rcHeightfield solid) {
-        rcRasterizeTriangles(ctx, verts, nv, tris, areas, nt, solid, 1);
-    }
+//    public void rcRasterizeTriangles(rcContext ctx, float[] verts, int nv,
+//                              int[] tris, char[] areas, int nt,
+//                              rcHeightfield solid) {
+//        rcRasterizeTriangles(ctx, verts, nv, tris, areas, nt, solid, 1);
+//    }
 
-    public abstract void rcRasterizeTriangles(rcContext ctx, float[] verts, int nv,
-                              short[] tris, char[] areas, int nt,
-                              rcHeightfield solid, int flagMergeThr);
+//    public abstract void rcRasterizeTriangles(rcContext ctx, float[] verts, int nv,
+//                              int[] tris, char[] areas, int nt,
+//                              rcHeightfield solid, int flagMergeThr);
 
     /// Rasterizes triangles into the specified heightfield.
 ///  @ingroup recast
@@ -306,29 +306,34 @@ public abstract class Recast {
         return (float)Math.sqrt(x);
     }
 
-    public static int[] create3(int[] arr, int fromIndex) {
-        int[] r = new int[3];
-        r[0] = arr[fromIndex+0];
-        r[0] = arr[fromIndex+1];
-        r[0] = arr[fromIndex+2];
-        return r;
-    }
+//    public static int[] create3(int[] arr, int fromIndex) {
+//        int[] r = new int[3];
+//        r[0] = arr[fromIndex+0];
+//        r[1] = arr[fromIndex+1];
+//        r[2] = arr[fromIndex+2];
+//        return r;
+//    }
 
-    public static short[] create3(short[] arr, int fromIndex) {
+    public static int[] create3(int[] arr, int fromIndex) {
         return createN(arr, fromIndex, 3);
     }
 
     public static int[] createN(int[] arr, int fromIndex, int n) {
         int[] r = new int[n];
-        System.arraycopy(arr, fromIndex, r, 0, n);
+		try {
+        	System.arraycopy(arr, fromIndex, r, 0, n);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			e.printStackTrace();
+			throw e;
+		}
         return r;
     }
 
-    public static short[] createN(short[] arr, int fromIndex, int n) {
-        short[] r = new short[n];
-        System.arraycopy(arr, fromIndex, r, 0, n);
-        return r;
-    }
+//    public static int[] createN(int[] arr, int fromIndex, int n) {
+//        int[] r = new int[n];
+//        System.arraycopy(arr, fromIndex, r, 0, n);
+//        return r;
+//    }
 
     public static float[] createN(float[] arr, int fromIndex, int n) {
         float[] r = new float[n];

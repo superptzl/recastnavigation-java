@@ -44,22 +44,22 @@ public class RecastMeh {
         }*/
 //            memset(vflags, 0, maxVertices);
 
-//            mesh.verts = (unsigned short*)rcAlloc(sizeof(unsigned short)*maxVertices*3, RC_ALLOC_PERM);
-        mesh.verts = new int[maxVertices*3];//(unsigned short*)rcAlloc(sizeof(unsigned short)*maxVertices*3, RC_ALLOC_PERM);
+//            mesh.verts = (unsigned int*)rcAlloc(sizeof(unsigned int)*maxVertices*3, RC_ALLOC_PERM);
+        mesh.verts = new int[maxVertices*3];//(unsigned int*)rcAlloc(sizeof(unsigned int)*maxVertices*3, RC_ALLOC_PERM);
         /*if (!mesh.verts)
         {
             ctx.log(RC_LOG_ERROR, "rcBuildPolyMesh: Out of memory 'mesh.verts' (%d).", maxVertices);
             return false;
         }*/
-//            mesh.polys = (unsigned short*)rcAlloc(sizeof(unsigned short)*maxTris*nvp*2, RC_ALLOC_PERM);
-        mesh.polys = new int[maxTris*nvp*2];//(unsigned short*)rcAlloc(sizeof(unsigned short)*maxTris*nvp*2, RC_ALLOC_PERM);
+//            mesh.polys = (unsigned int*)rcAlloc(sizeof(unsigned int)*maxTris*nvp*2, RC_ALLOC_PERM);
+        mesh.polys = new int[maxTris*nvp*2];//(unsigned int*)rcAlloc(sizeof(unsigned int)*maxTris*nvp*2, RC_ALLOC_PERM);
         /*if (!mesh.polys)
         {
             ctx.log(RC_LOG_ERROR, "rcBuildPolyMesh: Out of memory 'mesh.polys' (%d).", maxTris*nvp*2);
             return false;
         }*/
-//            mesh.regs = (unsigned short*)rcAlloc(sizeof(unsigned short)*maxTris, RC_ALLOC_PERM);
-        mesh.regs = new int[maxTris];//(unsigned short*)rcAlloc(sizeof(unsigned short)*maxTris, RC_ALLOC_PERM);
+//            mesh.regs = (unsigned int*)rcAlloc(sizeof(unsigned int)*maxTris, RC_ALLOC_PERM);
+        mesh.regs = new int[maxTris];//(unsigned int*)rcAlloc(sizeof(unsigned int)*maxTris, RC_ALLOC_PERM);
         /*if (!mesh.regs)
         {
             ctx.log(RC_LOG_ERROR, "rcBuildPolyMesh: Out of memory 'mesh.regs' (%d).", maxTris);
@@ -78,9 +78,9 @@ public class RecastMeh {
         mesh.nvp = nvp;
         mesh.maxpolys = maxTris;
 
-//            memset(mesh.verts, 0, sizeof(unsigned short)*maxVertices*3);
-//            memset(mesh.polys, 0xff, sizeof(unsigned short)*maxTris*nvp*2);
-//            memset(mesh.regs, 0, sizeof(unsigned short)*maxTris);
+//            memset(mesh.verts, 0, sizeof(unsigned int)*maxVertices*3);
+//            memset(mesh.polys, 0xff, sizeof(unsigned int)*maxTris*nvp*2);
+//            memset(mesh.regs, 0, sizeof(unsigned int)*maxTris);
 //            memset(mesh.areas, 0, sizeof(unsigned char)*maxTris);
 
 //            rcScopedDelete<int> nextVert = (int*)rcAlloc(sizeof(int)*maxVertices, RC_ALLOC_TEMP);
@@ -116,7 +116,7 @@ public class RecastMeh {
             ctx.log(RC_LOG_ERROR, "rcBuildPolyMesh: Out of memory 'tris' (%d).", maxVertsPerCont*3);
             return false;
         }*/
-//            rcScopedDelete<unsigned short> polys = (unsigned short*)rcAlloc(sizeof(unsigned short)*(maxVertsPerCont+1)*nvp, RC_ALLOC_TEMP);
+//            rcScopedDelete<unsigned int> polys = (unsigned int*)rcAlloc(sizeof(unsigned int)*(maxVertsPerCont+1)*nvp, RC_ALLOC_TEMP);
 		int[] polys = new int[(maxVertsPerCont+1)*nvp];
         /*if (!polys)
         {
@@ -174,7 +174,7 @@ public class RecastMeh {
 
             // Build initial polygons.
             int npolys = 0;
-//                memset(polys, 0xff, maxVertsPerCont*nvp*sizeof(unsigned short));
+//                memset(polys, 0xff, maxVertsPerCont*nvp*sizeof(unsigned int));
             for (int zz = 0; zz < maxVertsPerCont*nvp; zz++) {
                 polys[zz] = 0xff;
             }
@@ -183,9 +183,9 @@ public class RecastMeh {
 //                    int* t = tris[j*3];
                 if (tris[j*3+0] != tris[j*3+1] && tris[j*3+0] != tris[j*3+2] && tris[j*3+1] != tris[j*3+2])
                 {
-                    polys[npolys*nvp+0] = (short)indices[tris[j*3+0]];
-                    polys[npolys*nvp+1] = (short)indices[tris[j*3+1]];
-                    polys[npolys*nvp+2] = (short)indices[tris[j*3+2]];
+                    polys[npolys*nvp+0] = (int)indices[tris[j*3+0]];
+                    polys[npolys*nvp+1] = (int)indices[tris[j*3+1]];
+                    polys[npolys*nvp+2] = (int)indices[tris[j*3+2]];
                     npolys++;
                 }
             }
@@ -203,10 +203,10 @@ public class RecastMeh {
 
                     for (int j = 0; j < npolys-1; ++j)
                     {
-						int[] pj = Recast.create3(polys, j * nvp);
+						int[] pj = Recast.createN(polys, j * nvp, nvp);
                         for (int k = j+1; k < npolys; ++k)
                         {
-							int[] pk = Recast.create3(polys, k * nvp);
+							int[] pk = Recast.createN(polys, k * nvp, nvp);
                             int ea[] = new int[0], eb[] = new int[0];
                             int v = getPolyMergeValue(pj, pk, mesh.verts, ea, eb, nvp);
                             if (v > bestMergeVal)
@@ -228,10 +228,10 @@ public class RecastMeh {
                         mergePolys(pa, pb, bestEa, bestEb, tmpPoly, nvp);
                         System.arraycopy(pa, 0, polys, bestPa*nvp*nvp, nvp);
                         System.arraycopy(pb, 0, polys, bestPb*nvp*nvp, nvp);
-//                            short[] tmpPoly = createN(polys, maxVertsPerCont*nvp, nvp);
+//                            int[] tmpPoly = createN(polys, maxVertsPerCont*nvp, nvp);
                         System.arraycopy(tmpPoly, 0, polys, maxVertsPerCont*nvp, nvp);
 
-//                            memcpy(pb, &polys[(npolys-1)*nvp], sizeof(unsigned short)*nvp);
+//                            memcpy(pb, &polys[(npolys-1)*nvp], sizeof(unsigned int)*nvp);
                         System.arraycopy(polys, (npolys-1)*nvp, pb, 0, nvp);
                         npolys--;
                     }
@@ -246,8 +246,8 @@ public class RecastMeh {
             // Store polygons.
             for (int j = 0; j < npolys; ++j)
             {
-//                    short[] p = createN(mesh.polys, mesh.npolys*nvp*2, nvp);
-//                    short[] q = createN(polys[j*nvp];
+//                    int[] p = createN(mesh.polys, mesh.npolys*nvp*2, nvp);
+//                    int[] q = createN(polys[j*nvp];
                 for (int k = 0; k < nvp; ++k)
                     mesh.polys[mesh.npolys*nvp*2 + k] = polys[j*nvp + k];
                 mesh.regs[mesh.npolys] = cont.reg;
@@ -267,9 +267,9 @@ public class RecastMeh {
         {
             if (vflags[i] != 0)
             {
-                if (!canRemoveVertex(ctx, mesh, (short)i))
+                if (!canRemoveVertex(ctx, mesh, (int)i))
                 continue;
-                if (!removeVertex(ctx, mesh, (short)i, maxTris))
+                if (!removeVertex(ctx, mesh, (int)i, maxTris))
                 {
                     // Failed to remove vertex
                     ctx.log(rcLogCategory.RC_LOG_ERROR, "rcBuildPolyMesh: Failed to remove edge vertex %d.", i);
@@ -298,7 +298,7 @@ public class RecastMeh {
             int h = cset.height;
             for (int i = 0; i < mesh.npolys; ++i)
             {
-//                    short* p = &mesh.polys[i*2*nvp];
+//                    int* p = &mesh.polys[i*2*nvp];
                 for (int j = 0; j < nvp; ++j)
                 {
                     if (mesh.polys[i*2*nvp+j] == Recast.RC_MESH_NULL_IDX) break;
@@ -307,30 +307,30 @@ public class RecastMeh {
                         continue;
                     int nj = j+1;
                     if (nj >= nvp || mesh.polys[i*2*nvp+nj] == Recast.RC_MESH_NULL_IDX) nj = 0;
-//                        short* va = mesh.verts[mesh.polys[i*2*nvp+j]*3];
-//                        short* vb = mesh.verts[mesh.polys[i*2*nvp+nj]*3];
+//                        int* va = mesh.verts[mesh.polys[i*2*nvp+j]*3];
+//                        int* vb = mesh.verts[mesh.polys[i*2*nvp+nj]*3];
 
                     if ((int)mesh.verts[mesh.polys[i*2*nvp+j]*3+0] == 0 && (int)mesh.verts[mesh.polys[i*2*nvp+nj]*3+0] == 0)
-                        mesh.polys[i*2*nvp+nvp+j] = (short)0x8000 | 0;
+                        mesh.polys[i*2*nvp+nvp+j] = (int)0x8000 | 0;
                     else if ((int)mesh.verts[mesh.polys[i*2*nvp+j]*3+2] == h && (int)mesh.verts[mesh.polys[i*2*nvp+nj]*3+2] == h)
-                        mesh.polys[i*2*nvp+nvp+j] = (short)0x8000 | 1;
+                        mesh.polys[i*2*nvp+nvp+j] = (int)0x8000 | 1;
                     else if ((int)mesh.verts[mesh.polys[i*2*nvp+j]*3+0] == w && (int)mesh.verts[mesh.polys[i*2*nvp+nj]*3+0] == w)
-                        mesh.polys[i*2*nvp+nvp+j] = (short)0x8000 | 2;
+                        mesh.polys[i*2*nvp+nvp+j] = (int)0x8000 | 2;
                     else if ((int)mesh.verts[mesh.polys[i*2*nvp+j]*3+2] == 0 && (int)mesh.verts[mesh.polys[i*2*nvp+nj]*3+2] == 0)
-                        mesh.polys[i*2*nvp+nvp+j] = (short)0x8000 | 3;
+                        mesh.polys[i*2*nvp+nvp+j] = (int)0x8000 | 3;
                 }
             }
         }
 
         // Just allocate the mesh flags array. The user is resposible to fill it.
-//            mesh.flags = (unsigned short*)rcAlloc(sizeof(unsigned short)*mesh.npolys, RC_ALLOC_PERM);
-        mesh.flags = new short[mesh.npolys];//(unsigned short*)rcAlloc(sizeof(unsigned short)*mesh.npolys, RC_ALLOC_PERM);
+//            mesh.flags = (unsigned int*)rcAlloc(sizeof(unsigned int)*mesh.npolys, RC_ALLOC_PERM);
+        mesh.flags = new int[mesh.npolys];//(unsigned int*)rcAlloc(sizeof(unsigned int)*mesh.npolys, RC_ALLOC_PERM);
         /*if (!mesh.flags)
         {
             ctx.log(RC_LOG_ERROR, "rcBuildPolyMesh: Out of memory 'mesh.flags' (%d).", mesh.npolys);
             return false;
         }*/
-//            memset(mesh.flags, 0, sizeof(unsigned short) * mesh.npolys);
+//            memset(mesh.flags, 0, sizeof(unsigned int) * mesh.npolys);
 
         if (mesh.nverts > 0xffff)
         {
@@ -353,7 +353,7 @@ public class RecastMeh {
         // http://www.terathon.com/code/edges.php
 
         int maxEdgeCount = npolys*vertsPerPoly;
-//            short* firstEdge = (unsigned short*)rcAlloc(sizeof(unsigned short)*(nverts + maxEdgeCount), RC_ALLOC_TEMP);
+//            int* firstEdge = (unsigned int*)rcAlloc(sizeof(unsigned int)*(nverts + maxEdgeCount), RC_ALLOC_TEMP);
 		int[] firstEdge = new int[nverts + maxEdgeCount];
 //            if (!firstEdge)
 //                return false;
@@ -372,7 +372,7 @@ public class RecastMeh {
 
         for (int i = 0; i < npolys; ++i)
         {
-//                short* t = polys[i*vertsPerPoly*2];
+//                int* t = polys[i*vertsPerPoly*2];
             for (int j = 0; j < vertsPerPoly; ++j)
             {
                 if (polys[i*vertsPerPoly*2+j] == Recast.RC_MESH_NULL_IDX) break;
@@ -386,13 +386,13 @@ public class RecastMeh {
                     rcEdge edge = edges[edgeCount];
                     edge.vert[0] = v0;
                     edge.vert[1] = v1;
-                    edge.poly[0] = (short)i;
-                    edge.polyEdge[0] = (short)j;
-                    edge.poly[1] = (short)i;
+                    edge.poly[0] = (int)i;
+                    edge.polyEdge[0] = (int)j;
+                    edge.poly[1] = (int)i;
                     edge.polyEdge[1] = 0;
                     // Insert edge
                     nextEdge[nverts + edgeCount] = firstEdge[v0];
-                    firstEdge[v0] = (short)edgeCount;
+                    firstEdge[v0] = (int)edgeCount;
                     edgeCount++;
                 }
             }
@@ -400,7 +400,7 @@ public class RecastMeh {
 
         for (int i = 0; i < npolys; ++i)
         {
-//                short* t = polys[i*vertsPerPoly*2];
+//                int* t = polys[i*vertsPerPoly*2];
             for (int j = 0; j < vertsPerPoly; ++j)
             {
                 if (polys[i*vertsPerPoly*2+j] == Recast.RC_MESH_NULL_IDX) break;
@@ -416,8 +416,8 @@ public class RecastMeh {
                         rcEdge edge = edges[e];
                         if (edge.vert[1] == v0 && edge.poly[0] == edge.poly[1])
                         {
-                            edge.poly[1] = (short)i;
-                            edge.polyEdge[1] = (short)j;
+                            edge.poly[1] = (int)i;
+                            edge.polyEdge[1] = (int)j;
                             break;
                         }
                     }
@@ -431,8 +431,8 @@ public class RecastMeh {
             rcEdge e = edges[i];
             if (e.poly[0] != e.poly[1])
             {
-//                    short* p0 = &polys[e.poly[0]*vertsPerPoly*2];
-//                    short* p1 = polys[e.poly[1]*vertsPerPoly*2];
+//                    int* p0 = &polys[e.poly[0]*vertsPerPoly*2];
+//                    int* p1 = polys[e.poly[1]*vertsPerPoly*2];
                 polys[e.poly[0]*vertsPerPoly*2+vertsPerPoly + e.polyEdge[0]] = e.poly[1];
                 polys[e.poly[1]*vertsPerPoly*2+vertsPerPoly + e.polyEdge[1]] = e.poly[0];
             }
@@ -458,7 +458,7 @@ public class RecastMeh {
         an[0]++;
     }
 
-    public static boolean removeVertex(rcContext ctx, rcPolyMesh mesh, short rem, int maxTris)
+    public static boolean removeVertex(rcContext ctx, rcPolyMesh mesh, int rem, int maxTris)
     {
         int nvp = mesh.nvp;
 
@@ -535,10 +535,10 @@ public class RecastMeh {
                 }
                 // Remove the polygon.
 				int[] p2 = Recast.createN(mesh.polys, (mesh.npolys - 1) * nvp * 2, nvp);
-//                    memcpy(p,p2,sizeof(unsigned short)*nvp);
+//                    memcpy(p,p2,sizeof(unsigned int)*nvp);
                 System.arraycopy(p2, 0, p, 0, nvp);
-//                    memset(p+nvp,0xff,sizeof(unsigned short)*nvp);
-                Arrays.fill(p, nvp, nvp + nv, (short) 0xff);
+//                    memset(p+nvp,0xff,sizeof(unsigned int)*nvp);
+                Arrays.fill(p, nvp, nvp + nv, (int) 0xff);
                 mesh.regs[i] = mesh.regs[mesh.npolys-1];
                 mesh.areas[i] = mesh.areas[mesh.npolys-1];
                 mesh.npolys--;
@@ -667,15 +667,15 @@ public class RecastMeh {
         }
 
         // Merge the hole triangles back to polygons.
-//            rcScopedDelete<unsigned short> polys = (unsigned short*)rcAlloc(sizeof(unsigned short)*(ntris+1)*nvp, RC_ALLOC_TEMP);
-		int[] polys = new int[(ntris+1)*nvp];//(unsigned short*)rcAlloc(sizeof(unsigned short)*(ntris+1)*nvp, RC_ALLOC_TEMP);
+//            rcScopedDelete<unsigned int> polys = (unsigned int*)rcAlloc(sizeof(unsigned int)*(ntris+1)*nvp, RC_ALLOC_TEMP);
+		int[] polys = new int[(ntris+1)*nvp];//(unsigned int*)rcAlloc(sizeof(unsigned int)*(ntris+1)*nvp, RC_ALLOC_TEMP);
 //            if (!polys)
 //            {
 //                ctx.log(RC_LOG_ERROR, "removeVertex: Out of memory 'polys' (%d).", (ntris+1)*nvp);
 //                return false;
 //            }
-//            rcScopedDelete<unsigned short> pregs = (unsigned short*)rcAlloc(sizeof(unsigned short)*ntris, RC_ALLOC_TEMP);
-        short[] pregs = new short[ntris];//(unsigned short*)rcAlloc(sizeof(unsigned short)*ntris, RC_ALLOC_TEMP);
+//            rcScopedDelete<unsigned int> pregs = (unsigned int*)rcAlloc(sizeof(unsigned int)*ntris, RC_ALLOC_TEMP);
+        int[] pregs = new int[ntris];//(unsigned int*)rcAlloc(sizeof(unsigned int)*ntris, RC_ALLOC_TEMP);
 //            if (!pregs)
 //            {
 //                ctx.log(RC_LOG_ERROR, "removeVertex: Out of memory 'pregs' (%d).", ntris);
@@ -693,17 +693,17 @@ public class RecastMeh {
 
         // Build initial polygons.
         int npolys = 0;
-//            memset(polys, 0xff, ntris*nvp*sizeof(unsigned short));
-        Arrays.fill(polys, 0, ntris*nvp, (short)0xff);
+//            memset(polys, 0xff, ntris*nvp*sizeof(unsigned int));
+        Arrays.fill(polys, 0, ntris*nvp, (int)0xff);
         for (int j = 0; j < ntris; ++j)
         {
 //                int* t = create3(tris[j*3];
             if (tris[j*3+0] != tris[j*3+1] && tris[j*3+0] != tris[j*3+2] && tris[j*3+1] != tris[j*3+2])
             {
-                polys[npolys*nvp+0] = (short)hole[tris[j*3+0]];
-                polys[npolys*nvp+1] = (short)hole[tris[j*3+1]];
-                polys[npolys*nvp+2] = (short)hole[tris[j*3+2]];
-                pregs[npolys] = (short)hreg[tris[j*3+0]];
+                polys[npolys*nvp+0] = (int)hole[tris[j*3+0]];
+                polys[npolys*nvp+1] = (int)hole[tris[j*3+1]];
+                polys[npolys*nvp+2] = (int)hole[tris[j*3+2]];
+                pregs[npolys] = (int)hreg[tris[j*3+0]];
                 pareas[npolys] = (char)harea[tris[j*3+0]];
                 npolys++;
             }
@@ -747,12 +747,12 @@ public class RecastMeh {
 					int[] pa = Recast.createN(polys, bestPa * nvp, nvp);
 					int[] pb = Recast.createN(polys, bestPb * nvp, nvp);
                     mergePolys(pa, pb, bestEa, bestEb, tmpPoly, nvp);
-//                        short[] tmpPoly = createN(polys, ntris*nvp, nvp);
+//                        int[] tmpPoly = createN(polys, ntris*nvp, nvp);
                     System.arraycopy(tmpPoly, 0, polys, ntris*nvp, nvp);
                     System.arraycopy(pa, 0, polys, bestPa*nvp, nvp);
                     System.arraycopy(pb, 0, polys, bestPb*nvp, nvp);
 
-//                        memcpy(pb, &polys[(npolys-1)*nvp], sizeof(unsigned short)*nvp);
+//                        memcpy(pb, &polys[(npolys-1)*nvp], sizeof(unsigned int)*nvp);
                     System.arraycopy(polys, (npolys-1)*nvp, pb, 0, nvp);
                     pregs[bestPb] = pregs[npolys-1];
                     pareas[bestPb] = pareas[npolys-1];
@@ -770,9 +770,9 @@ public class RecastMeh {
         for (int i = 0; i < npolys; ++i)
         {
             if (mesh.npolys >= maxTris) break;
-//                short* p = &mesh.polys[mesh.npolys*nvp*2];
-//                memset(p,0xff,sizeof(unsigned short)*nvp*2);
-            Arrays.fill(mesh.polys, mesh.npolys*nvp*2, mesh.npolys*nvp*2 + nvp*2, (short)0xff);
+//                int* p = &mesh.polys[mesh.npolys*nvp*2];
+//                memset(p,0xff,sizeof(unsigned int)*nvp*2);
+            Arrays.fill(mesh.polys, mesh.npolys*nvp*2, mesh.npolys*nvp*2 + nvp*2, (int)0xff);
             for (int j = 0; j < nvp; ++j)
                 mesh.polys[mesh.npolys*nvp*2+j] = polys[i*nvp+j];
             mesh.regs[mesh.npolys] = pregs[i];
@@ -788,7 +788,7 @@ public class RecastMeh {
         return true;
     }
 
-    public static boolean canRemoveVertex(rcContext ctx, rcPolyMesh mesh, short rem)
+    public static boolean canRemoveVertex(rcContext ctx, rcPolyMesh mesh, int rem)
     {
         int nvp = mesh.nvp;
 
@@ -903,8 +903,8 @@ public class RecastMeh {
         int nb = countPolyVerts(pb, nvp);
 
         // Merge polygons.
-//            memset(tmp, 0xff, sizeof(unsigned short)*nvp);
-        Arrays.fill(tmp, 0, nvp, (short)0xff);
+//            memset(tmp, 0xff, sizeof(unsigned int)*nvp);
+        Arrays.fill(tmp, 0, nvp, (int)0xff);
         /*for (int i = 0; i < nvp; i ++) {
             tmp[i] = 0xff;
         }*/
@@ -916,7 +916,7 @@ public class RecastMeh {
         for (int i = 0; i < nb-1; ++i)
             tmp[n++] = pb[(eb+1+i) % nb];
 
-//            memcpy(pa, tmp, sizeof(unsigned short)*nvp);
+//            memcpy(pa, tmp, sizeof(unsigned int)*nvp);
         System.arraycopy(tmp, 0, pa, 0, nvp);
     }
 
@@ -1114,7 +1114,7 @@ public class RecastMeh {
         return (int)(n & (VERTEX_BUCKET_COUNT-1));
     }
 
-    public static short addVertex(int x, int y, int z,
+    public static int addVertex(int x, int y, int z,
 								  int[] verts, int[] firstVert, int[] nextVert, int[] nv)
     {
         int bucket = computeVertexHash(x, 0, z);
@@ -1122,22 +1122,22 @@ public class RecastMeh {
 
         while (i != -1)
         {
-//                short[] v = verts[i*3];
+//                int[] v = verts[i*3];
             if (verts[i*3+0] == x && (Recast.rcAbs(verts[i * 3 + 1] - y) <= 2) && verts[i*3+2] == z)
-                return (short)i;
+                return (int)i;
             i = nextVert[i]; // next
         }
 
         // Could not find, create new.
         i = nv[0]; nv[0]++;
-//            short[] v = verts[i*3];
+//            int[] v = verts[i*3];
         verts[i*3+0] = x;
         verts[i*3+1] = y;
         verts[i*3+2] = z;
         nextVert[i] = firstVert[bucket];
         firstVert[bucket] = i;
 
-        return (short)i;
+        return (int)i;
     }
 
     // Returns T iff (v_i, v_j) is a proper internal
