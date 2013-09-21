@@ -123,8 +123,10 @@ public class RecastMeh {
             ctx.log(RC_LOG_ERROR, "rcBuildPolyMesh: Out of memory 'polys' (%d).", maxVertsPerCont*nvp);
             return false;
         }*/
-		int[] tmpPoly = Recast.createN(polys, maxVertsPerCont * nvp, nvp);
+//		int[] tmpPoly = Recast.createN(polys, maxVertsPerCont * nvp, nvp);
+		int[] tmpPolyIndex = new int[]{maxVertsPerCont * nvp};
 
+		int sum = 0;
         for (int i = 0; i < cset.nconts; ++i)
         {
             rcContour cont = cset.conts[i];
@@ -156,15 +158,17 @@ public class RecastMeh {
             }
 
             // Add and merge vertices.
+//			assert cont.nverts == 15;
+			sum += cont.nverts;
             for (int j = 0; j < cont.nverts; ++j)
             {
 //                    int[] v = cont.verts[j*4];
 
-                int tmp[] = new int[]{mesh.nverts};
+                int nv[] = new int[]{mesh.nverts};
 
                 indices[j] = addVertex(cont.verts[j*4+0], cont.verts[j*4+1], cont.verts[j*4+2],
-                    mesh.verts, firstVert, nextVert, tmp);
-                mesh.nverts = tmp[0];
+                    mesh.verts, firstVert, nextVert, nv);
+                mesh.nverts = nv[0];
                 if ((cont.verts[j*4+3] & Recast.RC_BORDER_VERTEX) != 0)
                 {
                     // This vertex should be removed.
@@ -176,7 +180,7 @@ public class RecastMeh {
             int npolys = 0;
 //                memset(polys, 0xff, maxVertsPerCont*nvp*sizeof(unsigned int));
             for (int zz = 0; zz < maxVertsPerCont*nvp; zz++) {
-                polys[zz] = 0xff;
+                polys[zz] = Integer.MAX_VALUE;
             }
             for (int j = 0; j < ntris; ++j)
             {
@@ -203,12 +207,14 @@ public class RecastMeh {
 
                     for (int j = 0; j < npolys-1; ++j)
                     {
-						int[] pj = Recast.createN(polys, j * nvp, nvp);
+//						int[] pj = Recast.createN(polys, j * nvp, nvp);
+						int[] pjIndex = new int[]{j * nvp};// = Recast.createN(polys, j * nvp, nvp);
                         for (int k = j+1; k < npolys; ++k)
                         {
-							int[] pk = Recast.createN(polys, k * nvp, nvp);
-                            int ea[] = new int[0], eb[] = new int[0];
-                            int v = getPolyMergeValue(pj, pk, mesh.verts, ea, eb, nvp);
+//							int[] pk = Recast.createN(polys, k * nvp, nvp);
+							int[] pkIndex = new int[]{k * nvp};//Recast.createN(polys, k * nvp, nvp);
+                            int ea[] = new int[]{0}, eb[] = new int[]{0};
+                            int v = getPolyMergeValue(polys, pjIndex, polys, pkIndex, mesh.verts, ea, eb, nvp);
                             if (v > bestMergeVal)
                             {
                                 bestMergeVal = v;
@@ -223,16 +229,18 @@ public class RecastMeh {
                     if (bestMergeVal > 0)
                     {
                         // Found best, merge.
-						int[] pa = Recast.createN(polys, bestPa * nvp, nvp);
-						int[] pb = Recast.createN(polys, bestPb * nvp, nvp);
-                        mergePolys(pa, pb, bestEa, bestEb, tmpPoly, nvp);
-                        System.arraycopy(pa, 0, polys, bestPa*nvp*nvp, nvp);
-                        System.arraycopy(pb, 0, polys, bestPb*nvp*nvp, nvp);
-//                            int[] tmpPoly = createN(polys, maxVertsPerCont*nvp, nvp);
-                        System.arraycopy(tmpPoly, 0, polys, maxVertsPerCont*nvp, nvp);
+//						int[] pa = Recast.createN(polys, bestPa * nvp, nvp);
+//						int[] pb = Recast.createN(polys, bestPb * nvp, nvp);
+						int[] paIndex = new int[]{bestPa * nvp};
+						int[] pbIndex = new int[]{bestPb * nvp};
+                        mergePolys(polys, paIndex, polys, pbIndex, bestEa, bestEb, polys, tmpPolyIndex, nvp);
+//                        System.arraycopy(pa, 0, polys, bestPa*nvp, nvp);
+//                        System.arraycopy(pb, 0, polys, bestPb*nvp, nvp);
+//                        System.arraycopy(tmpPoly, 0, polys, maxVertsPerCont*nvp, nvp);
 
-//                            memcpy(pb, &polys[(npolys-1)*nvp], sizeof(unsigned int)*nvp);
-                        System.arraycopy(polys, (npolys-1)*nvp, pb, 0, nvp);
+//						memcpy(pb, &polys[(npolys-1)*nvp], sizeof(unsigned short)*nvp);
+
+                        System.arraycopy(polys, (npolys-1)*nvp, polys, pbIndex[0], nvp);
                         npolys--;
                     }
                     else
@@ -260,8 +268,9 @@ public class RecastMeh {
                 }
             }
         }
+		System.out.println("sum = " + sum);
 
-
+		assert mesh.nverts == 223;
         // Remove edge vertices.
         for (int i = 0; i < mesh.nverts; ++i)
         {
@@ -466,11 +475,11 @@ public class RecastMeh {
         int numRemovedVerts = 0;
         for (int i = 0; i < mesh.npolys; ++i)
         {
-			int[] p = Recast.createN(mesh.polys, i * nvp * 2, nvp);
-            int nv = countPolyVerts(p, nvp);
+//			int[] p = Recast.createN(mesh.polys, i * nvp * 2, nvp);
+            int nv = countPolyVerts(mesh.polys, i * nvp * 2, nvp);
             for (int j = 0; j < nv; ++j)
             {
-                if (p[j] == rem)
+                if (mesh.polys[i * nvp * 2 + j] == rem)
                     numRemovedVerts++;
             }
         }
@@ -513,38 +522,52 @@ public class RecastMeh {
 
         for (int i = 0; i < mesh.npolys; ++i)
         {
-			int[] p = Recast.createN(mesh.polys, i * nvp * 2, nvp);
-            int nv = countPolyVerts(p, nvp);
+//			int[] p = Recast.createN(mesh.polys, i * nvp * 2, nvp);
+			int pIndex = i * nvp * 2;
+            int nv = countPolyVerts(mesh.polys, pIndex, nvp);
             boolean hasRem = false;
             for (int j = 0; j < nv; ++j)
-                if (p[j] == rem) hasRem = true;
+                if (mesh.polys[pIndex+j] == rem) hasRem = true;
             if (hasRem)
             {
                 // Collect edges which does not touch the removed vertex.
                 for (int j = 0, k = nv-1; j < nv; k = j++)
                 {
-                    if (p[j] != rem && p[k] != rem)
+                    if (mesh.polys[pIndex+j] != rem && mesh.polys[pIndex+k] != rem)
                     {
 //                            int* e = edges[nedges*4];
-                        edges[nedges*4+0] = p[k];
-                        edges[nedges*4+1] = p[j];
+                        edges[nedges*4+0] = mesh.polys[pIndex+k];
+                        edges[nedges*4+1] = mesh.polys[pIndex+j];
                         edges[nedges*4+2] = mesh.regs[i];
                         edges[nedges*4+3] = mesh.areas[i];
                         nedges++;
                     }
                 }
                 // Remove the polygon.
-				int[] p2 = Recast.createN(mesh.polys, (mesh.npolys - 1) * nvp * 2, nvp);
+//				short*p2 =&mesh.polys[(mesh.npolys - 1) * nvp * 2];
+//				memcpy(p, p2, sizeof(unsignedshort)*nvp);
+				System.arraycopy(mesh.polys, (mesh.npolys - 1) * nvp * 2, mesh.polys, pIndex, nvp);
+//				memset(p + nvp, 0xff, sizeof(unsignedshort)*nvp);
+				Arrays.fill(mesh.polys, pIndex + nvp, pIndex + nvp + nvp, Integer.MAX_VALUE);
+				mesh.regs[i] = mesh.regs[mesh.npolys-1];
+				mesh.areas[i] = mesh.areas[mesh.npolys-1];
+				mesh.npolys--;
+				--i;
+
+
+
+
+//				int[] p2 = Recast.createN(mesh.polys, (mesh.npolys - 1) * nvp * 2, nvp);
 //                    memcpy(p,p2,sizeof(unsigned int)*nvp);
-                System.arraycopy(p2, 0, p, 0, nvp);
+//                System.arraycopy(p2, 0, p, pIndex, nvp);
 //                    memset(p+nvp,0xff,sizeof(unsigned int)*nvp);
-                Arrays.fill(p, nvp, nvp + nv, (int) 0xff);
-                mesh.regs[i] = mesh.regs[mesh.npolys-1];
-                mesh.areas[i] = mesh.areas[mesh.npolys-1];
-                mesh.npolys--;
-                --i;
+//                Arrays.fill(p, pIndex+nvp, nvp + nv, Integer.MAX_VALUE);
+//                mesh.regs[i] = mesh.regs[mesh.npolys-1];
+//                mesh.areas[i] = mesh.areas[mesh.npolys-1];
+//                mesh.npolys--;
+//                --i;      /
             }
-            System.arraycopy(p, 0, mesh.polys, i*nvp*2, nvp);
+//            System.arraycopy(p, pIndex, mesh.polys, i*nvp*2, nvp);
         }
 
         // Remove vertex.
@@ -559,10 +582,17 @@ public class RecastMeh {
         // Adjust indices to match the removed vertex layout.
         for (int i = 0; i < mesh.npolys; ++i)
         {
-			int[] p = Recast.createN(mesh.polys, i * nvp * 2, nvp);
+//			unsigned short* p = &mesh.polys[i*nvp*2];
+			int pIndex = i*nvp*2;
+			int nv = countPolyVerts(mesh.polys, pIndex, nvp);
+			for (int j = 0; j < nv; ++j)
+				if (mesh.polys[pIndex+j] > rem) mesh.polys[pIndex+j]--;
+
+
+			/*int[] p = Recast.createN(mesh.polys, i * nvp * 2, nvp);
             int nv = countPolyVerts(p, nvp);
             for (int j = 0; j < nv; ++j)
-                if (p[j] > rem) p[j]--;
+                if (p[j] > rem) p[j]--;*/
         }
         for (int i = 0; i < nedges; ++i)
         {
@@ -689,12 +719,13 @@ public class RecastMeh {
 //                return false;
 //            }
 
-		int[] tmpPoly = Recast.createN(polys, ntris * nvp, nvp);
+//		int[] tmpPoly = Recast.createN(polys, ntris * nvp, nvp);
+		int[] tmpPolyIndex = new int[]{ntris * nvp};
 
         // Build initial polygons.
         int npolys = 0;
 //            memset(polys, 0xff, ntris*nvp*sizeof(unsigned int));
-        Arrays.fill(polys, 0, ntris*nvp, (int)0xff);
+        Arrays.fill(polys, 0, ntris*nvp, Integer.MAX_VALUE);
         for (int j = 0; j < ntris; ++j)
         {
 //                int* t = create3(tris[j*3];
@@ -722,14 +753,16 @@ public class RecastMeh {
 
                 for (int j = 0; j < npolys-1; ++j)
                 {
-					int[] pj = Recast.createN(polys, j * nvp, nvp);
+//					int[] pj = Recast.createN(polys, j * nvp, nvp);
+					int[] pjIndex = new int[]{j * nvp};
                     for (int k = j+1; k < npolys; ++k)
                     {
-						int[] pk = Recast.createN(polys, k * nvp, nvp);
+//						int[] pk = Recast.createN(polys, k * nvp, nvp);
+						int[] pkIndex = new int[]{k * nvp};
                         int ea[] = new int[]{0}, eb[] = new int[]{0};
-                        int v = getPolyMergeValue(pj, pk, mesh.verts, ea, eb, nvp);
-                        System.arraycopy(pj, 0, polys, j*nvp, nvp);
-                        System.arraycopy(pk, 0, polys, k*nvp, nvp);
+                        int v = getPolyMergeValue(polys, pjIndex, polys, pkIndex, mesh.verts, ea, eb, nvp);
+//                        System.arraycopy(pj, 0, polys, j*nvp, nvp);
+//                        System.arraycopy(pk, 0, polys, k*nvp, nvp);
                         if (v > bestMergeVal)
                         {
                             bestMergeVal = v;
@@ -744,16 +777,21 @@ public class RecastMeh {
                 if (bestMergeVal > 0)
                 {
                     // Found best, merge.
-					int[] pa = Recast.createN(polys, bestPa * nvp, nvp);
-					int[] pb = Recast.createN(polys, bestPb * nvp, nvp);
-                    mergePolys(pa, pb, bestEa, bestEb, tmpPoly, nvp);
+//					int[] pa = Recast.createN(polys, bestPa * nvp, nvp);
+					int[] paIndex = new int[]{bestPa * nvp};
+//					int[] pb = Recast.createN(polys, bestPb * nvp, nvp);
+					int[] pbIndex = new int[]{bestPb * nvp};
+					mergePolys(polys, paIndex, polys, pbIndex, bestEa, bestEb, polys, tmpPolyIndex, nvp);
 //                        int[] tmpPoly = createN(polys, ntris*nvp, nvp);
-                    System.arraycopy(tmpPoly, 0, polys, ntris*nvp, nvp);
-                    System.arraycopy(pa, 0, polys, bestPa*nvp, nvp);
-                    System.arraycopy(pb, 0, polys, bestPb*nvp, nvp);
+//                    System.arraycopy(tmpPoly, 0, polys, ntris*nvp, nvp);
+//                    System.arraycopy(pa, 0, polys, bestPa*nvp, nvp);
+//                    System.arraycopy(pb, 0, polys, bestPb*nvp, nvp);
 
-//                        memcpy(pb, &polys[(npolys-1)*nvp], sizeof(unsigned int)*nvp);
-                    System.arraycopy(polys, (npolys-1)*nvp, pb, 0, nvp);
+//                      memcpy(pb, &polys[(npolys-1)*nvp], sizeof(unsigned int)*nvp);
+//						memcpy(pb, &polys[(npolys-1)*nvp], sizeof(unsigned short)*nvp);
+                    System.arraycopy(polys, (npolys-1)*nvp, polys, pbIndex[0], nvp);
+
+
                     pregs[bestPb] = pregs[npolys-1];
                     pareas[bestPb] = pareas[npolys-1];
                     npolys--;
@@ -772,7 +810,7 @@ public class RecastMeh {
             if (mesh.npolys >= maxTris) break;
 //                int* p = &mesh.polys[mesh.npolys*nvp*2];
 //                memset(p,0xff,sizeof(unsigned int)*nvp*2);
-            Arrays.fill(mesh.polys, mesh.npolys*nvp*2, mesh.npolys*nvp*2 + nvp*2, (int)0xff);
+            Arrays.fill(mesh.polys, mesh.npolys*nvp*2, mesh.npolys*nvp*2 + nvp*2, Integer.MAX_VALUE);
             for (int j = 0; j < nvp; ++j)
                 mesh.polys[mesh.npolys*nvp*2+j] = polys[i*nvp+j];
             mesh.regs[mesh.npolys] = pregs[i];
@@ -798,13 +836,14 @@ public class RecastMeh {
         int numRemainingEdges = 0;
         for (int i = 0; i < mesh.npolys; ++i)
         {
-			int[] p = Recast.createN(mesh.polys, i * nvp * 2, nvp);
-            int nv = countPolyVerts(p, nvp);
+//			int[] p = Recast.createN(mesh.polys, i * nvp * 2, nvp);
+			int pIndex = i * nvp * 2;
+            int nv = countPolyVerts(mesh.polys, pIndex, nvp);
             int numRemoved = 0;
             int numVerts = 0;
             for (int j = 0; j < nv; ++j)
             {
-                if (p[j] == rem)
+                if (mesh.polys[i * nvp * 2+j] == rem)
                 {
                     numTouchedVerts++;
                     numRemoved++;
@@ -838,17 +877,18 @@ public class RecastMeh {
 
         for (int i = 0; i < mesh.npolys; ++i)
         {
-			int[] p = Recast.createN(mesh.polys, i * nvp * 2, nvp);
+//			int[] p = Recast.createN(mesh.polys, i * nvp * 2, nvp);
 //                createN
-            int nv = countPolyVerts(p, nvp);
+			int pIndex = i * nvp * 2;
+            int nv = countPolyVerts(mesh.polys, pIndex, nvp);
 
             // Collect edges which touches the removed vertex.
             for (int j = 0, k = nv-1; j < nv; k = j++)
             {
-                if (p[j] == rem || p[k] == rem)
+                if (mesh.polys[pIndex+j] == rem || mesh.polys[pIndex+k] == rem)
                 {
                     // Arrange edge so that a=rem.
-                    int a = p[j], b = p[k];
+                    int a = mesh.polys[pIndex+j], b = mesh.polys[pIndex+k];
                     if (b == rem)  {
                         int t = a;
                         a = b;
@@ -896,44 +936,47 @@ public class RecastMeh {
         return true;
     }
 
-    static void mergePolys(int[] pa, int[] pb, int ea, int eb,
-						   int[] tmp, int nvp)
+    static void mergePolys(int[] pa, int[] paIndex,
+						   int[] pb, int[] pbIndex,
+						   int ea, int eb,
+						   int[] tmp, int[] tmpIndex,
+						   int nvp)
     {
-        int na = countPolyVerts(pa, nvp);
-        int nb = countPolyVerts(pb, nvp);
+        int na = countPolyVerts(pa, paIndex[0], nvp);
+        int nb = countPolyVerts(pb, pbIndex[0], nvp);
 
         // Merge polygons.
 //            memset(tmp, 0xff, sizeof(unsigned int)*nvp);
-        Arrays.fill(tmp, 0, nvp, (int)0xff);
+        Arrays.fill(tmp, tmpIndex[0], tmpIndex[0] + nvp, Integer.MAX_VALUE);
         /*for (int i = 0; i < nvp; i ++) {
             tmp[i] = 0xff;
         }*/
         int n = 0;
         // Add pa
         for (int i = 0; i < na-1; ++i)
-            tmp[n++] = pa[(ea+1+i) % na];
+            tmp[tmpIndex[0]+n++] = pa[paIndex[0]+(ea+1+i) % na];
         // Add pb
         for (int i = 0; i < nb-1; ++i)
-            tmp[n++] = pb[(eb+1+i) % nb];
+            tmp[tmpIndex[0]+n++] = pb[pbIndex[0]+(eb+1+i) % nb];
 
 //            memcpy(pa, tmp, sizeof(unsigned int)*nvp);
-        System.arraycopy(tmp, 0, pa, 0, nvp);
+        System.arraycopy(tmp, tmpIndex[0], pa, paIndex[0], nvp);
     }
 
-    public static int countPolyVerts(int[] p, int nvp)
+    public static int countPolyVerts(int[] p, int index, int nvp)
     {
         for (int i = 0; i < nvp; ++i)
-            if (p[i] == Recast.RC_MESH_NULL_IDX)
+            if (p[index + i] == Recast.RC_MESH_NULL_IDX)
                 return i;
         return nvp;
     }
 
-    public static int getPolyMergeValue(int[] pa, int[] pb,
-										int[] verts, int[] ea, int[] eb,
-                                 int nvp)
+    public static int getPolyMergeValue(int[] pa, int[] paIndex,
+										int[] pb, int[] pbIndex,
+										int[] verts, int[] ea, int[] eb, int nvp)
     {
-        int na = countPolyVerts(pa, nvp);
-        int nb = countPolyVerts(pb, nvp);
+        int na = countPolyVerts(pa, paIndex[0], nvp);
+        int nb = countPolyVerts(pb, pbIndex[0], nvp);
 
         // If the merged polygon would be too big, do not merge.
         if (na+nb-2 > nvp)
@@ -945,31 +988,57 @@ public class RecastMeh {
 
         for (int i = 0; i < na; ++i)
         {
-			int va0 = pa[i];
-			int va1 = pa[(i+1) % na];
-            if (va0 > va1) {
-				int t = va0;
-                va0 = va1;
-                va1 = t;
-//                    rcSwap(va0, va1);
-            }
-            for (int j = 0; j < nb; ++j)
-            {
-				int vb0 = pb[j];
-				int vb1 = pb[(j+1) % nb];
-                if (vb0 > vb1) {
-					int t = vb0;
-                    vb0 = vb1;
-                    vb1 = t;
-//                        rcSwap(vb0, vb1);
-                }
-                if (va0 == vb0 && va1 == vb1)
-                {
-                    ea[0] = i;
-                    eb[0] = j;
-                    break;
-                }
-            }
+			int va0 = pa[paIndex[0]+i];
+			int va1 = pa[paIndex[0]+(i+1) % na];
+			if (va0 > va1)     {
+				int tmp = va0;
+				va0 = va1;
+				va1 = tmp;
+			}
+//				rcSwap(va0, va1);
+			for (int j = 0; j < nb; ++j)
+			{
+				int vb0 = pb[pbIndex[0]+j];
+				int vb1 = pb[pbIndex[0]+(j+1) % nb];
+				if (vb0 > vb1) {
+					int tmp = vb0;
+					vb0 = vb1;
+					vb1 = tmp;
+//					rcSwap(vb0, vb1);
+				}
+				if (va0 == vb0 && va1 == vb1)
+				{
+					ea[0] = i;
+					eb[0] = j;
+					break;
+				}
+			}
+
+//			int va0 = pa[i];
+//			int va1 = pa[(i+1) % na];
+//            if (pa[paIndex[0]+i] > pa[paIndex[0]+(i+1) % na]) {
+//				int t = pa[paIndex[0]+i];
+//				pa[paIndex[0]+i] = pa[paIndex[0]+(i+1) % na];
+//				pa[paIndex[0]+(i+1) % na] = t;
+////                    rcSwap(va0, va1);
+//            }
+//            for (int j = 0; j < nb; ++j)
+//            {
+////				int vb0 = pb[j];
+////				int vb1 = pb[(j+1) % nb];
+//                if (pb[pbIndex[0]+j] > pb[pbIndex[0]+(j+1) % nb]) {
+//					int t = pb[pbIndex[0]+j];
+//					pb[pbIndex[0]+j] = pb[pbIndex[0]+(j+1) % nb];
+//					pb[pbIndex[0]+(j+1) % nb] = t;
+////                        rcSwap(vb0, vb1);
+//                }
+//                if (pa[paIndex[0]+i] == pb[pbIndex[0]+j] && pa[paIndex[0]+(i+1) % na] == pb[pbIndex[0]+(j+1) % nb])
+//                {
+//                    ea[0] = i;
+//                    eb[0] = j;
+//                    break;
+//                }
+//            }
         }
 
         // No common edge, cannot merge.
@@ -979,20 +1048,20 @@ public class RecastMeh {
         // Check to see if the merged polygon would be convex.
 		int va, vb, vc;
 
-        va = pa[(ea[0]+na-1) % na];
-        vb = pa[ea[0]];
-        vc = pb[(eb[0]+2) % nb];
+        va = pa[paIndex[0]+(ea[0]+na-1) % na];
+        vb = pa[paIndex[0]+ea[0]];
+        vc = pb[pbIndex[0]+(eb[0]+2) % nb];
         if (!uleft(Recast.create3(verts, va * 3), Recast.create3(verts, vb * 3), Recast.create3(verts, vc * 3)))
         return -1;
 
-        va = pb[(eb[0]+nb-1) % nb];
-        vb = pb[eb[0]];
-        vc = pa[(ea[0]+2) % na];
+        va = pb[pbIndex[0]+(eb[0]+nb-1) % nb];
+        vb = pb[pbIndex[0]+eb[0]];
+        vc = pa[paIndex[0]+(ea[0]+2) % na];
         if (!uleft(Recast.create3(verts, va * 3), Recast.create3(verts, vb * 3), Recast.create3(verts, vc * 3)))
         return -1;
 
-        va = pa[ea[0]];
-        vb = pa[(ea[0]+1)%na];
+        va = pa[paIndex[0]+ea[0]];
+        vb = pa[paIndex[0]+(ea[0]+1)%na];
 
         int dx = (int)verts[va*3+0] - (int)verts[vb*3+0];
         int dy = (int)verts[va*3+2] - (int)verts[vb*3+2];
@@ -1107,10 +1176,10 @@ public class RecastMeh {
 
     public static int computeVertexHash(int x, int y, int z)
     {
-        int h1 = 0x8da6b343; // Large multiplicative constants;
-        int h2 = 0xd8163841; // here arbitrarily chosen primes
-        int h3 = 0xcb1ab31f;
-        int n = h1 * x + h2 * y + h3 * z;
+        long h1 = 0x8da6b343L; // Large multiplicative constants;
+		long h2 = 0xd8163841L; // here arbitrarily chosen primes
+		long h3 = 0xcb1ab31fL;
+		long n = h1 * x + h2 * y + h3 * z;
         return (int)(n & (VERTEX_BUCKET_COUNT-1));
     }
 
@@ -1129,7 +1198,8 @@ public class RecastMeh {
         }
 
         // Could not find, create new.
-        i = nv[0]; nv[0]++;
+        i = nv[0];
+		nv[0]++;
 //            int[] v = verts[i*3];
         verts[i*3+0] = x;
         verts[i*3+1] = y;

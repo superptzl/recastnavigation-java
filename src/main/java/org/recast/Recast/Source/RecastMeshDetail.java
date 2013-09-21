@@ -359,7 +359,7 @@ public class RecastMeshDetail extends RecastImpl {
             }
         }
 
-        Arrays.fill(hp.data, 0, hp.width*hp.height, (int)0xff);
+        Arrays.fill(hp.data, 0, hp.width*hp.height, Integer.MAX_VALUE);
 //        memset(hp.data, 0xff, sizeof(unsigned int)*hp.width*hp.height);
 
         // Mark start locations.

@@ -24,7 +24,7 @@ public class RecastArea extends RecastImpl {
 
         // Init distance.
 //        memset(dist, 0xff, sizeof(unsigned char)*chf.spanCount);
-        Arrays.fill(dist, (char)0xff);
+        Arrays.fill(dist, Character.MAX_VALUE/*(char)0xff*/);
 
         // Mark boundary cells.
         for (int y = 0; y < h; ++y)

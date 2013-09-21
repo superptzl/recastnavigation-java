@@ -234,7 +234,249 @@ return dx*dx + dy*dy + dz*dz;*/
         return dx*dx + dz*dz;
     }
 
-    static void simplifyContour(rcIntArray points, rcIntArray simplified,
+	public static void simplifyContour(rcIntArray points, rcIntArray simplified,
+								float maxError, int maxEdgeLen, int buildFlags)
+	{
+		// Add initial points.
+		boolean hasConnections = false;
+		for (int i = 0; i < points.size(); i += 4)
+		{
+			if ((points.m_data[i+3] & Recast.RC_CONTOUR_REG_MASK) != 0)
+			{
+				hasConnections = true;
+				break;
+			}
+		}
+
+		if (hasConnections)
+		{
+			// The contour has some portals to other regions.
+			// Add a new point to every location where the region changes.
+			for (int i = 0, ni = points.size()/4; i < ni; ++i)
+			{
+				int ii = (i+1) % ni;
+				boolean differentRegs = (points.m_data[i*4+3] & Recast.RC_CONTOUR_REG_MASK) != (points.m_data[ii*4+3] & Recast.RC_CONTOUR_REG_MASK);
+				boolean areaBorders = (points.m_data[i*4+3] & Recast.RC_AREA_BORDER) != (points.m_data[ii*4+3] & Recast.RC_AREA_BORDER);
+				if (differentRegs || areaBorders)
+				{
+					simplified.push(points.m_data[i*4+0]);
+					simplified.push(points.m_data[i*4+1]);
+					simplified.push(points.m_data[i*4+2]);
+					simplified.push(i);
+				}
+			}
+		}
+
+		if (simplified.size() == 0)
+		{
+			// If there is no connections at all,
+			// create some initial points for the simplification process.
+			// Find lower-left and upper-right vertices of the contour.
+			int llx = points.m_data[0];
+			int lly = points.m_data[1];
+			int llz = points.m_data[2];
+			int lli = 0;
+			int urx = points.m_data[0];
+			int ury = points.m_data[1];
+			int urz = points.m_data[2];
+			int uri = 0;
+			for (int i = 0; i < points.size(); i += 4)
+			{
+				int x = points.m_data[i+0];
+				int y = points.m_data[i+1];
+				int z = points.m_data[i+2];
+				if (x < llx || (x == llx && z < llz))
+				{
+					llx = x;
+					lly = y;
+					llz = z;
+					lli = i/4;
+				}
+				if (x > urx || (x == urx && z > urz))
+				{
+					urx = x;
+					ury = y;
+					urz = z;
+					uri = i/4;
+				}
+			}
+			simplified.push(llx);
+			simplified.push(lly);
+			simplified.push(llz);
+			simplified.push(lli);
+
+			simplified.push(urx);
+			simplified.push(ury);
+			simplified.push(urz);
+			simplified.push(uri);
+		}
+
+		// Add points until all raw points are within
+		// error tolerance to the simplified shape.
+		 int pn = points.size()/4;
+		for (int i = 0; i < simplified.size()/4; )
+		{
+			int ii = (i+1) % (simplified.size()/4);
+
+			 int ax = simplified.m_data[i*4+0];
+			 int az = simplified.m_data[i*4+2];
+			 int ai = simplified.m_data[i*4+3];
+
+			 int bx = simplified.m_data[ii*4+0];
+			 int bz = simplified.m_data[ii*4+2];
+			 int bi = simplified.m_data[ii*4+3];
+
+			// Find maximum deviation from the segment.
+			float maxd = 0;
+			int maxi = -1;
+			int ci, cinc, endi;
+
+			// Traverse the segment in lexilogical order so that the
+			// max deviation is calculated similarly when traversing
+			// opposite segments.
+			if (bx > ax || (bx == ax && bz > az))
+			{
+				cinc = 1;
+				ci = (ai+cinc) % pn;
+				endi = bi;
+			}
+			else
+			{
+				cinc = pn-1;
+				ci = (bi+cinc) % pn;
+				endi = ai;
+			}
+
+			// Tessellate only outer edges or edges between areas.
+			if ((points.m_data[ci*4+3] & Recast.RC_CONTOUR_REG_MASK) == 0 ||
+				(points.m_data[ci*4+3] & Recast.RC_AREA_BORDER) != 0)
+			{
+				while (ci != endi)
+				{
+					float d = distancePtSeg(points.m_data[ci*4+0], points.m_data[ci*4+2], ax, az, bx, bz);
+					if (d > maxd)
+					{
+						maxd = d;
+						maxi = ci;
+					}
+					ci = (ci+cinc) % pn;
+				}
+			}
+
+
+			// If the max deviation is larger than accepted error,
+			// add new point, else continue to next segment.
+			if (maxi != -1 && maxd > (maxError*maxError))
+			{
+				// Add space for the new point.
+				simplified.resize(simplified.size()+4);
+				 int n = simplified.size()/4;
+				for (int j = n-1; j > i; --j)
+				{
+					simplified.m_data[j*4+0] = simplified.m_data[(j-1)*4+0];
+					simplified.m_data[j*4+1] = simplified.m_data[(j-1)*4+1];
+					simplified.m_data[j*4+2] = simplified.m_data[(j-1)*4+2];
+					simplified.m_data[j*4+3] = simplified.m_data[(j-1)*4+3];
+				}
+				// Add the point.
+				simplified.m_data[(i+1)*4+0] = points.m_data[maxi*4+0];
+				simplified.m_data[(i+1)*4+1] = points.m_data[maxi*4+1];
+				simplified.m_data[(i+1)*4+2] = points.m_data[maxi*4+2];
+				simplified.m_data[(i+1)*4+3] = maxi;
+			}
+			else
+			{
+				++i;
+			}
+		}
+
+		// Split too long edges.
+		if (maxEdgeLen > 0 && (buildFlags & (rcBuildContoursFlags.RC_CONTOUR_TESS_WALL_EDGES.v|rcBuildContoursFlags.RC_CONTOUR_TESS_AREA_EDGES.v)) != 0)
+		{
+			for (int i = 0; i < simplified.size()/4; )
+			{
+				 int ii = (i+1) % (simplified.size()/4);
+
+				 int ax = simplified.m_data[i*4+0];
+				 int az = simplified.m_data[i*4+2];
+				 int ai = simplified.m_data[i*4+3];
+
+				 int bx = simplified.m_data[ii*4+0];
+				 int bz = simplified.m_data[ii*4+2];
+				 int bi = simplified.m_data[ii*4+3];
+
+				// Find maximum deviation from the segment.
+				int maxi = -1;
+				int ci = (ai+1) % pn;
+
+				// Tessellate only outer edges or edges between areas.
+				boolean tess = false;
+				// Wall edges.
+				if ((buildFlags & rcBuildContoursFlags.RC_CONTOUR_TESS_WALL_EDGES.v) != 0 && (points.m_data[ci*4+3] & Recast.RC_CONTOUR_REG_MASK) == 0)
+					tess = true;
+				// Edges between areas.
+				if ((buildFlags & rcBuildContoursFlags.RC_CONTOUR_TESS_AREA_EDGES.v) !=0 && (points.m_data[ci*4+3] & Recast.RC_AREA_BORDER) != 0)
+					tess = true;
+
+				if (tess)
+				{
+					int dx = bx - ax;
+					int dz = bz - az;
+					if (dx*dx + dz*dz > maxEdgeLen*maxEdgeLen)
+					{
+						// Round based on the segments in lexilogical order so that the
+						// max tesselation is consistent regardles in which direction
+						// segments are traversed.
+						 int n = bi < ai ? (bi+pn - ai) : (bi - ai);
+						if (n > 1)
+						{
+							if (bx > ax || (bx == ax && bz > az))
+								maxi = (ai + n/2) % pn;
+							else
+								maxi = (ai + (n+1)/2) % pn;
+						}
+					}
+				}
+
+				// If the max deviation is larger than accepted error,
+				// add new point, else continue to next segment.
+				if (maxi != -1)
+				{
+					// Add space for the new point.
+					simplified.resize(simplified.size()+4);
+					 int n = simplified.size()/4;
+					for (int j = n-1; j > i; --j)
+					{
+						simplified.m_data[j*4+0] = simplified.m_data[(j-1)*4+0];
+						simplified.m_data[j*4+1] = simplified.m_data[(j-1)*4+1];
+						simplified.m_data[j*4+2] = simplified.m_data[(j-1)*4+2];
+						simplified.m_data[j*4+3] = simplified.m_data[(j-1)*4+3];
+					}
+					// Add the point.
+					simplified.m_data[(i+1)*4+0] = points.m_data[maxi*4+0];
+					simplified.m_data[(i+1)*4+1] = points.m_data[maxi*4+1];
+					simplified.m_data[(i+1)*4+2] = points.m_data[maxi*4+2];
+					simplified.m_data[(i+1)*4+3] = maxi;
+				}
+				else
+				{
+					++i;
+				}
+			}
+		}
+
+		for (int i = 0; i < simplified.size()/4; ++i)
+		{
+			// The edge vertex flag is take from the current raw point,
+			// and the neighbour region is take from the next raw point.
+			 int ai = (simplified.m_data[i*4+3]+1) % pn;
+			 int bi = simplified.m_data[i*4+3];
+			simplified.m_data[i*4+3] = (points.m_data[ai*4+3] & (Recast.RC_CONTOUR_REG_MASK|Recast.RC_AREA_BORDER)) | (points.m_data[bi*4+3] & Recast.RC_BORDER_VERTEX);
+		}
+
+	}
+
+   /* static void simplifyContour(rcIntArray points, rcIntArray simplified,
                                 float maxError, int maxEdgeLen, int buildFlags)
     {
         // Add initial points.
@@ -474,7 +716,7 @@ return dx*dx + dy*dy + dz*dz;*/
             simplified.set(i*4+3, (points.get(ai*4+3) & (Recast.RC_CONTOUR_REG_MASK| Recast.RC_AREA_BORDER)) | (points.get(bi*4+3) & Recast.RC_BORDER_VERTEX));
         }
     }
-
+*/
     static void removeDegenerateSegments(rcIntArray simplified)
     {
         // Remove adjacent vertices which are equal on xz-plane,
@@ -792,6 +1034,7 @@ return dx*dx + dy*dy + dz*dz;*/
                         }
 
                         cont.nrverts = verts.size()/4;
+//						assert cont.nrverts == 98;
                         cont.rverts = new int[cont.nrverts*4];//(int*)rcAlloc(sizeof(int)*cont.nrverts*4, RC_ALLOC_PERM);
                         /*if (!cont.rverts)
                         {

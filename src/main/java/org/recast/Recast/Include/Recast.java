@@ -8,7 +8,8 @@ public abstract class Recast {
 /// The region id field of a vertex may have several flags applied to it.  So the
 /// fields value can't be used directly.
 /// @see rcContour::verts, rcContour::rverts
-    public static final int RC_CONTOUR_REG_MASK = 0xffff;
+//    public static final int RC_CONTOUR_REG_MASK = 0xffff;
+    public static final int RC_CONTOUR_REG_MASK = Integer.MAX_VALUE;
     public static final int RC_AREA_BORDER = 0x20000;
     /// Border vertex flag.
 /// If a region ID has this bit set, then the associated element lies on
@@ -33,7 +34,7 @@ public abstract class Recast {
     /// An value which indicates an invalid index within a mesh.
 /// @note This does not necessarily indicate an error.
 /// @see rcPolyMesh::polys
-    public final static int RC_MESH_NULL_IDX = 0xffff;
+    public final static int RC_MESH_NULL_IDX = Integer.MAX_VALUE;
 
     /// Defines the number of bits allocated to rcSpan::smin and rcSpan::smax.
     public final static int RC_SPAN_HEIGHT_BITS = 13;
