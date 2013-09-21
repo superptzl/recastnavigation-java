@@ -278,7 +278,7 @@ public class RecastMeshDetail extends RecastImpl {
                     continue;
 
                 rcCompactCell c = chf.cells[(ax+bs)+(az+bs)*chf.width];
-                for (int i = (int)c.index, ni = (int)(c.index+c.count); i < ni; ++i)
+                for (int i = (int)c.getIndex(), ni = (int)(c.getIndex()+c.getCount()); i < ni; ++i)
                 {
                     rcCompactSpan s = chf.spans[i];
                     int d = (int)rcAbs(ay - (int)s.y);
@@ -349,7 +349,7 @@ public class RecastMeshDetail extends RecastImpl {
                 if (hp.data[ax-hp.xmin+(ay-hp.ymin)*hp.width] != 0)
                     continue;
 
-                int ai = (int)chf.cells[(ax+bs)+(ay+bs)*chf.width].index + rcGetCon(cs, dir);
+                int ai = (int)chf.cells[(ax+bs)+(ay+bs)*chf.width].getIndex() + rcGetCon(cs, dir);
 
                 int idx = ax-hp.xmin+(ay-hp.ymin)*hp.width;
                 hp.data[idx] = 1;
@@ -417,7 +417,7 @@ public class RecastMeshDetail extends RecastImpl {
                 if (hp.data[ax-hp.xmin+(ay-hp.ymin)*hp.width] != RC_UNSET_HEIGHT)
                     continue;
 
-                int ai = (int)chf.cells[(ax+bs)+(ay+bs)*chf.width].index + rcGetCon(cs, dir);
+                int ai = (int)chf.cells[(ax+bs)+(ay+bs)*chf.width].getIndex() + rcGetCon(cs, dir);
 
                 rcCompactSpan as = chf.spans[ai];
                 int idx = ax-hp.xmin+(ay-hp.ymin)*hp.width;

@@ -32,7 +32,7 @@ public class RecastArea extends RecastImpl {
             for (int x = 0; x < w; ++x)
             {
                 rcCompactCell c = chf.cells[x+y*w];
-                for (int i = (int)c.index, ni = (int)(c.index+c.count); i < ni; ++i)
+                for (int i = (int)c.getIndex(), ni = (int)(c.getIndex()+c.getCount()); i < ni; ++i)
                 {
                     if (chf.areas[i] == RC_NULL_AREA)
                     {
@@ -48,7 +48,7 @@ public class RecastArea extends RecastImpl {
                             {
                                 int nx = x + rcGetDirOffsetX(dir);
                                 int ny = y + rcGetDirOffsetY(dir);
-                                int nidx = (int)chf.cells[nx+ny*w].index + rcGetCon(s, dir);
+                                int nidx = (int)chf.cells[nx+ny*w].getIndex() + rcGetCon(s, dir);
                                 if (chf.areas[nidx] != RC_NULL_AREA)
                                 {
                                     nc++;
@@ -71,7 +71,7 @@ public class RecastArea extends RecastImpl {
             for (int x = 0; x < w; ++x)
             {
                 rcCompactCell c = chf.cells[x+y*w];
-                for (int i = (int)c.index, ni = (int)(c.index+c.count); i < ni; ++i)
+                for (int i = (int)c.getIndex(), ni = (int)(c.getIndex()+c.getCount()); i < ni; ++i)
                 {
                     rcCompactSpan s = chf.spans[i];
 
@@ -80,7 +80,7 @@ public class RecastArea extends RecastImpl {
                         // (-1,0)
                         int ax = x + rcGetDirOffsetX(0);
                         int ay = y + rcGetDirOffsetY(0);
-                        int ai = (int)chf.cells[ax+ay*w].index + rcGetCon(s, 0);
+                        int ai = (int)chf.cells[ax+ay*w].getIndex() + rcGetCon(s, 0);
                         rcCompactSpan as = chf.spans[ai];
                         nd = (char)rcMin((int)dist[ai]+2, 255);
                         if (nd < dist[i])
@@ -91,7 +91,7 @@ public class RecastArea extends RecastImpl {
                         {
                             int aax = ax + rcGetDirOffsetX(3);
                             int aay = ay + rcGetDirOffsetY(3);
-                            int aai = (int)chf.cells[aax+aay*w].index + rcGetCon(as, 3);
+                            int aai = (int)chf.cells[aax+aay*w].getIndex() + rcGetCon(as, 3);
                             nd = (char)rcMin((int)dist[aai]+3, 255);
                             if (nd < dist[i])
                                 dist[i] = nd;
@@ -102,7 +102,7 @@ public class RecastArea extends RecastImpl {
                         // (0,-1)
                         int ax = x + rcGetDirOffsetX(3);
                         int ay = y + rcGetDirOffsetY(3);
-                        int ai = (int)chf.cells[ax+ay*w].index + rcGetCon(s, 3);
+                        int ai = (int)chf.cells[ax+ay*w].getIndex() + rcGetCon(s, 3);
                         rcCompactSpan as = chf.spans[ai];
                         nd = (char)rcMin((int)dist[ai]+2, 255);
                         if (nd < dist[i])
@@ -113,7 +113,7 @@ public class RecastArea extends RecastImpl {
                         {
                             int aax = ax + rcGetDirOffsetX(2);
                             int aay = ay + rcGetDirOffsetY(2);
-                            int aai = (int)chf.cells[aax+aay*w].index + rcGetCon(as, 2);
+                            int aai = (int)chf.cells[aax+aay*w].getIndex() + rcGetCon(as, 2);
                             nd = (char)rcMin((int)dist[aai]+3, 255);
                             if (nd < dist[i])
                                 dist[i] = nd;
@@ -129,7 +129,7 @@ public class RecastArea extends RecastImpl {
             for (int x = w-1; x >= 0; --x)
             {
                 rcCompactCell c = chf.cells[x+y*w];
-                for (int i = (int)c.index, ni = (int)(c.index+c.count); i < ni; ++i)
+                for (int i = (int)c.getIndex(), ni = (int)(c.getIndex()+c.getCount()); i < ni; ++i)
                 {
                     rcCompactSpan s = chf.spans[i];
 
@@ -138,7 +138,7 @@ public class RecastArea extends RecastImpl {
                         // (1,0)
                         int ax = x + rcGetDirOffsetX(2);
                         int ay = y + rcGetDirOffsetY(2);
-                        int ai = (int)chf.cells[ax+ay*w].index + rcGetCon(s, 2);
+                        int ai = (int)chf.cells[ax+ay*w].getIndex() + rcGetCon(s, 2);
                         rcCompactSpan as = chf.spans[ai];
                         nd = (char)rcMin((int)dist[ai]+2, 255);
                         if (nd < dist[i])
@@ -149,7 +149,7 @@ public class RecastArea extends RecastImpl {
                         {
                             int aax = ax + rcGetDirOffsetX(1);
                             int aay = ay + rcGetDirOffsetY(1);
-                            int aai = (int)chf.cells[aax+aay*w].index + rcGetCon(as, 1);
+                            int aai = (int)chf.cells[aax+aay*w].getIndex() + rcGetCon(as, 1);
                             nd = (char)rcMin((int)dist[aai]+3, 255);
                             if (nd < dist[i])
                                 dist[i] = nd;
@@ -160,7 +160,7 @@ public class RecastArea extends RecastImpl {
                         // (0,1)
                         int ax = x + rcGetDirOffsetX(1);
                         int ay = y + rcGetDirOffsetY(1);
-                        int ai = (int)chf.cells[ax+ay*w].index + rcGetCon(s, 1);
+                        int ai = (int)chf.cells[ax+ay*w].getIndex() + rcGetCon(s, 1);
                         rcCompactSpan as = chf.spans[ai];
                         nd = (char)rcMin((int)dist[ai]+2, 255);
                         if (nd < dist[i])
@@ -171,7 +171,7 @@ public class RecastArea extends RecastImpl {
                         {
                             int aax = ax + rcGetDirOffsetX(0);
                             int aay = ay + rcGetDirOffsetY(0);
-                            int aai = (int)chf.cells[aax+aay*w].index + rcGetCon(as, 0);
+                            int aai = (int)chf.cells[aax+aay*w].getIndex() + rcGetCon(as, 0);
                             nd = (char)rcMin((int)dist[aai]+3, 255);
                             if (nd < dist[i])
                                 dist[i] = nd;
@@ -236,7 +236,7 @@ public class RecastArea extends RecastImpl {
             for (int x = minx; x <= maxx; ++x)
             {
                 rcCompactCell c = chf.cells[x+z*chf.width];
-                for (int i = (int)c.index, ni = (int)(c.index+c.count); i < ni; ++i)
+                for (int i = (int)c.getIndex(), ni = (int)(c.getIndex()+c.getCount()); i < ni; ++i)
                 {
                     rcCompactSpan s = chf.spans[i];
                     if (chf.areas[i] == RC_NULL_AREA)

@@ -50,7 +50,7 @@ public class RecastContour {
         {
             int ax = x + Recast.rcGetDirOffsetX(dir);
             int ay = y + Recast.rcGetDirOffsetY(dir);
-            int ai = (int)chf.cells[ax+ay*chf.width].index + Recast.rcGetCon(s, dir);
+            int ai = (int)chf.cells[ax+ay*chf.width].getIndex() + Recast.rcGetCon(s, dir);
             rcCompactSpan as = chf.spans[ai];
             ch = (int) Recast.rcMax(ch, (int) as.y);
             regs[1] = chf.spans[ai].reg | (chf.areas[ai] << 16);
@@ -58,7 +58,7 @@ public class RecastContour {
             {
                 int ax2 = ax + Recast.rcGetDirOffsetX(dirp);
                 int ay2 = ay + Recast.rcGetDirOffsetY(dirp);
-                int ai2 = (int)chf.cells[ax2+ay2*chf.width].index + Recast.rcGetCon(as, dirp);
+                int ai2 = (int)chf.cells[ax2+ay2*chf.width].getIndex() + Recast.rcGetCon(as, dirp);
                 rcCompactSpan as2 = chf.spans[ai2];
                 ch = (int) Recast.rcMax(ch, (int) as2.y);
                 regs[2] = chf.spans[ai2].reg | (chf.areas[ai2] << 16);
@@ -68,7 +68,7 @@ public class RecastContour {
         {
             int ax = x + Recast.rcGetDirOffsetX(dirp);
             int ay = y + Recast.rcGetDirOffsetY(dirp);
-            int ai = (int)chf.cells[ax+ay*chf.width].index + Recast.rcGetCon(s, dirp);
+            int ai = (int)chf.cells[ax+ay*chf.width].getIndex() + Recast.rcGetCon(s, dirp);
             rcCompactSpan as = chf.spans[ai];
             ch = (int) Recast.rcMax(ch, (int) as.y);
             regs[3] = chf.spans[ai].reg | (chf.areas[ai] << 16);
@@ -76,7 +76,7 @@ public class RecastContour {
             {
                 int ax2 = ax + Recast.rcGetDirOffsetX(dir);
                 int ay2 = ay + Recast.rcGetDirOffsetY(dir);
-                int ai2 = (int)chf.cells[ax2+ay2*chf.width].index + Recast.rcGetCon(as, dir);
+                int ai2 = (int)chf.cells[ax2+ay2*chf.width].getIndex() + Recast.rcGetCon(as, dir);
                 rcCompactSpan as2 = chf.spans[ai2];
                 ch = (int) Recast.rcMax(ch, (int) as2.y);
                 regs[2] = chf.spans[ai2].reg | (chf.areas[ai2] << 16);
@@ -144,7 +144,7 @@ public class RecastContour {
                 {
                     int ax = x + Recast.rcGetDirOffsetX(dir);
                     int ay = y + Recast.rcGetDirOffsetY(dir);
-                    int ai = (int)chf.cells[ax+ay*chf.width].index + Recast.rcGetCon(s, dir);
+                    int ai = (int)chf.cells[ax+ay*chf.width].getIndex() + Recast.rcGetCon(s, dir);
                     r = (int)chf.spans[ai].reg;
                     if (area != chf.areas[ai])
                         isAreaBorder = true;
@@ -170,7 +170,7 @@ public class RecastContour {
                 if (Recast.rcGetCon(s, dir) != Recast.RC_NOT_CONNECTED)
                 {
                     rcCompactCell nc = chf.cells[nx+ny*chf.width];
-                    ni = (int)nc.index + Recast.rcGetCon(s, dir);
+                    ni = (int)nc.getIndex() + Recast.rcGetCon(s, dir);
                 }
                 if (ni == -1)
                 {
@@ -676,7 +676,7 @@ return dx*dx + dy*dy + dz*dz;*/
             for (int x = 0; x < w; ++x)
             {
                 rcCompactCell c = chf.cells[x+y*w];
-                for (int i = (int)c.index, ni = (int)(c.index+c.count); i < ni; ++i)
+                for (int i = (int)c.getIndex(), ni = (int)(c.getIndex()+c.getCount()); i < ni; ++i)
                 {
                     char res = 0;
                     rcCompactSpan s = chf.spans[i];
@@ -693,7 +693,7 @@ return dx*dx + dy*dy + dz*dz;*/
                         {
                             int ax = x + Recast.rcGetDirOffsetX(dir);
                             int ay = y + Recast.rcGetDirOffsetY(dir);
-                            int ai = (int)chf.cells[ax+ay*w].index + Recast.rcGetCon(s, dir);
+                            int ai = (int)chf.cells[ax+ay*w].getIndex() + Recast.rcGetCon(s, dir);
                             r = chf.spans[ai].reg;
                         }
                         if (r == chf.spans[i].reg)
@@ -714,7 +714,7 @@ return dx*dx + dy*dy + dz*dz;*/
             for (int x = 0; x < w; ++x)
             {
                 rcCompactCell c = chf.cells[x+y*w];
-                for (int i = (int)c.index, ni = (int)(c.index+c.count); i < ni; ++i)
+                for (int i = (int)c.getIndex(), ni = (int)(c.getIndex()+c.getCount()); i < ni; ++i)
                 {
                     if (flags[i] == 0 || flags[i] == 0xf)
                     {

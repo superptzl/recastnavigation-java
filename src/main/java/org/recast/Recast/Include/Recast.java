@@ -391,8 +391,10 @@ public abstract class Recast {
     public static void rcSetCon(rcCompactSpan s, int dir, int i)
     {
         int shift = (int)dir*6;
-        int con = s.con;
-        s.con = (con & ~(0x3f << shift)) | (((int)i & 0x3f) << shift);
+//        int con = s.con;
+//        boolean[] con = s.getCon();
+//        s.con = (con & ~(0x3f << shift)) | (((int)i & 0x3f) << shift);
+		s.setCon((s.getCon() & ~(0x3f << shift)) | (((int)i & 0x3f) << shift));
     }
 
 /// Gets neighbor connection data for the specified direction.
@@ -403,6 +405,7 @@ public abstract class Recast {
     public static int rcGetCon(rcCompactSpan s, int dir)
     {
         int shift = (int)dir*6;
-        return (s.con >> shift) & 0x3f;
+//        return 0;//(s.con >> shift) & 0x3f;
+        return (s.getCon() >> shift) & 0x3f;
     }
 }

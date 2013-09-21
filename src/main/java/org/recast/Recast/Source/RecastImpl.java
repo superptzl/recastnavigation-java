@@ -153,22 +153,29 @@ public class RecastImpl extends Recast {
                 // If there are no spans at this cell, just leave the data to index=0, count=0.
                 if (s == null) continue;
                 rcCompactCell c = chf.cells[x + y * w];
-                c.index = idx;
-                c.count = 0;
+                c.setIndex(idx);
+                c.setCount(0);
                 while (s != null) {
-                    if (s.area != RC_NULL_AREA) {
-                        int bot = (int) s.smax;
-                        int top = s.next != null ? (int) s.next.smin : MAX_HEIGHT;
+                    if (s.getArea() != RC_NULL_AREA) {
+                        int bot = (int) s.getSmax();
+                        int top = s.next != null ? (int) s.next.getSmin() : MAX_HEIGHT;
                         chf.spans[idx].y = (short) rcClamp(bot, 0, 0xffff).shortValue();
-                        chf.spans[idx].h = (char) rcClamp(top - bot, 0, 0xff).shortValue();
-                        chf.areas[idx] = (char) s.area;
+                        chf.spans[idx].setH((char) rcClamp(top - bot, 0, 0xff).shortValue());
+                        chf.areas[idx] = (char) s.getArea();//area;
                         idx++;
-                        c.count++;
+                        c.setCount(c.getCount()+1);//count++;
                     }
                     s = s.next;
                 }
             }
         }
+		//debug
+//		for (rcCompactCell c : chf.cells) {
+//			if (c.getIndex() != 0 || c.getCount() != 0) {
+//				System.out.println(c);
+//			}
+//		}
+		//-----
 
         // Find neighbour connections.
         int MAX_LAYERS = RC_NOT_CONNECTED - 1;
@@ -176,7 +183,7 @@ public class RecastImpl extends Recast {
         for (int y = 0; y < h; ++y) {
             for (int x = 0; x < w; ++x) {
                 rcCompactCell c = chf.cells[x + y * w];
-                for (int i = (int) c.index, ni = (int) (c.index + c.count); i < ni; ++i) {
+                for (int i = (int) c.getIndex(), ni = (int) (c.getIndex() + c.getCount()); i < ni; ++i) {
                     rcCompactSpan s = chf.spans[i];
 
                     for (int dir = 0; dir < 4; ++dir) {
@@ -190,16 +197,16 @@ public class RecastImpl extends Recast {
                         // Iterate over all neighbour spans and check if any of the is
                         // accessible from current cell.
                         rcCompactCell nc = chf.cells[nx + ny * w];
-                        for (int k = (int) nc.index, nk = (int) (nc.index + nc.count); k < nk; ++k) {
+                        for (int k = (int) nc.getIndex(), nk = (int) (nc.getIndex() + nc.getCount()); k < nk; ++k) {
                             rcCompactSpan ns = chf.spans[k];
                             int bot = rcMax(s.y, ns.y);
-                            int top = rcMin(s.y + s.h, ns.y + ns.h);
+                            int top = rcMin(s.y + s.getH(), ns.y + ns.getH());
 
                             // Check that the gap between the spans is walkable,
                             // and that the climb height between the gaps is not too high.
                             if ((top - bot) >= walkableHeight && rcAbs((int) ns.y - (int) s.y) <= walkableClimb) {
                                 // Mark direction as walkable.
-                                int lidx = k - (int) nc.index;
+                                int lidx = k - (int) nc.getIndex();
                                 if (lidx < 0 || lidx > MAX_LAYERS) {
                                     tooHighNeighbour = rcMax(tooHighNeighbour, lidx);
                                     continue;
@@ -247,7 +254,7 @@ public class RecastImpl extends Recast {
         for (int y = 0; y < h; ++y) {
             for (int x = 0; x < w; ++x) {
                 for (rcSpan s = hf.spans[x + y * w]; s != null; s = s.next) {
-                    if (s.area != RC_NULL_AREA)
+                    if (s.getArea() != RC_NULL_AREA)
                         spanCount++;
                 }
             }

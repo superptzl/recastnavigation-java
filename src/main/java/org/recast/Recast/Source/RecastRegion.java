@@ -35,6 +35,7 @@ public class RecastRegion extends RecastImpl {
 
 //        rcScopedDelete<unsigned short> srcReg = (unsigned short*)rcAlloc(sizeof(unsigned short)*chf.spanCount, RC_ALLOC_TEMP);
         short[] srcReg = new short[chf.spanCount];
+		int[] srcRegIndex = new int[]{0};
         /*if (!srcReg)
         {
             ctx.log(RC_LOG_ERROR, "rcBuildRegionsMonotone: Out of memory 'src' (%d).", chf.spanCount);
@@ -59,10 +60,10 @@ public class RecastRegion extends RecastImpl {
             int bw = rcMin(w, borderSize);
             int bh = rcMin(h, borderSize);
             // Paint regions
-            paintRectRegion(0, bw, 0, h, (short)(id|RC_BORDER_REG), chf, srcReg); id++;
-            paintRectRegion(w-bw, w, 0, h, (short)(id|RC_BORDER_REG), chf, srcReg); id++;
-            paintRectRegion(0, w, 0, bh, (short)(id|RC_BORDER_REG), chf, srcReg); id++;
-            paintRectRegion(0, w, h-bh, h, (short)(id|RC_BORDER_REG), chf, srcReg); id++;
+            paintRectRegion(0, bw, 0, h, (short)(id|RC_BORDER_REG), chf, srcReg, srcRegIndex); id++;
+            paintRectRegion(w-bw, w, 0, h, (short)(id|RC_BORDER_REG), chf, srcReg, srcRegIndex); id++;
+            paintRectRegion(0, w, 0, bh, (short)(id|RC_BORDER_REG), chf, srcReg, srcRegIndex); id++;
+            paintRectRegion(0, w, h-bh, h, (short)(id|RC_BORDER_REG), chf, srcReg, srcRegIndex); id++;
 
             chf.borderSize = borderSize;
         }
@@ -86,7 +87,7 @@ public class RecastRegion extends RecastImpl {
             {
                 rcCompactCell c = chf.cells[x+y*w];
 
-                for (int i = (int)c.index, ni = (int)(c.index+c.count); i < ni; ++i)
+                for (int i = (int)c.getIndex(), ni = (int)(c.getIndex()+c.getCount()); i < ni; ++i)
                 {
                     rcCompactSpan s = chf.spans[i];
                     if (chf.areas[i] == RC_NULL_AREA) continue;
@@ -97,9 +98,9 @@ public class RecastRegion extends RecastImpl {
                     {
                         int ax = x + rcGetDirOffsetX(0);
                         int ay = y + rcGetDirOffsetY(0);
-                        int ai = (int)chf.cells[ax+ay*w].index + rcGetCon(s, 0);
-                        if ((srcReg[ai] & RC_BORDER_REG) == 0 && chf.areas[i] == chf.areas[ai])
-                            previd = srcReg[ai];
+                        int ai = (int)chf.cells[ax+ay*w].getIndex() + rcGetCon(s, 0);
+                        if ((srcReg[srcRegIndex[0]+ai] & RC_BORDER_REG) == 0 && chf.areas[i] == chf.areas[ai])
+                            previd = srcReg[srcRegIndex[0]+ai];
                     }
 
                     if (previd == 0)
@@ -115,10 +116,10 @@ public class RecastRegion extends RecastImpl {
                     {
                         int ax = x + rcGetDirOffsetX(3);
                         int ay = y + rcGetDirOffsetY(3);
-                        int ai = (int)chf.cells[ax+ay*w].index + rcGetCon(s, 3);
-                        if (srcReg[ai] != 0 && (srcReg[ai] & RC_BORDER_REG) == 0 && chf.areas[i] == chf.areas[ai])
+                        int ai = (int)chf.cells[ax+ay*w].getIndex() + rcGetCon(s, 3);
+                        if (srcReg[srcRegIndex[0]+ai] != 0 && (srcReg[srcRegIndex[0]+ai] & RC_BORDER_REG) == 0 && chf.areas[i] == chf.areas[ai])
                         {
-                            short nr = srcReg[ai];
+                            short nr = srcReg[srcRegIndex[0]+ai];
                             if (sweeps[previd].nei == 0 || sweeps[previd].nei == nr)
                             {
                                 sweeps[previd].nei = nr;
@@ -132,7 +133,7 @@ public class RecastRegion extends RecastImpl {
                         }
                     }
 
-                    srcReg[i] = previd;
+                    srcReg[srcRegIndex[0]+i] = previd;
                 }
             }
 
@@ -155,10 +156,10 @@ public class RecastRegion extends RecastImpl {
             {
                 rcCompactCell c = chf.cells[x+y*w];
 
-                for (int i = (int)c.index, ni = (int)(c.index+c.count); i < ni; ++i)
+                for (int i = (int)c.getIndex(), ni = (int)(c.getIndex()+c.getCount()); i < ni; ++i)
                 {
-                    if (srcReg[i] > 0 && srcReg[i] < rid)
-                        srcReg[i] = sweeps[srcReg[i]].id;
+                    if (srcReg[srcRegIndex[0]+i] > 0 && srcReg[srcRegIndex[0]+i] < rid)
+                        srcReg[srcRegIndex[0]+i] = sweeps[srcReg[srcRegIndex[0]+i]].id;
                 }
             }
         }
@@ -167,14 +168,14 @@ public class RecastRegion extends RecastImpl {
 
         // Filter out small regions.
         chf.maxRegions = id;
-        if (!filterSmallRegions(ctx, minRegionArea, mergeRegionArea, chf.maxRegions, chf, srcReg))
+        if (!filterSmallRegions(ctx, minRegionArea, mergeRegionArea, chf.maxRegions, chf, srcReg, srcRegIndex))
             return false;
 
         ctx.stopTimer(rcTimerLabel.RC_TIMER_BUILD_REGIONS_FILTER);
 
         // Store the result out.
         for (int i = 0; i < chf.spanCount; ++i)
-            chf.spans[i].reg = srcReg[i];
+            chf.spans[i].reg = srcReg[srcRegIndex[0]+i];
 
         ctx.stopTimer(rcTimerLabel.RC_TIMER_BUILD_REGIONS);
 
@@ -182,7 +183,7 @@ public class RecastRegion extends RecastImpl {
     }
 
     static void paintRectRegion(int minx, int maxx, int miny, int maxy, short regId,
-                                rcCompactHeightfield chf, short[] srcReg)
+                                rcCompactHeightfield chf, short[] srcReg, int[] srcRegIndex)
     {
         int w = chf.width;
         for (int y = miny; y < maxy; ++y)
@@ -190,10 +191,10 @@ public class RecastRegion extends RecastImpl {
             for (int x = minx; x < maxx; ++x)
             {
                 rcCompactCell c = chf.cells[x+y*w];
-                for (int i = (int)c.index, ni = (int)(c.index+c.count); i < ni; ++i)
+                for (int i = (int)c.getIndex(), ni = (int)(c.getIndex()+c.getCount()); i < ni; ++i)
                 {
                     if (chf.areas[i] != RC_NULL_AREA)
-                        srcReg[i] = regId;
+                        srcReg[srcRegIndex[0]+i] = regId;
                 }
             }
         }
@@ -202,7 +203,7 @@ public class RecastRegion extends RecastImpl {
     public static boolean filterSmallRegions(rcContext ctx, int minRegionArea, int mergeRegionSize,
                                    short maxRegionId,
                                    rcCompactHeightfield chf,
-                                   short[] srcReg)
+                                   short[] srcReg, int[] srcRegIndex)
     {
         int w = chf.width;
         int h = chf.height;
@@ -228,9 +229,9 @@ public class RecastRegion extends RecastImpl {
             for (int x = 0; x < w; ++x)
             {
                 rcCompactCell c = chf.cells[x+y*w];
-                for (int i = (int)c.index, ni = (int)(c.index+c.count); i < ni; ++i)
+                for (int i = (int)c.getIndex(), ni = (int)(c.getIndex()+c.getCount()); i < ni; ++i)
                 {
-                    short r = srcReg[i];
+                    short r = srcReg[srcRegIndex[0]+i];
                     if (r == 0 || r >= nreg)
                         continue;
 
@@ -239,10 +240,10 @@ public class RecastRegion extends RecastImpl {
 
 
                     // Update floors.
-                    for (int j = (int)c.index; j < ni; ++j)
+                    for (int j = (int)c.getIndex(); j < ni; ++j)
                     {
                         if (i == j) continue;
-                        short floorId = srcReg[j];
+                        short floorId = srcReg[srcRegIndex[0]+j];
                         if (floorId == 0 || floorId >= nreg)
                             continue;
                         addUniqueFloorRegion(reg, floorId);
@@ -258,7 +259,7 @@ public class RecastRegion extends RecastImpl {
                     int ndir = -1;
                     for (int dir = 0; dir < 4; ++dir)
                     {
-                        if (isSolidEdge(chf, srcReg, x, y, i, dir))
+                        if (isSolidEdge(chf, srcReg, srcRegIndex, x, y, i, dir))
                         {
                             ndir = dir;
                             break;
@@ -269,7 +270,7 @@ public class RecastRegion extends RecastImpl {
                     {
                         // The cell is at border.
                         // Walk around the contour to find all the neighbours.
-                        walkContour(x, y, i, ndir, chf, srcReg, reg.connections);
+                        walkContour(x, y, i, ndir, chf, srcReg, srcRegIndex, reg.connections);
                     }
                 }
             }
@@ -434,8 +435,8 @@ public class RecastRegion extends RecastImpl {
         // Remap regions.
         for (int i = 0; i < chf.spanCount; ++i)
         {
-            if ((srcReg[i] & RC_BORDER_REG) == 0)
-                srcReg[i] = regions[srcReg[i]].id;
+            if ((srcReg[srcRegIndex[0]+i] & RC_BORDER_REG) == 0)
+                srcReg[srcRegIndex[0]+i] = regions[srcReg[srcRegIndex[0]+i]].id;
         }
 
 //        for (int i = 0; i < nreg; ++i)
@@ -529,7 +530,7 @@ public class RecastRegion extends RecastImpl {
 
     static void walkContour(int x, int y, int i, int dir,
                             rcCompactHeightfield chf,
-                            short[] srcReg,
+                            short[] srcReg, int[] srcRegIndex,
                             rcIntArray cont)
     {
         int startDir = dir;
@@ -541,8 +542,8 @@ public class RecastRegion extends RecastImpl {
         {
             int ax = x + rcGetDirOffsetX(dir);
             int ay = y + rcGetDirOffsetY(dir);
-            int ai = (int)chf.cells[ax+ay*chf.width].index + rcGetCon(ss, dir);
-            curReg = srcReg[ai];
+            int ai = (int)chf.cells[ax+ay*chf.width].getIndex() + rcGetCon(ss, dir);
+            curReg = srcReg[srcRegIndex[0]+ai];
         }
         cont.push((int)curReg);
 
@@ -551,7 +552,7 @@ public class RecastRegion extends RecastImpl {
         {
             rcCompactSpan s = chf.spans[i];
 
-            if (isSolidEdge(chf, srcReg, x, y, i, dir))
+            if (isSolidEdge(chf, srcReg, srcRegIndex, x, y, i, dir))
             {
                 // Choose the edge corner
                 short r = 0;
@@ -559,8 +560,8 @@ public class RecastRegion extends RecastImpl {
                 {
                     int ax = x + rcGetDirOffsetX(dir);
                     int ay = y + rcGetDirOffsetY(dir);
-                    int ai = (int)chf.cells[ax+ay*chf.width].index + rcGetCon(s, dir);
-                    r = srcReg[ai];
+                    int ai = (int)chf.cells[ax+ay*chf.width].getIndex() + rcGetCon(s, dir);
+                    r = srcReg[srcRegIndex[0]+ai];
                 }
                 if (r != curReg)
                 {
@@ -578,7 +579,7 @@ public class RecastRegion extends RecastImpl {
                 if (rcGetCon(s, dir) != RC_NOT_CONNECTED)
                 {
                     rcCompactCell nc = chf.cells[nx+ny*chf.width];
-                    ni = (int)nc.index + rcGetCon(s, dir);
+                    ni = (int)nc.getIndex() + rcGetCon(s, dir);
                 }
                 if (ni == -1)
                 {
@@ -650,7 +651,7 @@ public class RecastRegion extends RecastImpl {
         reg.floors.push(n);
     }
 
-    static boolean isSolidEdge(rcCompactHeightfield chf, short[] srcReg,
+    static boolean isSolidEdge(rcCompactHeightfield chf, short[] srcReg, int[] srcRegIndex,
                             int x, int y, int i, int dir)
     {
         rcCompactSpan s = chf.spans[i];
@@ -659,10 +660,10 @@ public class RecastRegion extends RecastImpl {
         {
             int ax = x + rcGetDirOffsetX(dir);
             int ay = y + rcGetDirOffsetY(dir);
-            int ai = (int)chf.cells[ax+ay*chf.width].index + rcGetCon(s, dir);
-            r = srcReg[ai];
+            int ai = (int)chf.cells[ax+ay*chf.width].getIndex() + rcGetCon(s, dir);
+            r = srcReg[srcRegIndex[0]+ai];
         }
-        if (r == srcReg[i])
+        if (r == srcReg[srcRegIndex[0]+i])
             return false;
         return true;
     }
@@ -832,9 +833,13 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
 		rcIntArray visited = new rcIntArrayImpl(1024);
 
         short[] srcReg = buf;
-        short[] srcDist = createN(buf, chf.spanCount, chf.spanCount);//buf + chf.spanCount;
-        short[] dstReg = createN(buf, chf.spanCount*2, chf.spanCount);//buf + chf.spanCount * 2;
-        short[] dstDist = createN(buf, chf.spanCount*3, chf.spanCount);//buf + chf.spanCount * 3;
+		int[] srcRegIndex = new int[]{0};
+        short[] srcDist = buf;//createN(buf, chf.spanCount, chf.spanCount);//buf + chf.spanCount;
+		int[] srcDistIndex = new int[]{chf.spanCount};
+        short[] dstReg = buf;//createN(buf, chf.spanCount*2, chf.spanCount);//buf + chf.spanCount * 2;
+		int[] dstRegIndex = new int[]{chf.spanCount*2};
+        short[] dstDist = buf;//createN(buf, chf.spanCount*3, chf.spanCount);//buf + chf.spanCount * 3;
+		int[] dstDistIndex = new int[]{chf.spanCount*3};
 
 //        memset(srcReg, 0, sizeof(unsigned short)*chf.spanCount);
 //        memset(srcDist, 0, sizeof(unsigned short)*chf.spanCount);
@@ -854,10 +859,10 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
             int bw = rcMin(w, borderSize);
             int bh = rcMin(h, borderSize);
             // Paint regions
-            paintRectRegion(0, bw, 0, h, (short)(regionId|RC_BORDER_REG), chf, srcReg); regionId++;
-            paintRectRegion(w-bw, w, 0, h, (short)(regionId|RC_BORDER_REG), chf, srcReg); regionId++;
-            paintRectRegion(0, w, 0, bh, (short)(regionId|RC_BORDER_REG), chf, srcReg); regionId++;
-            paintRectRegion(0, w, h-bh, h, (short)(regionId|RC_BORDER_REG), chf, srcReg); regionId++;
+            paintRectRegion(0, bw, 0, h, (short)(regionId|RC_BORDER_REG), chf, srcReg, srcRegIndex); regionId++;
+            paintRectRegion(w-bw, w, 0, h, (short)(regionId|RC_BORDER_REG), chf, srcReg, srcRegIndex); regionId++;
+            paintRectRegion(0, w, 0, bh, (short)(regionId|RC_BORDER_REG), chf, srcReg, srcRegIndex); regionId++;
+            paintRectRegion(0, w, h-bh, h, (short)(regionId|RC_BORDER_REG), chf, srcReg, srcRegIndex); regionId++;
 
             chf.borderSize = borderSize;
         }
@@ -869,16 +874,20 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
             ctx.startTimer(rcTimerLabel.RC_TIMER_BUILD_REGIONS_EXPAND);
 
             // Expand current regions until no empty connected cells found.
-            if (expandRegions(expandIters, level, chf, srcReg, srcDist, dstReg, dstDist, stack) != srcReg)
+			int oldSrcRegIndex = srcRegIndex[0];
+            if (expandRegions(expandIters, level, chf, srcReg, srcRegIndex, srcDist,
+							  srcDistIndex, dstReg, dstRegIndex, dstDist, dstDistIndex, stack) != oldSrcRegIndex)
             {
 //                rcSwap(srcReg, dstReg);
-                short[] tmp = srcReg;
-                srcReg = dstReg;
-                dstReg = tmp;
+//                short[] tmp = srcReg;
+//				int tmpIndex = 0;
+				int tmpIndex = srcRegIndex[0];
+                srcRegIndex[0] = dstRegIndex[0];
+                dstRegIndex[0] = tmpIndex;
 //                rcSwap(srcDist, dstDist);
-                tmp = srcDist;
-                srcDist = dstDist;
-                dstDist = tmp;
+                tmpIndex = srcDistIndex[0];
+                srcDistIndex[0] = dstDistIndex[0];
+                dstDistIndex[0] = tmpIndex;
             }
 
             ctx.stopTimer(rcTimerLabel.RC_TIMER_BUILD_REGIONS_EXPAND);
@@ -891,11 +900,11 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                 for (int x = 0; x < w; ++x)
                 {
                     rcCompactCell c = chf.cells[x+y*w];
-                    for (int i = (int)c.index, ni = (int)(c.index+c.count); i < ni; ++i)
+                    for (int i = (int)c.getIndex(), ni = (int)(c.getIndex()+c.getCount()); i < ni; ++i)
                     {
-                        if (chf.dist[i] < level || srcReg[i] != 0 || chf.areas[i] == RC_NULL_AREA)
+                        if (chf.dist[i] < level || srcReg[srcRegIndex[0]+i] != 0 || chf.areas[i] == RC_NULL_AREA)
                             continue;
-                        if (floodRegion(x, y, i, level, regionId, chf, srcReg, srcDist, stack))
+                        if (floodRegion(x, y, i, level, regionId, chf, srcReg, srcRegIndex, srcDist, srcDistIndex, stack))
                             regionId++;
                     }
                 }
@@ -905,16 +914,18 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
         }
 
         // Expand current regions until no empty connected cells found.
-        if (expandRegions(expandIters*8, (short)0, chf, srcReg, srcDist, dstReg, dstDist, stack) != srcReg)
+		int oldSrcRegIndex = srcRegIndex[0];
+        if (expandRegions(expandIters*8, (short)0, chf, srcReg, srcRegIndex, srcDist, srcDistIndex, dstReg, dstRegIndex, dstDist, dstDistIndex, stack) != oldSrcRegIndex)
         {
 //            rcSwap(srcReg, dstReg);
-            short[] tmp = srcReg;
-            srcReg = dstReg;
-            dstReg = tmp;
+//            short[] tmp = srcReg;
+            int tmpIndex = srcRegIndex[0];
+            srcRegIndex[0] = dstRegIndex[0];
+            dstRegIndex[0] = tmpIndex;
 //            rcSwap(srcDist, dstDist);
-            tmp = srcDist;
-            srcDist = dstDist;
-            dstDist = tmp;
+            tmpIndex = srcDistIndex[0];
+            srcDistIndex[0] = dstDistIndex[0];
+            dstDistIndex[0] = tmpIndex;
         }
 
         ctx.stopTimer(rcTimerLabel.RC_TIMER_BUILD_REGIONS_WATERSHED);
@@ -923,14 +934,21 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
 
         // Filter out small regions.
         chf.maxRegions = regionId;
-        if (!filterSmallRegions(ctx, minRegionArea, mergeRegionArea, chf.maxRegions, chf, srcReg))
+        if (!filterSmallRegions(ctx, minRegionArea, mergeRegionArea, chf.maxRegions, chf, srcReg, srcRegIndex))
             return false;
 
         ctx.stopTimer(rcTimerLabel.RC_TIMER_BUILD_REGIONS_FILTER);
 
+		System.out.println("----");
+		for (int sR : srcReg) {
+			if (sR != 0) {
+				System.out.println(sR);
+			}
+		}
+		System.out.println("----");
         // Write the result out.
         for (int i = 0; i < chf.spanCount; ++i)
-            chf.spans[i].reg = srcReg[i];
+            chf.spans[i].reg = srcReg[srcRegIndex[0]+i];
 
         ctx.stopTimer(rcTimerLabel.RC_TIMER_BUILD_REGIONS);
 
@@ -940,7 +958,8 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
     static boolean floodRegion(int x, int y, int i,
                             short level, short r,
                             rcCompactHeightfield chf,
-                            short[] srcReg, short[] srcDist,
+                            short[] srcReg, int[] srcRegIndex,
+							short[] srcDist, int[] srcDistIndex,
                             rcIntArray stack)
     {
         int w = chf.width;
@@ -952,8 +971,8 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
         stack.push((int)x);
         stack.push((int)y);
         stack.push((int)i);
-        srcReg[i] = r;
-        srcDist[i] = 0;
+        srcReg[srcRegIndex[0]+i] = r;
+        srcDist[srcDistIndex[0]+i] = 0;
 
         short lev = (short)(level >= 2 ? level-2 : 0);
         int count = 0;
@@ -975,10 +994,10 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                 {
                     int ax = cx + rcGetDirOffsetX(dir);
                     int ay = cy + rcGetDirOffsetY(dir);
-                    int ai = (int)chf.cells[ax+ay*w].index + rcGetCon(cs, dir);
+                    int ai = (int)chf.cells[ax+ay*w].getIndex() + rcGetCon(cs, dir);
                     if (chf.areas[ai] != area)
                         continue;
-                    short nr = srcReg[ai];
+                    short nr = srcReg[srcRegIndex[0]+ai];
                     if ((nr & RC_BORDER_REG) != 0) // Do not take borders into account.
                         continue;
                     if (nr != 0 && nr != r)
@@ -991,10 +1010,10 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                     {
                         int ax2 = ax + rcGetDirOffsetX(dir2);
                         int ay2 = ay + rcGetDirOffsetY(dir2);
-                        int ai2 = (int)chf.cells[ax2+ay2*w].index + rcGetCon(as, dir2);
+                        int ai2 = (int)chf.cells[ax2+ay2*w].getIndex() + rcGetCon(as, dir2);
                         if (chf.areas[ai2] != area)
                             continue;
-                        short nr2 = srcReg[ai2];
+                        short nr2 = srcReg[srcRegIndex[0]+ai2];
                         if (nr2 != 0 && nr2 != r)
                             ar = nr2;
                     }
@@ -1002,7 +1021,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
             }
             if (ar != 0)
             {
-                srcReg[ci] = 0;
+                srcReg[srcRegIndex[0]+ci] = 0;
                 continue;
             }
             count++;
@@ -1014,13 +1033,13 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                 {
                     int ax = cx + rcGetDirOffsetX(dir);
                     int ay = cy + rcGetDirOffsetY(dir);
-                    int ai = (int)chf.cells[ax+ay*w].index + rcGetCon(cs, dir);
+                    int ai = (int)chf.cells[ax+ay*w].getIndex() + rcGetCon(cs, dir);
                     if (chf.areas[ai] != area)
                         continue;
-                    if (chf.dist[ai] >= lev && srcReg[ai] == 0)
+                    if (chf.dist[ai] >= lev && srcReg[srcRegIndex[0]+ai] == 0)
                     {
-                        srcReg[ai] = r;
-                        srcDist[ai] = 0;
+                        srcReg[srcRegIndex[0]+ai] = r;
+                        srcDist[srcDistIndex[0]+ai] = 0;
                         stack.push(ax);
                         stack.push(ay);
                         stack.push(ai);
@@ -1032,10 +1051,12 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
         return count > 0;
     }
 
-    public static short[] expandRegions(int maxIter, short level,
+    public static int expandRegions(int maxIter, short level,
                                          rcCompactHeightfield chf,
-                                         short[] srcReg, short[] srcDist,
-                                         short[] dstReg, short[] dstDist,
+                                         short[] srcReg, int[] srcRegIndex,
+										 short[] srcDist, int[] srcDistIndex,
+                                         short[] dstReg, int[] dstRegIndex,
+										 short[] dstDist, int[] dstDistIndex,
 										 rcIntArray stack)
     {
         int w = chf.width;
@@ -1048,9 +1069,9 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
             for (int x = 0; x < w; ++x)
             {
                 rcCompactCell c = chf.cells[x+y*w];
-                for (int i = (int)c.index, ni = (int)(c.index+c.count); i < ni; ++i)
+                for (int i = (int)c.getIndex(), ni = (int)(c.getIndex()+c.getCount()); i < ni; ++i)
                 {
-                    if (chf.dist[i] >= level && srcReg[i] == 0 && chf.areas[i] != RC_NULL_AREA)
+                    if (chf.dist[i] >= level && srcReg[srcRegIndex[0]+i] == 0 && chf.areas[i] != RC_NULL_AREA)
                     {
                         stack.push(x);
                         stack.push(y);
@@ -1066,9 +1087,9 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
             int failed = 0;
 
 //            memcpy(dstReg, srcReg, sizeof(unsigned short)*chf.spanCount);
-            System.arraycopy(srcReg, 0, dstReg, 0, chf.spanCount);
+            System.arraycopy(srcReg, srcRegIndex[0], dstReg, dstRegIndex[0], chf.spanCount);
 //            memcpy(dstDist, srcDist, sizeof(unsigned short)*chf.spanCount);
-            System.arraycopy(srcDist, 0, dstDist, 0, chf.spanCount);
+            System.arraycopy(srcDist, srcDistIndex[0], dstDist, dstDistIndex[0], chf.spanCount);
 
             for (int j = 0; j < stack.size(); j += 3)
             {
@@ -1081,7 +1102,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                     continue;
                 }
 
-                short r = srcReg[i];
+                short r = srcReg[srcRegIndex[0]+i];
                 short d2 = (short)0xffff;
                 char area = chf.areas[i];
                 rcCompactSpan s = chf.spans[i];
@@ -1090,22 +1111,22 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                     if (rcGetCon(s, dir) == RC_NOT_CONNECTED) continue;
                     int ax = x + rcGetDirOffsetX(dir);
                     int ay = y + rcGetDirOffsetY(dir);
-                    int ai = (int)chf.cells[ax+ay*w].index + rcGetCon(s, dir);
+                    int ai = (int)chf.cells[ax+ay*w].getIndex() + rcGetCon(s, dir);
                     if (chf.areas[ai] != area) continue;
-                    if (srcReg[ai] > 0 && (srcReg[ai] & RC_BORDER_REG) == 0)
+                    if (srcReg[srcRegIndex[0]+ai] > 0 && (srcReg[srcRegIndex[0]+ai] & RC_BORDER_REG) == 0)
                     {
-                        if ((int)srcDist[ai]+2 < (int)d2)
+                        if ((int)srcDist[srcDistIndex[0]+ai]+2 < (int)d2)
                         {
-                            r = srcReg[ai];
-                            d2 = (short)(srcDist[ai]+2);
+                            r = srcReg[srcRegIndex[0]+ai];
+                            d2 = (short)(srcDist[srcDistIndex[0]+ai]+2);
                         }
                     }
                 }
                 if (r != 0)
                 {
                     stack.m_data[j+2] = -1; // mark as used
-                    dstReg[i] = r;
-                    dstDist[i] = d2;
+                    dstReg[dstRegIndex[0]+i] = r;
+                    dstDist[dstDistIndex[0]+i] = d2;
                 }
                 else
                 {
@@ -1114,14 +1135,20 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
             }
 
             // rcSwap source and dest.
-            short[] tmp = srcReg;
-            srcReg = dstReg;
-            dstReg = tmp;
+//            short[] tmp = srcReg;
+			int tmpIndex = srcRegIndex[0];
+//            srcReg = dstReg;
+			srcRegIndex[0] = dstRegIndex[0];
+//            dstReg = tmpIndex;
+			dstRegIndex[0] = tmpIndex;
 //            rcSwap(srcReg, dstReg);
 //            rcSwap(srcDist, dstDist);
-            tmp = srcDist;
-            srcDist = dstDist;
-            dstDist = tmp;
+//            tmp = srcDist;
+			/*int */tmpIndex = srcDistIndex[0];
+//            srcDist = dstDist;
+			srcDistIndex[0] = dstDistIndex[0];
+//            dstDist = tmp;
+			dstDistIndex[0] = tmpIndex;
 
             if (failed*3 == stack.size())
                 break;
@@ -1134,7 +1161,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
             }
         }
 
-        return srcReg;
+        return srcRegIndex[0];
     }
 
 
@@ -1154,7 +1181,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
             for (int x = 0; x < w; ++x)
             {
                 rcCompactCell c = chf.cells[x+y*w];
-                for (int i = (int)c.index, ni = (int)(c.index+c.count); i < ni; ++i)
+                for (int i = (int)c.getIndex(), ni = (int)(c.getIndex()+c.getCount()); i < ni; ++i)
                 {
                     rcCompactSpan s = chf.spans[i];
                     char area = chf.areas[i];
@@ -1166,7 +1193,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                         {
                             int ax = x + rcGetDirOffsetX(dir);
                             int ay = y + rcGetDirOffsetY(dir);
-                            int ai = (int)chf.cells[ax+ay*w].index + rcGetCon(s, dir);
+                            int ai = (int)chf.cells[ax+ay*w].getIndex() + rcGetCon(s, dir);
                             if (area == chf.areas[ai])
                                 nc++;
                         }
@@ -1184,7 +1211,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
             for (int x = 0; x < w; ++x)
             {
                 rcCompactCell c = chf.cells[x+y*w];
-                for (int i = (int)c.index, ni = (int)(c.index+c.count); i < ni; ++i)
+                for (int i = (int)c.getIndex(), ni = (int)(c.getIndex()+c.getCount()); i < ni; ++i)
                 {
                     rcCompactSpan s = chf.spans[i];
 
@@ -1193,7 +1220,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                         // (-1,0)
                         int ax = x + rcGetDirOffsetX(0);
                         int ay = y + rcGetDirOffsetY(0);
-                        int ai = (int)chf.cells[ax+ay*w].index + rcGetCon(s, 0);
+                        int ai = (int)chf.cells[ax+ay*w].getIndex() + rcGetCon(s, 0);
                         rcCompactSpan as = chf.spans[ai];
                         if (src[ai]+2 < src[i])
                             src[i] = (short)(src[ai]+2);
@@ -1203,7 +1230,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                         {
                             int aax = ax + rcGetDirOffsetX(3);
                             int aay = ay + rcGetDirOffsetY(3);
-                            int aai = (int)chf.cells[aax+aay*w].index + rcGetCon(as, 3);
+                            int aai = (int)chf.cells[aax+aay*w].getIndex() + rcGetCon(as, 3);
                             if (src[aai]+3 < src[i])
                                 src[i] = (short)(src[aai]+3);
                         }
@@ -1213,7 +1240,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                         // (0,-1)
                         int ax = x + rcGetDirOffsetX(3);
                         int ay = y + rcGetDirOffsetY(3);
-                        int ai = (int)chf.cells[ax+ay*w].index + rcGetCon(s, 3);
+                        int ai = (int)chf.cells[ax+ay*w].getIndex() + rcGetCon(s, 3);
                         rcCompactSpan as = chf.spans[ai];
                         if (src[ai]+2 < src[i])
                             src[i] = (short)(src[ai]+2);
@@ -1223,7 +1250,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                         {
                             int aax = ax + rcGetDirOffsetX(2);
                             int aay = ay + rcGetDirOffsetY(2);
-                            int aai = (int)chf.cells[aax+aay*w].index + rcGetCon(as, 2);
+                            int aai = (int)chf.cells[aax+aay*w].getIndex() + rcGetCon(as, 2);
                             if (src[aai]+3 < src[i])
                                 src[i] = (short)(src[aai]+3);
                         }
@@ -1238,7 +1265,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
             for (int x = w-1; x >= 0; --x)
             {
                 rcCompactCell c = chf.cells[x+y*w];
-                for (int i = (int)c.index, ni = (int)(c.index+c.count); i < ni; ++i)
+                for (int i = (int)c.getIndex(), ni = (int)(c.getIndex()+c.getCount()); i < ni; ++i)
                 {
                     rcCompactSpan s = chf.spans[i];
 
@@ -1247,7 +1274,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                         // (1,0)
                         int ax = x + rcGetDirOffsetX(2);
                         int ay = y + rcGetDirOffsetY(2);
-                        int ai = (int)chf.cells[ax+ay*w].index + rcGetCon(s, 2);
+                        int ai = (int)chf.cells[ax+ay*w].getIndex() + rcGetCon(s, 2);
                         rcCompactSpan as = chf.spans[ai];
                         if (src[ai]+2 < src[i])
                             src[i] = (short)(src[ai]+2);
@@ -1257,7 +1284,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                         {
                             int aax = ax + rcGetDirOffsetX(1);
                             int aay = ay + rcGetDirOffsetY(1);
-                            int aai = (int)chf.cells[aax+aay*w].index + rcGetCon(as, 1);
+                            int aai = (int)chf.cells[aax+aay*w].getIndex() + rcGetCon(as, 1);
                             if (src[aai]+3 < src[i])
                                 src[i] = (short)(src[aai]+3);
                         }
@@ -1267,7 +1294,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                         // (0,1)
                         int ax = x + rcGetDirOffsetX(1);
                         int ay = y + rcGetDirOffsetY(1);
-                        int ai = (int)chf.cells[ax+ay*w].index + rcGetCon(s, 1);
+                        int ai = (int)chf.cells[ax+ay*w].getIndex() + rcGetCon(s, 1);
                         rcCompactSpan as = chf.spans[ai];
                         if (src[ai]+2 < src[i])
                             src[i] = (short)(src[ai]+2);
@@ -1277,7 +1304,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                         {
                             int aax = ax + rcGetDirOffsetX(0);
                             int aay = ay + rcGetDirOffsetY(0);
-                            int aai = (int)chf.cells[aax+aay*w].index + rcGetCon(as, 0);
+                            int aai = (int)chf.cells[aax+aay*w].getIndex() + rcGetCon(as, 0);
                             if (src[aai]+3 < src[i])
                                 src[i] = (short)(src[aai]+3);
                         }
@@ -1289,7 +1316,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
         maxDist[0] = 0;
         for (int i = 0; i < chf.spanCount; ++i)
             maxDist[0] = (short)rcMax(src[i], maxDist[0]);
-
+		assert maxDist[0] == 52;
     }
 
     static short[] boxBlur(rcCompactHeightfield chf, int thr,
@@ -1305,7 +1332,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
             for (int x = 0; x < w; ++x)
             {
                 rcCompactCell c = chf.cells[x+y*w];
-                for (int i = (int)c.index, ni = (int)(c.index+c.count); i < ni; ++i)
+                for (int i = (int)c.getIndex(), ni = (int)(c.getIndex()+c.getCount()); i < ni; ++i)
                 {
                     rcCompactSpan s = chf.spans[i];
                     short cd = src[i];
@@ -1322,7 +1349,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                         {
                             int ax = x + rcGetDirOffsetX(dir);
                             int ay = y + rcGetDirOffsetY(dir);
-                            int ai = (int)chf.cells[ax+ay*w].index + rcGetCon(s, dir);
+                            int ai = (int)chf.cells[ax+ay*w].getIndex() + rcGetCon(s, dir);
                             d += (int)src[ai];
 
                             rcCompactSpan as = chf.spans[ai];
@@ -1331,7 +1358,7 @@ public     boolean rcBuildRegions(rcContext ctx, rcCompactHeightfield chf,
                             {
                                 int ax2 = ax + rcGetDirOffsetX(dir2);
                                 int ay2 = ay + rcGetDirOffsetY(dir2);
-                                int ai2 = (int)chf.cells[ax2+ay2*w].index + rcGetCon(as, dir2);
+                                int ai2 = (int)chf.cells[ax2+ay2*w].getIndex() + rcGetCon(as, dir2);
                                 d += (int)src[ai2];
                             }
                             else

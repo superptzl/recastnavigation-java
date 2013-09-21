@@ -260,9 +260,9 @@ public class RecastRasterization extends RecastImpl {
         int idx = x + y*hf.width;
 
         rcSpan s = allocSpan(hf);
-        s.smin = smin;
-        s.smax = smax;
-        s.area = area;
+        s.setSmin(smin);
+        s.setSmax(smax);
+        s.setArea(area);
         s.next = null;
 
         // Empty cell, add he first span.
@@ -277,12 +277,12 @@ public class RecastRasterization extends RecastImpl {
         // Insert and merge spans.
         while (cur != null)
         {
-            if (cur.smin > s.smax)
+            if (cur.getSmin() > s.getSmax())
             {
                 // Current span is further than the new span, break.
                 break;
             }
-            else if (cur.smax < s.smin)
+            else if (cur.getSmax() < s.getSmin())
             {
                 // Current span is before the new span advance.
                 prev = cur;
@@ -291,14 +291,14 @@ public class RecastRasterization extends RecastImpl {
             else
             {
                 // Merge spans.
-                if (cur.smin < s.smin)
-                    s.smin = cur.smin;
-                if (cur.smax > s.smax)
-                    s.smax = cur.smax;
+                if (cur.getSmin() < s.getSmin())
+                    s.setSmin(cur.getSmin());
+                if (cur.getSmax() > s.getSmax())
+                    s.setSmax(cur.getSmax());
 
                 // Merge flags.
-                if (rcAbs((int)s.smax - (int)cur.smax) <= flagMergeThr)
-                    s.area = rcMax(s.area, cur.area);
+                if (rcAbs((int)s.getSmax() - (int)cur.getSmax()) <= flagMergeThr)
+                    s.setArea(rcMax(s.getArea(), cur.getArea()));
 
                 // Remove current span.
                 rcSpan next = cur.next;
