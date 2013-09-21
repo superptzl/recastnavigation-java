@@ -19,10 +19,6 @@ public class RecastTest
 	public void testBuild() throws Exception
 	{
 		InputGeomImpl geom = new InputGeomImpl();
-		//		boolean loaded = geom.loadMesh("D:\\link\\study\\pathfinding\\test1\\recast\\RecastDemo\\Bin\\Meshes\\dungeon.obj");
-		//		boolean loaded = geom.loadMesh("D:\\work\\tests\\test1_v3\\recast\\RecastDemo\\Bin\\Meshes\\dungeon.obj");
-		//		boolean loaded = geom.loadMesh("D:\\link\\study\\pathfinding\\Recast_tests\\test1_v3_2\\recast\\RecastDemo\\Bin\\Meshes\\nav_test.obj");
-//		File file = new File("mesh/dungeon.obj");
 		URL source = RecastTest.class.getClassLoader().getResource("mesh/dungeon.obj");
 		File sourceFile = new File(source.toURI());
 		boolean loaded = geom.loadMesh(sourceFile);
@@ -34,8 +30,5 @@ public class RecastTest
 		sample.handleBuild();
 		assert sample.m_pmesh.nverts == 223;
 		assert sample.m_pmesh.npolys == 120;
-
-		//		Frame frame = new MainFrame(new DrawingApplet(geom), 800, 800);
-		//		new DrawingApplet(geom);
 	}
 }

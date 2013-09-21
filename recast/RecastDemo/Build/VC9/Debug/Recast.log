@@ -1,0 +1,71 @@
+﻿Build started 20.09.2013 21:47:45.
+     1>Project "D:\link\study\pathfinding\recast\recastnavigation-read-only\RecastDemo\Build\VC9\Recast.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Touching "Debug\Recast.unsuccessfulbuild".
+       ClCompile:
+         All outputs are up-to-date.
+         All outputs are up-to-date.
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"..\..\Bin\Recast.exe" /NOLOGO /LIBPATH:..\..\Contrib\SDL\lib opengl32.lib glu32.lib sdlmain.lib sdl.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\Recast.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"D:\link\study\pathfinding\recast\recastnavigation-read-only\RecastDemo\Bin\Recast.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"..\..\Bin\Recast.lib" /MACHINE:X86 /CLRTHREADATTRIBUTE:NONE Debug\Recast.obj
+         Debug\RecastAlloc.obj
+         Debug\RecastArea.obj
+         Debug\RecastContour.obj
+         Debug\RecastFilter.obj
+         Debug\RecastLayers.obj
+         Debug\RecastMesh.obj
+         Debug\RecastMeshDetail.obj
+         Debug\RecastRasterization.obj
+         Debug\RecastRegion.obj
+         Debug\DetourAlloc.obj
+         Debug\DetourCommon.obj
+         Debug\DetourNavMesh.obj
+         Debug\DetourNavMeshBuilder.obj
+         Debug\DetourNavMeshQuery.obj
+         Debug\DetourNode.obj
+         Debug\ChunkyTriMesh.obj
+         Debug\ConvexVolumeTool.obj
+         Debug\CrowdTool.obj
+         Debug\Filelist.obj
+         Debug\imgui.obj
+         Debug\imguiRenderGL.obj
+         Debug\InputGeom.obj
+         Debug\main.obj
+         Debug\MeshLoaderObj.obj
+         Debug\NavMeshPruneTool.obj
+         Debug\NavMeshTesterTool.obj
+         Debug\OffMeshConnectionTool.obj
+         Debug\PerfTimer.obj
+         Debug\Sample.obj
+         Debug\Sample_Debug.obj
+         Debug\Sample_SoloMesh.obj
+         Debug\Sample_TempObstacles.obj
+         Debug\Sample_TileMesh.obj
+         Debug\SampleInterfaces.obj
+         Debug\SlideShow.obj
+         Debug\TestCase.obj
+         Debug\ValueHistory.obj
+         Debug\DebugDraw.obj
+         Debug\DetourDebugDraw.obj
+         Debug\RecastDebugDraw.obj
+         Debug\RecastDump.obj
+         Debug\DetourCrowd.obj
+         Debug\DetourLocalBoundary.obj
+         Debug\DetourObstacleAvoidance.obj
+         Debug\DetourPathCorridor.obj
+         Debug\DetourPathQueue.obj
+         Debug\DetourProximityGrid.obj
+         Debug\fastlz.obj
+         Debug\DetourTileCache.obj
+         Debug\DetourTileCacheBuilder.obj
+     1>MSVCRTD.lib(cinitexe.obj) : warning LNK4098: defaultlib 'msvcrt.lib' conflicts with use of other libs; use /NODEFAULTLIB:library
+         Recast.vcxproj -> D:\link\study\pathfinding\recast\recastnavigation-read-only\RecastDemo\Build\VC9\..\..\Bin\Recast.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"..\..\Bin\Recast.exe;#1" /manifest Debug\Recast.exe.intermediate.manifest
+       FinalizeBuildStatus:
+         Deleting file "Debug\Recast.unsuccessfulbuild".
+         Touching "Debug\Recast.lastbuildstate".
+     1>Done Building Project "D:\link\study\pathfinding\recast\recastnavigation-read-only\RecastDemo\Build\VC9\Recast.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.17
