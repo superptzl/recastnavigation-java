@@ -1,5 +1,7 @@
 package org.recast.RecastDemo.Include;
 
+import java.io.File;
+
 /**
  * @author igozha
  * @since 18.09.13 20:23
@@ -68,7 +70,7 @@ public abstract class InputGeom
 //		InputGeom();
 //		~InputGeom();
 
-	public abstract boolean loadMesh(/*class rcContext* ctx, */String filepath);
+	public abstract boolean loadMesh(/*class rcContext* ctx, */File filepath);
 
 	public abstract boolean load(/*rcContext* ctx, */String filepath);
 	public abstract boolean save(String filepath);

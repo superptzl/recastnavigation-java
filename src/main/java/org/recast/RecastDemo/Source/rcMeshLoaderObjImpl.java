@@ -174,7 +174,7 @@ public class rcMeshLoaderObjImpl extends rcMeshLoaderObj
 		return i;
 	}
 	
-	public boolean load(String filename)
+	public boolean load(File file)
 	{
 //		char* buf = 0;
 //
@@ -197,8 +197,8 @@ public class rcMeshLoaderObjImpl extends rcMeshLoaderObj
 				int nv;
 				int vcap[] = new int[]{0};
 				int tcap[] = new int[]{0};
-		File fp = new File(filename);
-		try (BufferedReader br = new BufferedReader(new FileReader(fp)))
+//		File fp = new File(filename);
+		try (BufferedReader br = new BufferedReader(new FileReader(file)))
 		{
 
 			String line;
@@ -278,7 +278,7 @@ public class rcMeshLoaderObjImpl extends rcMeshLoaderObj
 				m_normals[i + 2] *= d;
 			}
 		}
-		m_filename = filename;
+//		m_filename = filename;
 //		strncpy(m_filename, filename, sizeof(m_filename));
 //		m_filename[sizeof(m_filename)-1] = '\0';
 		

@@ -1,5 +1,7 @@
 package org.recast.RecastDemo.Include;
 
+import java.io.File;
+
 /**
  * @author igozha
  * @since 18.09.13 20:27
@@ -33,7 +35,7 @@ public abstract class rcMeshLoaderObj
 //		rcMeshLoaderObj();
 //		~rcMeshLoaderObj();
 
-	public abstract boolean load(String fileName);
+	public abstract boolean load(File fileName);
 
 	public float[] getVerts()
 	{
@@ -60,10 +62,10 @@ public abstract class rcMeshLoaderObj
 		return m_triCount;
 	}
 
-	public String getFileName()
-	{
-		return m_filename;
-	}
+//	public String getFileName()
+//	{
+//		return m_filename;
+//	}
 
 //	private:
 
@@ -71,7 +73,7 @@ public abstract class rcMeshLoaderObj
 
 	public abstract void addTriangle(int a, int b, int c, int[] cap);
 
-	public String m_filename;
+//	public String m_filename;
 	public float m_scale;
 	public float[] m_verts;
 	public int[] m_tris;
