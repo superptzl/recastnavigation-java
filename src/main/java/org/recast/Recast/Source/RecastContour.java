@@ -194,33 +194,35 @@ public class RecastContour {
                                int px, int pz,
                                int qx, int qz)
     {
-/*	float pqx = (float)(qx - px);
-float pqy = (float)(qy - py);
-float pqz = (float)(qz - pz);
-float dx = (float)(x - px);
-float dy = (float)(y - py);
-float dz = (float)(z - pz);
-float d = pqx*pqx + pqy*pqy + pqz*pqz;
-float t = pqx*dx + pqy*dy + pqz*dz;
-if (d > 0)
-    t /= d;
-if (t < 0)
-    t = 0;
-else if (t > 1)
-    t = 1;
-
-dx = px + t*pqx - x;
-dy = py + t*pqy - y;
-dz = pz + t*pqz - z;
-
-return dx*dx + dy*dy + dz*dz;*/
-
         float pqx = (float)(qx - px);
         float pqz = (float)(qz - pz);
         float dx = (float)(x - px);
         float dz = (float)(z - pz);
         float d = pqx*pqx + pqz*pqz;
         float t = pqx*dx + pqz*dz;
+        if (d > 0)
+            t /= d;
+        if (t < 0)
+            t = 0;
+        else if (t > 1)
+            t = 1;
+
+        dx = px + t*pqx - x;
+        dz = pz + t*pqz - z;
+
+        return dx*dx + dz*dz;
+    }
+
+    static double distancePtSegDouble(int x, int z,
+                               int px, int pz,
+                               int qx, int qz)
+    {
+		double pqx = (double)(qx - px);
+		double pqz = (double)(qz - pz);
+		double dx = (double)(x - px);
+		double dz = (double)(z - pz);
+		double d = pqx*pqx + pqz*pqz;
+		double t = pqx*dx + pqz*dz;
         if (d > 0)
             t /= d;
         if (t < 0)
@@ -327,7 +329,7 @@ return dx*dx + dy*dy + dz*dz;*/
 			 int bi = simplified.m_data[ii*4+3];
 
 			// Find maximum deviation from the segment.
-			float maxd = 0;
+			double maxd = 0;
 			int maxi = -1;
 			int ci, cinc, endi;
 
@@ -353,7 +355,7 @@ return dx*dx + dy*dy + dz*dz;*/
 			{
 				while (ci != endi)
 				{
-					float d = distancePtSeg(points.m_data[ci*4+0], points.m_data[ci*4+2], ax, az, bx, bz);
+					double d = distancePtSegDouble(points.m_data[ci*4+0], points.m_data[ci*4+2], ax, az, bx, bz);
 					if (d > maxd)
 					{
 						maxd = d;

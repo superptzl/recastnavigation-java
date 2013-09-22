@@ -8,8 +8,13 @@ public abstract class Recast {
 /// The region id field of a vertex may have several flags applied to it.  So the
 /// fields value can't be used directly.
 /// @see rcContour::verts, rcContour::rverts
-//    public static final int RC_CONTOUR_REG_MASK = 0xffff;
-    public static final int RC_CONTOUR_REG_MASK = Integer.MAX_VALUE;
+    public static final int RC_CONTOUR_REG_MASK = 0xffff;
+//    public static final int RC_CONTOUR_REG_MASK = Integer.MAX_VALUE;
+	/// Area border flag.
+	/// If a region ID has this bit set, then the associated element lies on
+	/// the border of an area.
+	/// (Used during the region and contour build process.)
+	/// @see rcCompactSpan::reg, #rcContour::verts, #rcContour::rverts
     public static final int RC_AREA_BORDER = 0x20000;
     /// Border vertex flag.
 /// If a region ID has this bit set, then the associated element lies on
