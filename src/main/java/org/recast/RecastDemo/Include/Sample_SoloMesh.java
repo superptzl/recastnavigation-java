@@ -1,5 +1,6 @@
 package org.recast.RecastDemo.Include;
 
+import org.draw.DrawingApplet;
 import org.recast.Recast.Include.*;
 import org.recast.RecastDemo.Source.SampleImpl;
 
@@ -78,11 +79,13 @@ public abstract class Sample_SoloMesh extends SampleImpl {
 
     public abstract void handleDebugMode();
 
-    public abstract void handleRender();
+
 
     public abstract void handleRenderOverlay(double[] proj, double[] model, int[] view);*/
 
 //    public abstract void handleMeshChanged(InputGeom geom);
+
+	public abstract void handleRender(DrawingApplet drawing);
 
     public abstract boolean handleBuild();
 //};

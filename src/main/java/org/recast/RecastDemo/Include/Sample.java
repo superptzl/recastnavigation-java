@@ -1,11 +1,13 @@
 package org.recast.RecastDemo.Include;
 
+import org.recast.Detour.Include.dtNavMesh;
+import org.recast.Detour.Include.dtNavMeshQuery;
 import org.recast.Recast.Include.BuildContext;
 
 public abstract class Sample {
     public InputGeom m_geom;
-//    public dtNavMesh m_navMesh;
-//    public dtNavMeshQuery m_navQuery;
+    public dtNavMesh m_navMesh;
+    public dtNavMeshQuery m_navQuery;
 //    public dtCrowd m_crowd;
 
     public char m_navMeshDrawFlags;
@@ -53,8 +55,8 @@ public abstract class Sample {
 //    public abstract void handleUpdate(float dt);
 
     public InputGeom getInputGeom() { return m_geom; }
-//    public dtNavMesh getNavMesh() { return m_navMesh; }
-//    public dtNavMeshQuery getNavMeshQuery() { return m_navQuery; }
+    public dtNavMesh getNavMesh() { return m_navMesh; }
+    public dtNavMeshQuery getNavMeshQuery() { return m_navQuery; }
 //    public dtCrowd getCrowd() { return m_crowd; }
     public float getAgentRadius() { return m_agentRadius; }
     public float getAgentHeight() { return m_agentHeight; }

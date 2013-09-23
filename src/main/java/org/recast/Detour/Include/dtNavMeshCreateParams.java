@@ -1,5 +1,7 @@
 package org.recast.Detour.Include;
 
+/// Represents the source data used to build an navigation mesh tile.
+	/// @ingroup detour
 public class dtNavMeshCreateParams {
     /// @name Polygon Mesh Attributes
     /// Used to create the base navigation graph.
