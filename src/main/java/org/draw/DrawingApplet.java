@@ -5,7 +5,7 @@ import com.sun.j3d.utils.applet.MainFrame;
 import com.sun.j3d.utils.behaviors.keyboard.KeyNavigatorBehavior;
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
 import com.sun.j3d.utils.behaviors.mouse.MouseTranslate;
-import com.sun.j3d.utils.behaviors.mouse.MouseWheelZoom;
+//import com.sun.j3d.utils.behaviors.mouse.MouseWheelZoom;
 import com.sun.j3d.utils.geometry.Sphere;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 import org.recast.RecastDemo.Source.InputGeomImpl;
@@ -120,10 +120,10 @@ public class DrawingApplet extends Applet
 			MouseRotate behavior = new MouseRotate();
 			behavior.setTransformGroup(tg);
 			objTrans.addChild(behavior);
-			MouseWheelZoom zoom = new MouseWheelZoom();
-			zoom.setTransformGroup(tg);
-			objTrans.addChild(zoom);
-			zoom.setSchedulingBounds(bounds);
+//			MouseWheelZoom zoom = new MouseWheelZoom();
+//			zoom.setTransformGroup(tg);
+//			objTrans.addChild(zoom);
+//			zoom.setSchedulingBounds(bounds);
 			// Create the translate behavior node
 			MouseTranslate behavior3 = new MouseTranslate();
 			behavior3.setTransformGroup(tg);

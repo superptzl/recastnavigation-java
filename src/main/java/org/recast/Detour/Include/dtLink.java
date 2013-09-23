@@ -9,7 +9,7 @@ package org.recast.Detour.Include;
 /// @see dtMeshTile
 public class dtLink
 {
-	public dtPolyRef ref;					///< Neighbour reference. (The neighbor that is linked to.)
+	public dtPoly ref;					///< Neighbour reference. (The neighbor that is linked to.)
 	public int next;				///< Index of the next link.
 	public char edge;				///< Index of the polygon edge that owns this link.
 	public char side;				///< If a boundary link, defines on which side the link is.

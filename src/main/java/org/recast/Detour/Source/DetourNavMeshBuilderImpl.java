@@ -41,7 +41,7 @@ public class DetourNavMeshBuilderImpl extends DetourNavMeshBuilder
 //	#include "DetourAlloc.h"
 //	#include "DetourAssert.h"
 	
-	public final static int MESH_NULL_IDX = 0xffff;
+	public final static int MESH_NULL_IDX = Integer.MAX_VALUE;//0xffff;
 	public final static char XP = 1<<0;
 	public final static 			char ZP = 1<<1;
 	public final static char XM = 1<<2;
@@ -221,6 +221,7 @@ public class DetourNavMeshBuilderImpl extends DetourNavMeshBuilder
 		BVItem[] items = new BVItem[npolys];//(BVItem*)dtAlloc(sizeof(BVItem)*npolys, DT_ALLOC_TEMP);
 		for (int i = 0; i < npolys; i++)
 		{
+            items[i] = new BVItem();
 			BVItem it = items[i];
 			it.i = i;
 			// Calc polygon bounds.
@@ -309,14 +310,14 @@ public class DetourNavMeshBuilderImpl extends DetourNavMeshBuilder
 		
 		// Classify off-mesh connection points. We store only the connections
 		// whose start point is inside the tile.
-		char[] offMeshConClass;
+		char[] offMeshConClass = new char[params.offMeshConCount*2];
 		int storedOffMeshConCount = 0;
 		int offMeshConLinkCount = 0;
 		
 		if (params.offMeshConCount > 0)
 		{
 //			offMeshConClass = (char*)dtAlloc(sizeof(char)*params.offMeshConCount*2, DT_ALLOC_TEMP);
-			offMeshConClass = new char[params.offMeshConCount*2];
+//			offMeshConClass = ;
 //			if (!offMeshConClass)
 //				return false;
 	
@@ -464,6 +465,9 @@ public class DetourNavMeshBuilderImpl extends DetourNavMeshBuilder
 		}
 		meshTile.detailTris = new char[4*detailTriCount];
 		meshTile.bvTree = new dtBVNode[params.buildBvTree ? params.polyCount*2 : 0];
+        for (int i = 0; i < meshTile.bvTree.length; i++) {
+            meshTile.bvTree[i] = new dtBVNode();
+        }
 		meshTile.offMeshCons = new dtOffMeshConnection[storedOffMeshConCount];
 
 		// Store header
@@ -596,12 +600,14 @@ public class DetourNavMeshBuilderImpl extends DetourNavMeshBuilder
 				// Copy vertices except the first 'nv' verts which are equal to nav poly verts.
 				if ((ndv-nv) != 0)
 				{
-					memcpy(&navDVerts[vbase*3], &params.detailVerts[(vb+nv)*3], sizeof(float)*3*(ndv-nv));
+//					memcpy(&navDVerts[vbase*3], &params.detailVerts[(vb+nv)*3], sizeof(float)*3*(ndv-nv));
+                    System.arraycopy(params.detailVerts, (vb+nv)*3, meshTile.detailVerts, vbase*3, 3*(ndv-nv));
 					vbase += (int)(ndv-nv);
 				}
 			}
 			// Store triangles.
-			memcpy(navDTris, params.detailTris, sizeof(char)*4*params.detailTriCount);
+//			memcpy(navDTris, params.detailTris, sizeof(char)*4*params.detailTriCount);
+            System.arraycopy(params.detailTris, 0, meshTile.detailTris, 0, 4*params.detailTriCount);
 		}
 		else
 		{

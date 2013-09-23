@@ -7,9 +7,9 @@ package org.recast.Detour.Include;
 /// @ingroup detour
 public abstract class dtQueryFilter
 {
-	float m_areaCost[] = new float[DetourNavMesh.dtTileFlags.DT_MAX_AREAS];		///< Cost per area type. (Used by default implementation.)
-	int m_includeFlags;		///< Flags for polygons that can be visited. (Used by default implementation.)
-	int m_excludeFlags;		///< Flags for polygons that should not be visted. (Used by default implementation.)
+    public 	float m_areaCost[] = new float[DetourNavMesh.dtTileFlags.DT_MAX_AREAS];		///< Cost per area type. (Used by default implementation.)
+	public int m_includeFlags;		///< Flags for polygons that can be visited. (Used by default implementation.)
+    public int m_excludeFlags;		///< Flags for polygons that should not be visted. (Used by default implementation.)
 
 //public:
 //	dtQueryFilter();
@@ -19,11 +19,11 @@ public abstract class dtQueryFilter
 	///  @param[in]		tile	The tile containing the polygon.
 	///  @param[in]		poly  The polygon to test.
 //#ifdef DT_VIRTUAL_QUERYFILTER
-//	virtual bool passFilter(dtPolyRef ref,
+//	virtual bool passFilter(dtPoly ref,
 //							dtMeshTile*tile,
 //							dtPoly*poly) ;
 //#else
-	public abstract boolean passFilter(dtPolyRef ref,
+	public abstract boolean passFilter(dtPoly ref,
 					dtMeshTile tile,
 					dtPoly poly) ;
 //#endif
@@ -43,14 +43,14 @@ public abstract class dtQueryFilter
 	///  @param[in]		nextPoly	The next polygon. [opt]
 //#ifdef DT_VIRTUAL_QUERYFILTER
 //	virtual float getCost(float* pa, float* pb,
-//						  dtPolyRef prevRef, dtMeshTile* prevTile, dtPoly* prevPoly,
-//						  dtPolyRef curRef, dtMeshTile* curTile, dtPoly* curPoly,
-//						  dtPolyRef nextRef, dtMeshTile* nextTile, dtPoly* nextPoly) ;
+//						  dtPoly prevRef, dtMeshTile* prevTile, dtPoly* prevPoly,
+//						  dtPoly curRef, dtMeshTile* curTile, dtPoly* curPoly,
+//						  dtPoly nextRef, dtMeshTile* nextTile, dtPoly* nextPoly) ;
 //#else
-	float getCost(float[] pa, float[] pb,
-				  dtPolyRef prevRef, dtMeshTile prevTile, dtPoly prevPoly,
-				  dtPolyRef curRef, dtMeshTile curTile, dtPoly curPoly,
-				  dtPolyRef nextRef, dtMeshTile nextTile, dtPoly nextPoly) ;
+    public abstract float getCost(float[] pa, float[] pb,
+				  dtPoly prevRef, dtMeshTile prevTile, dtPoly prevPoly,
+				  dtPoly curRef, dtMeshTile curTile, dtPoly curPoly,
+				  dtPoly nextRef, dtMeshTile nextTile, dtPoly nextPoly) ;
 //#endif
 
 	/// @name Getters and setters for the default implementation data.

@@ -30,9 +30,9 @@ public class dtStatus
 	public int dtStatus;
 	
 	// High level status.
-	public final static int DT_FAILURE = 1u << 31;			// Operation failed.
-	public final static int DT_SUCCESS = 1u << 30;			// Operation succeed.
-	public final static int DT_IN_PROGRESS = 1u << 29;		// Operation still in progress.
+	public final static int DT_FAILURE = Integer.valueOf("100000000000000000000000000000", 2);//1u << 31;			// Operation failed.
+	public final static int DT_SUCCESS = Integer.valueOf("010000000000000000000000000000", 2);//1u << 30;			// Operation succeed.
+	public final static int DT_IN_PROGRESS = Integer.valueOf("001000000000000000000000000000", 2);//1u << 29;		// Operation still in progress.
 	
 	// Detail information for status.
 	public final static int DT_STATUS_DETAIL_MASK = 0x0ffffff;
@@ -43,9 +43,15 @@ public class dtStatus
 	public final static int DT_BUFFER_TOO_SMALL = 1 << 4;	// Result buffer for the query was too small to store all results.
 	public final static int DT_OUT_OF_NODES = 1 << 5;		// Query ran out of nodes during search.
 	public final static int DT_PARTIAL_RESULT = 1 << 6;	// Query did not reach the end location, returning best guess. 
-	
-	
-	// Returns true of status is success.
+
+    public dtStatus(int dtStatus) {
+        this.dtStatus = dtStatus;
+    }
+
+    public dtStatus() {
+    }
+
+    // Returns true of status is success.
 	public static boolean dtStatusSucceed(dtStatus status)
 	{
 		return (status.dtStatus & DT_SUCCESS) != 0;

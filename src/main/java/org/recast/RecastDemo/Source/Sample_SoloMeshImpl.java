@@ -4,6 +4,7 @@ import org.draw.DrawingApplet;
 import org.recast.Detour.Include.*;
 import org.recast.Detour.Source.DetourNavMeshBuilderImpl;
 import org.recast.Detour.Source.dtNavMeshImpl;
+import org.recast.Detour.Source.dtNavMeshQueryImpl;
 import org.recast.Recast.Include.*;
 import org.recast.Recast.Source.RecastDump;
 import org.recast.Recast.Source.RecastImpl;
@@ -653,7 +654,7 @@ public void handleRender(DrawingApplet drawing)
 
 			dtStatus status;
 
-			status = m_navMesh.init(header, meshTile, DetourNavMesh.dtTileFlags.DT_TILE_FREE_DATA);
+			status = m_navMesh.init(header, DetourNavMesh.dtTileFlags.DT_TILE_FREE_DATA);
 			if (dtStatus.dtStatusFailed(status))
 			{
 //				dtFree(navData);
@@ -661,6 +662,7 @@ public void handleRender(DrawingApplet drawing)
 				return false;
 			}
 
+            m_navQuery = new dtNavMeshQueryImpl();
 			status = m_navQuery.init(m_navMesh, 2048);
 			if (dtStatus.dtStatusFailed(status))
 			{

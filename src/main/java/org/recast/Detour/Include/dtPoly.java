@@ -13,10 +13,10 @@ public class dtPoly
 
 	/// The indices of the polygon's vertices.
 	/// The actual vertices are located in dtMeshTile::verts.
-	public int verts[] = new int[]{DetourNavMesh.DT_VERTS_PER_POLYGON};
+	public int verts[] = new int[DetourNavMesh.DT_VERTS_PER_POLYGON];
 
 	/// Packed data representing neighbor polygons references and flags for each edge.
-	public int neis[] = new int[]{DetourNavMesh.DT_VERTS_PER_POLYGON};
+	public int neis[] = new int[DetourNavMesh.DT_VERTS_PER_POLYGON];
 
 	/// The user defined polygon flags.
 	public int flags;

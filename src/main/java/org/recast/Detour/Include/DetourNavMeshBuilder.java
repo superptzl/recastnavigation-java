@@ -1,10 +1,12 @@
 package org.recast.Detour.Include;
 
+import org.recast.Detour.Source.DetourCommonImpl;
+
 /**
  * @author igozha
  * @since 22.09.13 20:44
  */
-public abstract class DetourNavMeshBuilder extends DetourCommon
+public abstract class DetourNavMeshBuilder extends DetourCommonImpl
 {
 	//
 	// Copyright (c) 2009-2010 Mikko Mononen memon@inside.org

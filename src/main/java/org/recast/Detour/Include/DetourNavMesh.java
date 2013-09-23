@@ -39,4 +39,17 @@ public abstract class DetourNavMesh
 		/// @ingroup detour
 		public final static int DT_MAX_AREAS = 64;
 	}
+//
+//    /// Extracts the tile's index from the specified polygon reference.
+//    ///  @note This function is generally meant for internal use only.
+//    ///  @param[in]	ref		The polygon reference.
+//    ///  @see #encodePolyId
+//    public static int decodePolyIdTile(dtPoly ref)
+//    {
+//        const dtPolyRef tileMask = ((dtPolyRef)1<<m_tileBits)-1;
+//        return (unsigned int)((ref >> m_polyBits) & tileMask);
+//    }
+    /// The maximum number of user defined area ids.
+/// @ingroup detour
+    public final static int DT_MAX_AREAS = 64;
 }

@@ -27,8 +27,8 @@ public class dtMeshTile
 
 	public dtOffMeshConnection[] offMeshCons;        ///< The tile off-mesh connections. [Size: dtMeshHeader::offMeshConCount]
 
-	public char[] data;                    ///< The tile data. (Not directly accessed under normal situations.)
-	public int dataSize;                            ///< Size of the tile data.
+//	public char[] data;                    ///< The tile data. (Not directly accessed under normal situations.)
+//	public int dataSize;                            ///< Size of the tile data.
 	public int flags;                                ///< Tile flags. (See: #dtTileFlags)
 	public dtMeshTile next;                        ///< The next free tile, or the next tile in the spatial grid.
 }

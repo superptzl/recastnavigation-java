@@ -1,6 +1,6 @@
 package org.recast.Detour.Source;
 
-import org.recast.Detour.Include.dtNavMeshQuery;
+import org.recast.Detour.Include.*;
 
 /**
  * @author igozha
@@ -25,17 +25,17 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	//    misrepresented as being the original software.
 	// 3. This notice may not be removed or altered from any source distribution.
 	//
-
-	#include <math.h>
-	#include <float.h>
-	#include <string.h>
-	#include "DetourNavMeshQuery.h"
-	#include "DetourNavMesh.h"
-	#include "DetourNode.h"
-	#include "DetourCommon.h"
-	#include "DetourAlloc.h"
-	#include "DetourAssert.h"
-	#include <new>
+//
+//	#include <math.h>
+//	#include <float.h>
+//	#include <string.h>
+//	#include "DetourNavMeshQuery.h"
+//	#include "DetourNavMesh.h"
+//	#include "DetourNode.h"
+//	#include "DetourCommon.h"
+//	#include "DetourAlloc.h"
+//	#include "DetourAssert.h"
+//	#include <new>
 
 	/// @class dtQueryFilter
 	///
@@ -70,62 +70,62 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	///
 	/// @see dtNavMeshQuery
 
-	dtQueryFilter::dtQueryFilter() :
-		m_includeFlags(0xffff),
-		m_excludeFlags(0)
+	public dtNavMeshQueryImpl()
 	{
-		for (int i = 0; i < DT_MAX_AREAS; ++i)
-			m_areaCost[i] = 1.0f;
+//        m_includeFlags = 0xffff;
+//        m_excludeFlags(0)
+//		for (int i = 0; i < DetourNavMesh.DT_MAX_AREAS; ++i)
+//			m_areaCost[i] = 1.0f;
 	}
 
-	#ifdef DT_VIRTUAL_QUERYFILTER
-	bool dtQueryFilter::passFilter(const dtPolyRef /*ref*/,
-								   const dtMeshTile* /*tile*/,
+//	#ifdef DT_VIRTUAL_QUERYFILTER
+	/*bool passFilter(const dtPoly *//*ref*//*,
+								   const dtMeshTile* *//*tile*//*,
 								   const dtPoly* poly) const
 	{
-		return (poly->flags & m_includeFlags) != 0 && (poly->flags & m_excludeFlags) == 0;
+		return (poly.flags & m_includeFlags) != 0 && (poly.flags & m_excludeFlags) == 0;
 	}
 
-	float dtQueryFilter::getCost(const float* pa, const float* pb,
-								 const dtPolyRef /*prevRef*/, const dtMeshTile* /*prevTile*/, const dtPoly* /*prevPoly*/,
-								 const dtPolyRef /*curRef*/, const dtMeshTile* /*curTile*/, const dtPoly* curPoly,
-								 const dtPolyRef /*nextRef*/, const dtMeshTile* /*nextTile*/, const dtPoly* /*nextPoly*/) const
+	float getCost(const float* pa, const float* pb,
+								 const dtPoly *//*prevRef*//*, const dtMeshTile* *//*prevTile*//*, const dtPoly* *//*prevPoly*//*,
+								 const dtPoly *//*curRef*//*, const dtMeshTile* *//*curTile*//*, const dtPoly* curPoly,
+								 const dtPoly *//*nextRef*//*, const dtMeshTile* *//*nextTile*//*, const dtPoly* *//*nextPoly*//*) const
 	{
-		return dtVdist(pa, pb) * m_areaCost[curPoly->getArea()];
-	}
-	#else
-	inline bool dtQueryFilter::passFilter(const dtPolyRef /*ref*/,
-										  const dtMeshTile* /*tile*/,
-										  const dtPoly* poly) const
-	{
-		return (poly->flags & m_includeFlags) != 0 && (poly->flags & m_excludeFlags) == 0;
-	}
+		return dtVdist(pa, pb) * m_areaCost[curPoly.getArea()];
+	}*/
+//	#else
+//	inline bool passFilter(const dtPoly /*ref*/,
+//										  const dtMeshTile* /*tile*/,
+//										  const dtPoly* poly) const
+//	{
+//		return (poly.flags & m_includeFlags) != 0 && (poly.flags & m_excludeFlags) == 0;
+//	}
+//
+//	inline float getCost(const float* pa, const float* pb,
+//										const dtPoly /*prevRef*/, const dtMeshTile* /*prevTile*/, const dtPoly* /*prevPoly*/,
+//										const dtPoly /*curRef*/, const dtMeshTile* /*curTile*/, const dtPoly* curPoly,
+//										const dtPoly /*nextRef*/, const dtMeshTile* /*nextTile*/, const dtPoly* /*nextPoly*/) const
+//	{
+//		return dtVdist(pa, pb) * m_areaCost[curPoly.getArea()];
+//	}
+//	#endif
 
-	inline float dtQueryFilter::getCost(const float* pa, const float* pb,
-										const dtPolyRef /*prevRef*/, const dtMeshTile* /*prevTile*/, const dtPoly* /*prevPoly*/,
-										const dtPolyRef /*curRef*/, const dtMeshTile* /*curTile*/, const dtPoly* curPoly,
-										const dtPolyRef /*nextRef*/, const dtMeshTile* /*nextTile*/, const dtPoly* /*nextPoly*/) const
-	{
-		return dtVdist(pa, pb) * m_areaCost[curPoly->getArea()];
-	}
-	#endif
+	public static float H_SCALE = 0.999f; // Search heuristic scale.
 
-	static const float H_SCALE = 0.999f; // Search heuristic scale.
-
-
-	dtNavMeshQuery* dtAllocNavMeshQuery()
-	{
-		void* mem = dtAlloc(sizeof(dtNavMeshQuery), DT_ALLOC_PERM);
-		if (!mem) return 0;
-		return new(mem) dtNavMeshQuery;
-	}
-
-	void dtFreeNavMeshQuery(dtNavMeshQuery* navmesh)
-	{
-		if (!navmesh) return;
-		navmesh->~dtNavMeshQuery();
-		dtFree(navmesh);
-	}
+//
+//	dtNavMeshQuery* dtAllocNavMeshQuery()
+//	{
+//		void* mem = dtAlloc(sizeof(dtNavMeshQuery), DT_ALLOC_PERM);
+//		if (!mem) return 0;
+//		return new(mem) dtNavMeshQuery;
+//	}
+//
+//	void dtFreeNavMeshQuery(dtNavMeshQuery* navmesh)
+//	{
+//		if (!navmesh) return;
+//		navmesh.~dtNavMeshQuery();
+//		dtFree(navmesh);
+//	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////
 
@@ -145,27 +145,28 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	///
 	/// @see dtNavMesh, dtQueryFilter, #dtAllocNavMeshQuery(), #dtAllocNavMeshQuery()
 
-	dtNavMeshQuery::dtNavMeshQuery() :
-		m_nav(0),
-		m_tinyNodePool(0),
-		m_nodePool(0),
-		m_openList(0)
-	{
-		memset(&m_query, 0, sizeof(dtQueryData));
-	}
+//	dtNavMeshQuery()
+//	{
+//        :
+//        m_nav(0),
+//                m_tinyNodePool(0),
+//                m_nodePool(0),
+//                m_openList(0)
+//		memset(&m_query, 0, sizeof(dtQueryData));
+//	}
 
-	dtNavMeshQuery::~dtNavMeshQuery()
-	{
-		if (m_tinyNodePool)
-			m_tinyNodePool->~dtNodePool();
-		if (m_nodePool)
-			m_nodePool->~dtNodePool();
-		if (m_openList)
-			m_openList->~dtNodeQueue();
-		dtFree(m_tinyNodePool);
-		dtFree(m_nodePool);
-		dtFree(m_openList);
-	}
+//	~dtNavMeshQuery()
+//	{
+//		if (m_tinyNodePool)
+//			m_tinyNodePool.~dtNodePool();
+//		if (m_nodePool)
+//			m_nodePool.~dtNodePool();
+//		if (m_openList)
+//			m_openList.~dtNodeQueue();
+//		dtFree(m_tinyNodePool);
+//		dtFree(m_nodePool);
+//		dtFree(m_openList);
+//	}
 
 	/// @par
 	///
@@ -173,71 +174,72 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	/// functions are used.
 	///
 	/// This function can be used multiple times.
-	dtStatus dtNavMeshQuery::init(const dtNavMesh* nav, const int maxNodes)
+	public dtStatus init(dtNavMesh nav, int maxNodes)
 	{
 		m_nav = nav;
 
-		if (!m_nodePool || m_nodePool->getMaxNodes() < maxNodes)
+		if (m_nodePool == null|| m_nodePool.getMaxNodes() < maxNodes)
 		{
-			if (m_nodePool)
+//			if (m_nodePool)
 			{
-				m_nodePool->~dtNodePool();
-				dtFree(m_nodePool);
-				m_nodePool = 0;
+//				m_nodePool.~dtNodePool();
+//				dtFree(m_nodePool);
+//				m_nodePool = 0;
 			}
-			m_nodePool = new (dtAlloc(sizeof(dtNodePool), DT_ALLOC_PERM)) dtNodePool(maxNodes, dtNextPow2(maxNodes/4));
-			if (!m_nodePool)
-				return DT_FAILURE | DT_OUT_OF_MEMORY;
+//			m_nodePool = new (dtAlloc(sizeof(dtNodePool), DT_ALLOC_PERM)) dtNodePool(maxNodes, dtNextPow2(maxNodes/4));
+			m_nodePool = new dtNodePoolImpl(maxNodes, DetourCommon.dtNextPow2(maxNodes / 4));
+//			if (!m_nodePool)
+//				return DT_FAILURE | DT_OUT_OF_MEMORY;
 		}
 		else
 		{
-			m_nodePool->clear();
+			m_nodePool.clear();
 		}
 
-		if (!m_tinyNodePool)
+		if (m_tinyNodePool == null)
 		{
-			m_tinyNodePool = new (dtAlloc(sizeof(dtNodePool), DT_ALLOC_PERM)) dtNodePool(64, 32);
-			if (!m_tinyNodePool)
-				return DT_FAILURE | DT_OUT_OF_MEMORY;
+			m_tinyNodePool = new dtNodePoolImpl(64, 32);
+//			if (!m_tinyNodePool)
+//				return DT_FAILURE | DT_OUT_OF_MEMORY;
 		}
 		else
 		{
-			m_tinyNodePool->clear();
+			m_tinyNodePool.clear();
 		}
 
 		// TODO: check the open list size too.
-		if (!m_openList || m_openList->getCapacity() < maxNodes)
+		if (m_openList == null || m_openList.getCapacity() < maxNodes)
 		{
-			if (m_openList)
+			if (m_openList != null)
 			{
-				m_openList->~dtNodeQueue();
-				dtFree(m_openList);
-				m_openList = 0;
+				m_openList = null;//.~dtNodeQueue();
+//				dtFree(m_openList);
+//				m_openList = 0;
 			}
-			m_openList = new (dtAlloc(sizeof(dtNodeQueue), DT_ALLOC_PERM)) dtNodeQueue(maxNodes);
-			if (!m_openList)
-				return DT_FAILURE | DT_OUT_OF_MEMORY;
+			m_openList = new dtNodeQueueImpl(maxNodes);
+//			if (!m_openList)
+//				return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_OUT_OF_MEMORY);
 		}
 		else
 		{
-			m_openList->clear();
+			m_openList.clear();
 		}
 
-		return DT_SUCCESS;
+		return new dtStatus(dtStatus.DT_SUCCESS);
 	}
 
-	dtStatus dtNavMeshQuery::findRandomPoint(const dtQueryFilter* filter, float (*frand)(),
-											 dtPolyRef* randomRef, float* randomPt) const
+	/*dtStatus findRandomPoint(const dtQueryFilter* filter, float (*frand)(),
+											 dtPoly* randomRef, float* randomPt) const
 	{
 		dtAssert(m_nav);
 
 		// Randomly pick one tile. Assume that all tiles cover roughly the same area.
 		const dtMeshTile* tile = 0;
 		float tsum = 0.0f;
-		for (int i = 0; i < m_nav->getMaxTiles(); i++)
+		for (int i = 0; i < m_nav.getMaxTiles(); i++)
 		{
-			const dtMeshTile* t = m_nav->getTile(i);
-			if (!t || !t->header) continue;
+			const dtMeshTile* t = m_nav.getTile(i);
+			if (!t || !t.header) continue;
 
 			// Choose random tile using reservoi sampling.
 			const float area = 1.0f; // Could be tile area too.
@@ -251,28 +253,28 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 
 		// Randomly pick one polygon weighted by polygon area.
 		const dtPoly* poly = 0;
-		dtPolyRef polyRef = 0;
-		const dtPolyRef base = m_nav->getPolyRefBase(tile);
+		dtPoly polyRef = 0;
+		const dtPoly base = m_nav.getPolyRefBase(tile);
 
 		float areaSum = 0.0f;
-		for (int i = 0; i < tile->header->polyCount; ++i)
+		for (int i = 0; i < tile.header.polyCount; ++i)
 		{
-			const dtPoly* p = &tile->polys[i];
+			const dtPoly* p = &tile.polys[i];
 			// Do not return off-mesh connection polygons.
-			if (p->getType() != DT_POLYTYPE_GROUND)
+			if (p.getType() != DT_POLYTYPE_GROUND)
 				continue;
 			// Must pass filter
-			const dtPolyRef ref = base | (dtPolyRef)i;
-			if (!filter->passFilter(ref, tile, p))
+			const dtPoly ref = base | (dtPoly)i;
+			if (!filter.passFilter(ref, tile, p))
 				continue;
 
 			// Calc area of the polygon.
 			float polyArea = 0.0f;
-			for (int j = 2; j < p->vertCount; ++j)
+			for (int j = 2; j < p.vertCount; ++j)
 			{
-				const float* va = &tile->verts[p->verts[0]*3];
-				const float* vb = &tile->verts[p->verts[j-1]*3];
-				const float* vc = &tile->verts[p->verts[j]*3];
+				const float* va = &tile.verts[p.verts[0]*3];
+				const float* vb = &tile.verts[p.verts[j-1]*3];
+				const float* vc = &tile.verts[p.verts[j]*3];
 				polyArea += dtTriArea2D(va,vb,vc);
 			}
 
@@ -290,13 +292,13 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			return DT_FAILURE;
 
 		// Randomly pick point on polygon.
-		const float* v = &tile->verts[poly->verts[0]*3];
+		const float* v = &tile.verts[poly.verts[0]*3];
 		float verts[3*DT_VERTS_PER_POLYGON];
 		float areas[DT_VERTS_PER_POLYGON];
 		dtVcopy(&verts[0*3],v);
-		for (int j = 1; j < poly->vertCount; ++j)
+		for (int j = 1; j < poly.vertCount; ++j)
 		{
-			v = &tile->verts[poly->verts[j]*3];
+			v = &tile.verts[poly.verts[j]*3];
 			dtVcopy(&verts[j*3],v);
 		}
 
@@ -304,7 +306,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		const float t = frand();
 
 		float pt[3];
-		dtRandomPointInConvexPoly(verts, poly->vertCount, areas, s, t, pt);
+		dtRandomPointInConvexPoly(verts, poly.vertCount, areas, s, t, pt);
 
 		float h = 0.0f;
 		dtStatus status = getPolyHeight(polyRef, pt, &h);
@@ -318,35 +320,35 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		return DT_SUCCESS;
 	}
 
-	dtStatus dtNavMeshQuery::findRandomPointAroundCircle(dtPolyRef startRef, const float* centerPos, const float radius,
+	dtStatus findRandomPointAroundCircle(dtPoly startRef, const float* centerPos, const float radius,
 														 const dtQueryFilter* filter, float (*frand)(),
-														 dtPolyRef* randomRef, float* randomPt) const
+														 dtPoly* randomRef, float* randomPt) const
 	{
 		dtAssert(m_nav);
 		dtAssert(m_nodePool);
 		dtAssert(m_openList);
 
 		// Validate input
-		if (!startRef || !m_nav->isValidPolyRef(startRef))
+		if (!startRef || !m_nav.isValidPolyRef(startRef))
 			return DT_FAILURE | DT_INVALID_PARAM;
 
 		const dtMeshTile* startTile = 0;
 		const dtPoly* startPoly = 0;
-		m_nav->getTileAndPolyByRefUnsafe(startRef, &startTile, &startPoly);
-		if (!filter->passFilter(startRef, startTile, startPoly))
+		m_nav.getTileAndPolyByRefUnsafe(startRef, &startTile, &startPoly);
+		if (!filter.passFilter(startRef, startTile, startPoly))
 			return DT_FAILURE | DT_INVALID_PARAM;
 
-		m_nodePool->clear();
-		m_openList->clear();
+		m_nodePool.clear();
+		m_openList.clear();
 
-		dtNode* startNode = m_nodePool->getNode(startRef);
-		dtVcopy(startNode->pos, centerPos);
-		startNode->pidx = 0;
-		startNode->cost = 0;
-		startNode->total = 0;
-		startNode->id = startRef;
-		startNode->flags = DT_NODE_OPEN;
-		m_openList->push(startNode);
+		dtNode* startNode = m_nodePool.getNode(startRef);
+		dtVcopy(startNode.pos, centerPos);
+		startNode.pidx = 0;
+		startNode.cost = 0;
+		startNode.total = 0;
+		startNode.id = startRef;
+		startNode.flags = DT_NODE_OPEN;
+		m_openList.push(startNode);
 
 		dtStatus status = DT_SUCCESS;
 
@@ -355,31 +357,31 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 
 		const dtMeshTile* randomTile = 0;
 		const dtPoly* randomPoly = 0;
-		dtPolyRef randomPolyRef = 0;
+		dtPoly randomPolyRef = 0;
 
-		while (!m_openList->empty())
+		while (!m_openList.empty())
 		{
-			dtNode* bestNode = m_openList->pop();
-			bestNode->flags &= ~DT_NODE_OPEN;
-			bestNode->flags |= DT_NODE_CLOSED;
+			dtNode* bestNode = m_openList.pop();
+			bestNode.flags &= ~DT_NODE_OPEN;
+			bestNode.flags |= DT_NODE_CLOSED;
 
 			// Get poly and tile.
 			// The API input has been cheked already, skip checking internal data.
-			const dtPolyRef bestRef = bestNode->id;
+			const dtPoly bestRef = bestNode.id;
 			const dtMeshTile* bestTile = 0;
 			const dtPoly* bestPoly = 0;
-			m_nav->getTileAndPolyByRefUnsafe(bestRef, &bestTile, &bestPoly);
+			m_nav.getTileAndPolyByRefUnsafe(bestRef, &bestTile, &bestPoly);
 
 			// Place random locations on on ground.
-			if (bestPoly->getType() == DT_POLYTYPE_GROUND)
+			if (bestPoly.getType() == DT_POLYTYPE_GROUND)
 			{
 				// Calc area of the polygon.
 				float polyArea = 0.0f;
-				for (int j = 2; j < bestPoly->vertCount; ++j)
+				for (int j = 2; j < bestPoly.vertCount; ++j)
 				{
-					const float* va = &bestTile->verts[bestPoly->verts[0]*3];
-					const float* vb = &bestTile->verts[bestPoly->verts[j-1]*3];
-					const float* vc = &bestTile->verts[bestPoly->verts[j]*3];
+					const float* va = &bestTile.verts[bestPoly.verts[0]*3];
+					const float* vb = &bestTile.verts[bestPoly.verts[j-1]*3];
+					const float* vc = &bestTile.verts[bestPoly.verts[j]*3];
 					polyArea += dtTriArea2D(va,vb,vc);
 				}
 				// Choose random polygon weighted by area, using reservoi sampling.
@@ -395,18 +397,18 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 
 
 			// Get parent poly and tile.
-			dtPolyRef parentRef = 0;
+			dtPoly parentRef = 0;
 			const dtMeshTile* parentTile = 0;
 			const dtPoly* parentPoly = 0;
-			if (bestNode->pidx)
-				parentRef = m_nodePool->getNodeAtIdx(bestNode->pidx)->id;
+			if (bestNode.pidx)
+				parentRef = m_nodePool.getNodeAtIdx(bestNode.pidx).id;
 			if (parentRef)
-				m_nav->getTileAndPolyByRefUnsafe(parentRef, &parentTile, &parentPoly);
+				m_nav.getTileAndPolyByRefUnsafe(parentRef, &parentTile, &parentPoly);
 
-			for (unsigned int i = bestPoly->firstLink; i != DT_NULL_LINK; i = bestTile->links[i].next)
+			for (unsigned int i = bestPoly.firstLink; i != DT_NULL_LINK; i = bestTile.links[i].next)
 			{
-				const dtLink* link = &bestTile->links[i];
-				dtPolyRef neighbourRef = link->ref;
+				const dtLink* link = &bestTile.links[i];
+				dtPoly neighbourRef = link.ref;
 				// Skip invalid neighbours and do not follow back to parent.
 				if (!neighbourRef || neighbourRef == parentRef)
 					continue;
@@ -414,10 +416,10 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 				// Expand to neighbour
 				const dtMeshTile* neighbourTile = 0;
 				const dtPoly* neighbourPoly = 0;
-				m_nav->getTileAndPolyByRefUnsafe(neighbourRef, &neighbourTile, &neighbourPoly);
+				m_nav.getTileAndPolyByRefUnsafe(neighbourRef, &neighbourTile, &neighbourPoly);
 
 				// Do not advance if the polygon is excluded by the filter.
-				if (!filter->passFilter(neighbourRef, neighbourTile, neighbourPoly))
+				if (!filter.passFilter(neighbourRef, neighbourTile, neighbourPoly))
 					continue;
 
 				// Find edge and calc distance to the edge.
@@ -431,39 +433,39 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 				if (distSqr > radiusSqr)
 					continue;
 
-				dtNode* neighbourNode = m_nodePool->getNode(neighbourRef);
+				dtNode* neighbourNode = m_nodePool.getNode(neighbourRef);
 				if (!neighbourNode)
 				{
 					status |= DT_OUT_OF_NODES;
 					continue;
 				}
 
-				if (neighbourNode->flags & DT_NODE_CLOSED)
+				if (neighbourNode.flags & DT_NODE_CLOSED)
 					continue;
 
 				// Cost
-				if (neighbourNode->flags == 0)
-					dtVlerp(neighbourNode->pos, va, vb, 0.5f);
+				if (neighbourNode.flags == 0)
+					dtVlerp(neighbourNode.pos, va, vb, 0.5f);
 
-				const float total = bestNode->total + dtVdist(bestNode->pos, neighbourNode->pos);
+				const float total = bestNode.total + dtVdist(bestNode.pos, neighbourNode.pos);
 
 				// The node is already in open list and the new result is worse, skip.
-				if ((neighbourNode->flags & DT_NODE_OPEN) && total >= neighbourNode->total)
+				if ((neighbourNode.flags & DT_NODE_OPEN) && total >= neighbourNode.total)
 					continue;
 
-				neighbourNode->id = neighbourRef;
-				neighbourNode->flags = (neighbourNode->flags & ~DT_NODE_CLOSED);
-				neighbourNode->pidx = m_nodePool->getNodeIdx(bestNode);
-				neighbourNode->total = total;
+				neighbourNode.id = neighbourRef;
+				neighbourNode.flags = (neighbourNode.flags & ~DT_NODE_CLOSED);
+				neighbourNode.pidx = m_nodePool.getNodeIdx(bestNode);
+				neighbourNode.total = total;
 
-				if (neighbourNode->flags & DT_NODE_OPEN)
+				if (neighbourNode.flags & DT_NODE_OPEN)
 				{
-					m_openList->modify(neighbourNode);
+					m_openList.modify(neighbourNode);
 				}
 				else
 				{
-					neighbourNode->flags = DT_NODE_OPEN;
-					m_openList->push(neighbourNode);
+					neighbourNode.flags = DT_NODE_OPEN;
+					m_openList.push(neighbourNode);
 				}
 			}
 		}
@@ -472,13 +474,13 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			return DT_FAILURE;
 
 		// Randomly pick point on polygon.
-		const float* v = &randomTile->verts[randomPoly->verts[0]*3];
+		const float* v = &randomTile.verts[randomPoly.verts[0]*3];
 		float verts[3*DT_VERTS_PER_POLYGON];
 		float areas[DT_VERTS_PER_POLYGON];
 		dtVcopy(&verts[0*3],v);
-		for (int j = 1; j < randomPoly->vertCount; ++j)
+		for (int j = 1; j < randomPoly.vertCount; ++j)
 		{
-			v = &randomTile->verts[randomPoly->verts[j]*3];
+			v = &randomTile.verts[randomPoly.verts[j]*3];
 			dtVcopy(&verts[j*3],v);
 		}
 
@@ -486,7 +488,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		const float t = frand();
 
 		float pt[3];
-		dtRandomPointInConvexPoly(verts, randomPoly->vertCount, areas, s, t, pt);
+		dtRandomPointInConvexPoly(verts, randomPoly.vertCount, areas, s, t, pt);
 
 		float h = 0.0f;
 		dtStatus stat = getPolyHeight(randomPolyRef, pt, &h);
@@ -498,7 +500,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		*randomRef = randomPolyRef;
 
 		return DT_SUCCESS;
-	}
+	}*/
 
 
 	//////////////////////////////////////////////////////////////////////////////////////////
@@ -511,12 +513,12 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	///
 	/// See closestPointOnPolyBoundary() for a limited but faster option.
 	///
-	dtStatus dtNavMeshQuery::closestPointOnPoly(dtPolyRef ref, const float* pos, float* closest) const
+	/*dtStatus closestPointOnPoly(dtPoly ref, const float* pos, float* closest) const
 	{
 		dtAssert(m_nav);
 		const dtMeshTile* tile = 0;
 		const dtPoly* poly = 0;
-		if (dtStatusFailed(m_nav->getTileAndPolyByRef(ref, &tile, &poly)))
+		if (dtStatusFailed(m_nav.getTileAndPolyByRef(ref, &tile, &poly)))
 			return DT_FAILURE | DT_INVALID_PARAM;
 		if (!tile)
 			return DT_FAILURE | DT_INVALID_PARAM;
@@ -526,14 +528,14 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		return DT_SUCCESS;
 	}
 
-	void dtNavMeshQuery::closestPointOnPolyInTile(const dtMeshTile* tile, const dtPoly* poly,
+	void closestPointOnPolyInTile(const dtMeshTile* tile, const dtPoly* poly,
 												  const float* pos, float* closest) const
 	{
 		// Off-mesh connections don't have detail polygons.
-		if (poly->getType() == DT_POLYTYPE_OFFMESH_CONNECTION)
+		if (poly.getType() == DT_POLYTYPE_OFFMESH_CONNECTION)
 		{
-			const float* v0 = &tile->verts[poly->verts[0]*3];
-			const float* v1 = &tile->verts[poly->verts[1]*3];
+			const float* v0 = &tile.verts[poly.verts[0]*3];
+			const float* v1 = &tile.verts[poly.verts[1]*3];
 			const float d0 = dtVdist(pos, v0);
 			const float d1 = dtVdist(pos, v1);
 			const float u = d0 / (d0+d1);
@@ -541,16 +543,16 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			return;
 		}
 
-		const unsigned int ip = (unsigned int)(poly - tile->polys);
-		const dtPolyDetail* pd = &tile->detailMeshes[ip];
+		const unsigned int ip = (unsigned int)(poly - tile.polys);
+		const dtPolyDetail* pd = &tile.detailMeshes[ip];
 
 		// Clamp point to be inside the polygon.
 		float verts[DT_VERTS_PER_POLYGON*3];
 		float edged[DT_VERTS_PER_POLYGON];
 		float edget[DT_VERTS_PER_POLYGON];
-		const int nv = poly->vertCount;
+		const int nv = poly.vertCount;
 		for (int i = 0; i < nv; ++i)
-			dtVcopy(&verts[i*3], &tile->verts[poly->verts[i]*3]);
+			dtVcopy(&verts[i*3], &tile.verts[poly.verts[i]*3]);
 
 		dtVcopy(closest, pos);
 		if (!dtDistancePtPolyEdgesSqr(pos, verts, nv, edged, edget))
@@ -572,16 +574,16 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		}
 
 		// Find height at the location.
-		for (int j = 0; j < pd->triCount; ++j)
+		for (int j = 0; j < pd.triCount; ++j)
 		{
-			const unsigned char* t = &tile->detailTris[(pd->triBase+j)*4];
+			const unsigned char* t = &tile.detailTris[(pd.triBase+j)*4];
 			const float* v[3];
 			for (int k = 0; k < 3; ++k)
 			{
-				if (t[k] < poly->vertCount)
-					v[k] = &tile->verts[poly->verts[t[k]]*3];
+				if (t[k] < poly.vertCount)
+					v[k] = &tile.verts[poly.verts[t[k]]*3];
 				else
-					v[k] = &tile->detailVerts[(pd->vertBase+(t[k]-poly->vertCount))*3];
+					v[k] = &tile.detailVerts[(pd.vertBase+(t[k]-poly.vertCount))*3];
 			}
 			float h;
 			if (dtClosestHeightPointTriangle(pos, v[0], v[1], v[2], h))
@@ -591,17 +593,17 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			}
 		}
 
-	/*	float closestDistSqr = FLT_MAX;
-		for (int j = 0; j < pd->triCount; ++j)
+	*//*	float closestDistSqr = FLT_MAX;
+		for (int j = 0; j < pd.triCount; ++j)
 		{
-			const unsigned char* t = &tile->detailTris[(pd->triBase+j)*4];
+			const unsigned char* t = &tile.detailTris[(pd.triBase+j)*4];
 			const float* v[3];
 			for (int k = 0; k < 3; ++k)
 			{
-				if (t[k] < poly->vertCount)
-					v[k] = &tile->verts[poly->verts[t[k]]*3];
+				if (t[k] < poly.vertCount)
+					v[k] = &tile.verts[poly.verts[t[k]]*3];
 				else
-					v[k] = &tile->detailVerts[(pd->vertBase+(t[k]-poly->vertCount))*3];
+					v[k] = &tile.detailVerts[(pd.vertBase+(t[k]-poly.vertCount))*3];
 			}
 
 			float pt[3];
@@ -613,7 +615,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 				dtVcopy(closest, pt);
 				closestDistSqr = d;
 			}
-		}*/
+		}*//*
 	}
 
 	/// @par
@@ -627,13 +629,13 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	///
 	/// @p pos does not have to be within the bounds of the polybon or the navigation mesh.
 	///
-	dtStatus dtNavMeshQuery::closestPointOnPolyBoundary(dtPolyRef ref, const float* pos, float* closest) const
+	dtStatus closestPointOnPolyBoundary(dtPoly ref, const float* pos, float* closest) const
 	{
 		dtAssert(m_nav);
 
 		const dtMeshTile* tile = 0;
 		const dtPoly* poly = 0;
-		if (dtStatusFailed(m_nav->getTileAndPolyByRef(ref, &tile, &poly)))
+		if (dtStatusFailed(m_nav.getTileAndPolyByRef(ref, &tile, &poly)))
 			return DT_FAILURE | DT_INVALID_PARAM;
 
 		// Collect vertices.
@@ -641,9 +643,9 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		float edged[DT_VERTS_PER_POLYGON];
 		float edget[DT_VERTS_PER_POLYGON];
 		int nv = 0;
-		for (int i = 0; i < (int)poly->vertCount; ++i)
+		for (int i = 0; i < (int)poly.vertCount; ++i)
 		{
-			dtVcopy(&verts[nv*3], &tile->verts[poly->verts[i]*3]);
+			dtVcopy(&verts[nv*3], &tile.verts[poly.verts[i]*3]);
 			nv++;
 		}
 
@@ -679,19 +681,19 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	/// Will return #DT_FAILURE if the provided position is outside the xz-bounds
 	/// of the polygon.
 	///
-	dtStatus dtNavMeshQuery::getPolyHeight(dtPolyRef ref, const float* pos, float* height) const
+	dtStatus getPolyHeight(dtPoly ref, const float* pos, float* height) const
 	{
 		dtAssert(m_nav);
 
 		const dtMeshTile* tile = 0;
 		const dtPoly* poly = 0;
-		if (dtStatusFailed(m_nav->getTileAndPolyByRef(ref, &tile, &poly)))
+		if (dtStatusFailed(m_nav.getTileAndPolyByRef(ref, &tile, &poly)))
 			return DT_FAILURE | DT_INVALID_PARAM;
 
-		if (poly->getType() == DT_POLYTYPE_OFFMESH_CONNECTION)
+		if (poly.getType() == DT_POLYTYPE_OFFMESH_CONNECTION)
 		{
-			const float* v0 = &tile->verts[poly->verts[0]*3];
-			const float* v1 = &tile->verts[poly->verts[1]*3];
+			const float* v0 = &tile.verts[poly.verts[0]*3];
+			const float* v1 = &tile.verts[poly.verts[1]*3];
 			const float d0 = dtVdist(pos, v0);
 			const float d1 = dtVdist(pos, v1);
 			const float u = d0 / (d0+d1);
@@ -701,18 +703,18 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		}
 		else
 		{
-			const unsigned int ip = (unsigned int)(poly - tile->polys);
-			const dtPolyDetail* pd = &tile->detailMeshes[ip];
-			for (int j = 0; j < pd->triCount; ++j)
+			const unsigned int ip = (unsigned int)(poly - tile.polys);
+			const dtPolyDetail* pd = &tile.detailMeshes[ip];
+			for (int j = 0; j < pd.triCount; ++j)
 			{
-				const unsigned char* t = &tile->detailTris[(pd->triBase+j)*4];
+				const unsigned char* t = &tile.detailTris[(pd.triBase+j)*4];
 				const float* v[3];
 				for (int k = 0; k < 3; ++k)
 				{
-					if (t[k] < poly->vertCount)
-						v[k] = &tile->verts[poly->verts[t[k]]*3];
+					if (t[k] < poly.vertCount)
+						v[k] = &tile.verts[poly.verts[t[k]]*3];
 					else
-						v[k] = &tile->detailVerts[(pd->vertBase+(t[k]-poly->vertCount))*3];
+						v[k] = &tile.detailVerts[(pd.vertBase+(t[k]-poly.vertCount))*3];
 				}
 				float h;
 				if (dtClosestHeightPointTriangle(pos, v[0], v[1], v[2], h))
@@ -736,26 +738,26 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	/// @warning This function is not suitable for large area searches.  If the search
 	/// extents overlaps more than 128 polygons it may return an invalid result.
 	///
-	dtStatus dtNavMeshQuery::findNearestPoly(const float* center, const float* extents,
+	dtStatus findNearestPoly(const float* center, const float* extents,
 											 const dtQueryFilter* filter,
-											 dtPolyRef* nearestRef, float* nearestPt) const
+											 dtPoly* nearestRef, float* nearestPt) const
 	{
 		dtAssert(m_nav);
 
 		*nearestRef = 0;
 
 		// Get nearby polygons from proximity grid.
-		dtPolyRef polys[128];
+		dtPoly polys[128];
 		int polyCount = 0;
 		if (dtStatusFailed(queryPolygons(center, extents, filter, polys, &polyCount, 128)))
 			return DT_FAILURE | DT_INVALID_PARAM;
 
 		// Find nearest polygon amongst the nearby polygons.
-		dtPolyRef nearest = 0;
+		dtPoly nearest = 0;
 		float nearestDistanceSqr = FLT_MAX;
 		for (int i = 0; i < polyCount; ++i)
 		{
-			dtPolyRef ref = polys[i];
+			dtPoly ref = polys[i];
 			float closestPtPoly[3];
 			closestPointOnPoly(ref, center, closestPtPoly);
 			float d = dtVdistSqr(center, closestPtPoly);
@@ -774,7 +776,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		return DT_SUCCESS;
 	}
 
-	dtPolyRef dtNavMeshQuery::findNearestPolyInTile(const dtMeshTile* tile, const float* center, const float* extents,
+	dtPoly findNearestPolyInTile(const dtMeshTile* tile, const float* center, const float* extents,
 													const dtQueryFilter* filter, float* nearestPt) const
 	{
 		dtAssert(m_nav);
@@ -784,16 +786,16 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		dtVadd(bmax, center, extents);
 
 		// Get nearby polygons from proximity grid.
-		dtPolyRef polys[128];
+		dtPoly polys[128];
 		int polyCount = queryPolygonsInTile(tile, bmin, bmax, filter, polys, 128);
 
 		// Find nearest polygon amongst the nearby polygons.
-		dtPolyRef nearest = 0;
+		dtPoly nearest = 0;
 		float nearestDistanceSqr = FLT_MAX;
 		for (int i = 0; i < polyCount; ++i)
 		{
-			dtPolyRef ref = polys[i];
-			const dtPoly* poly = &tile->polys[m_nav->decodePolyIdPoly(ref)];
+			dtPoly ref = polys[i];
+			const dtPoly* poly = &tile.polys[m_nav.decodePolyIdPoly(ref)];
 			float closestPtPoly[3];
 			closestPointOnPolyInTile(tile, poly, center, closestPtPoly);
 
@@ -810,19 +812,19 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		return nearest;
 	}
 
-	int dtNavMeshQuery::queryPolygonsInTile(const dtMeshTile* tile, const float* qmin, const float* qmax,
+	int queryPolygonsInTile(const dtMeshTile* tile, const float* qmin, const float* qmax,
 											const dtQueryFilter* filter,
-											dtPolyRef* polys, const int maxPolys) const
+											dtPoly* polys, const int maxPolys) const
 	{
 		dtAssert(m_nav);
 
-		if (tile->bvTree)
+		if (tile.bvTree)
 		{
-			const dtBVNode* node = &tile->bvTree[0];
-			const dtBVNode* end = &tile->bvTree[tile->header->bvNodeCount];
-			const float* tbmin = tile->header->bmin;
-			const float* tbmax = tile->header->bmax;
-			const float qfac = tile->header->bvQuantFactor;
+			const dtBVNode* node = &tile.bvTree[0];
+			const dtBVNode* end = &tile.bvTree[tile.header.bvNodeCount];
+			const float* tbmin = tile.header.bmin;
+			const float* tbmax = tile.header.bmax;
+			const float qfac = tile.header.bvQuantFactor;
 
 			// Calculate quantized box
 			unsigned short bmin[3], bmax[3];
@@ -842,17 +844,17 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			bmax[2] = (unsigned short)(qfac * maxz + 1) | 1;
 
 			// Traverse tree
-			const dtPolyRef base = m_nav->getPolyRefBase(tile);
+			const dtPoly base = m_nav.getPolyRefBase(tile);
 			int n = 0;
 			while (node < end)
 			{
-				const bool overlap = dtOverlapQuantBounds(bmin, bmax, node->bmin, node->bmax);
-				const bool isLeafNode = node->i >= 0;
+				const bool overlap = dtOverlapQuantBounds(bmin, bmax, node.bmin, node.bmax);
+				const bool isLeafNode = node.i >= 0;
 
 				if (isLeafNode && overlap)
 				{
-					dtPolyRef ref = base | (dtPolyRef)node->i;
-					if (filter->passFilter(ref, tile, &tile->polys[node->i]))
+					dtPoly ref = base | (dtPoly)node.i;
+					if (filter.passFilter(ref, tile, &tile.polys[node.i]))
 					{
 						if (n < maxPolys)
 							polys[n++] = ref;
@@ -863,7 +865,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 					node++;
 				else
 				{
-					const int escapeIndex = -node->i;
+					const int escapeIndex = -node.i;
 					node += escapeIndex;
 				}
 			}
@@ -874,24 +876,24 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		{
 			float bmin[3], bmax[3];
 			int n = 0;
-			const dtPolyRef base = m_nav->getPolyRefBase(tile);
-			for (int i = 0; i < tile->header->polyCount; ++i)
+			const dtPoly base = m_nav.getPolyRefBase(tile);
+			for (int i = 0; i < tile.header.polyCount; ++i)
 			{
-				const dtPoly* p = &tile->polys[i];
+				const dtPoly* p = &tile.polys[i];
 				// Do not return off-mesh connection polygons.
-				if (p->getType() == DT_POLYTYPE_OFFMESH_CONNECTION)
+				if (p.getType() == DT_POLYTYPE_OFFMESH_CONNECTION)
 					continue;
 				// Must pass filter
-				const dtPolyRef ref = base | (dtPolyRef)i;
-				if (!filter->passFilter(ref, tile, p))
+				const dtPoly ref = base | (dtPoly)i;
+				if (!filter.passFilter(ref, tile, p))
 					continue;
 				// Calc polygon bounds.
-				const float* v = &tile->verts[p->verts[0]*3];
+				const float* v = &tile.verts[p.verts[0]*3];
 				dtVcopy(bmin, v);
 				dtVcopy(bmax, v);
-				for (int j = 1; j < p->vertCount; ++j)
+				for (int j = 1; j < p.vertCount; ++j)
 				{
-					v = &tile->verts[p->verts[j]*3];
+					v = &tile.verts[p.verts[j]*3];
 					dtVmin(bmin, v);
 					dtVmax(bmax, v);
 				}
@@ -914,9 +916,9 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	/// be filled to capacity. The method of choosing which polygons from the
 	/// full set are included in the partial result set is undefined.
 	///
-	dtStatus dtNavMeshQuery::queryPolygons(const float* center, const float* extents,
+	dtStatus queryPolygons(const float* center, const float* extents,
 										   const dtQueryFilter* filter,
-										   dtPolyRef* polys, int* polyCount, const int maxPolys) const
+										   dtPoly* polys, int* polyCount, const int maxPolys) const
 	{
 		dtAssert(m_nav);
 
@@ -926,8 +928,8 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 
 		// Find tiles the query touches.
 		int minx, miny, maxx, maxy;
-		m_nav->calcTileLoc(bmin, &minx, &miny);
-		m_nav->calcTileLoc(bmax, &maxx, &maxy);
+		m_nav.calcTileLoc(bmin, &minx, &miny);
+		m_nav.calcTileLoc(bmax, &maxx, &maxy);
 
 		static const int MAX_NEIS = 32;
 		const dtMeshTile* neis[MAX_NEIS];
@@ -937,7 +939,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		{
 			for (int x = minx; x <= maxx; ++x)
 			{
-				const int nneis = m_nav->getTilesAt(x,y,neis,MAX_NEIS);
+				const int nneis = m_nav.getTilesAt(x,y,neis,MAX_NEIS);
 				for (int j = 0; j < nneis; ++j)
 				{
 					n += queryPolygonsInTile(neis[j], bmin, bmax, filter, polys+n, maxPolys-n);
@@ -965,10 +967,10 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	/// The start and end positions are used to calculate traversal costs.
 	/// (The y-values impact the result.)
 	///
-	dtStatus dtNavMeshQuery::findPath(dtPolyRef startRef, dtPolyRef endRef,
+	dtStatus findPath(dtPoly startRef, dtPoly endRef,
 									  const float* startPos, const float* endPos,
 									  const dtQueryFilter* filter,
-									  dtPolyRef* path, int* pathCount, const int maxPath) const
+									  dtPoly* path, int* pathCount, const int maxPath) const
 	{
 		dtAssert(m_nav);
 		dtAssert(m_nodePool);
@@ -983,7 +985,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			return DT_FAILURE | DT_INVALID_PARAM;
 
 		// Validate input
-		if (!m_nav->isValidPolyRef(startRef) || !m_nav->isValidPolyRef(endRef))
+		if (!m_nav.isValidPolyRef(startRef) || !m_nav.isValidPolyRef(endRef))
 			return DT_FAILURE | DT_INVALID_PARAM;
 
 		if (startRef == endRef)
@@ -993,32 +995,32 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			return DT_SUCCESS;
 		}
 
-		m_nodePool->clear();
-		m_openList->clear();
+		m_nodePool.clear();
+		m_openList.clear();
 
-		dtNode* startNode = m_nodePool->getNode(startRef);
-		dtVcopy(startNode->pos, startPos);
-		startNode->pidx = 0;
-		startNode->cost = 0;
-		startNode->total = dtVdist(startPos, endPos) * H_SCALE;
-		startNode->id = startRef;
-		startNode->flags = DT_NODE_OPEN;
-		m_openList->push(startNode);
+		dtNode* startNode = m_nodePool.getNode(startRef);
+		dtVcopy(startNode.pos, startPos);
+		startNode.pidx = 0;
+		startNode.cost = 0;
+		startNode.total = dtVdist(startPos, endPos) * H_SCALE;
+		startNode.id = startRef;
+		startNode.flags = DT_NODE_OPEN;
+		m_openList.push(startNode);
 
 		dtNode* lastBestNode = startNode;
-		float lastBestNodeCost = startNode->total;
+		float lastBestNodeCost = startNode.total;
 
 		dtStatus status = DT_SUCCESS;
 
-		while (!m_openList->empty())
+		while (!m_openList.empty())
 		{
 			// Remove node from open list and put it in closed list.
-			dtNode* bestNode = m_openList->pop();
-			bestNode->flags &= ~DT_NODE_OPEN;
-			bestNode->flags |= DT_NODE_CLOSED;
+			dtNode* bestNode = m_openList.pop();
+			bestNode.flags &= ~DT_NODE_OPEN;
+			bestNode.flags |= DT_NODE_CLOSED;
 
 			// Reached the goal, stop searching.
-			if (bestNode->id == endRef)
+			if (bestNode.id == endRef)
 			{
 				lastBestNode = bestNode;
 				break;
@@ -1026,23 +1028,23 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 
 			// Get current poly and tile.
 			// The API input has been cheked already, skip checking internal data.
-			const dtPolyRef bestRef = bestNode->id;
+			const dtPoly bestRef = bestNode.id;
 			const dtMeshTile* bestTile = 0;
 			const dtPoly* bestPoly = 0;
-			m_nav->getTileAndPolyByRefUnsafe(bestRef, &bestTile, &bestPoly);
+			m_nav.getTileAndPolyByRefUnsafe(bestRef, &bestTile, &bestPoly);
 
 			// Get parent poly and tile.
-			dtPolyRef parentRef = 0;
+			dtPoly parentRef = 0;
 			const dtMeshTile* parentTile = 0;
 			const dtPoly* parentPoly = 0;
-			if (bestNode->pidx)
-				parentRef = m_nodePool->getNodeAtIdx(bestNode->pidx)->id;
+			if (bestNode.pidx)
+				parentRef = m_nodePool.getNodeAtIdx(bestNode.pidx).id;
 			if (parentRef)
-				m_nav->getTileAndPolyByRefUnsafe(parentRef, &parentTile, &parentPoly);
+				m_nav.getTileAndPolyByRefUnsafe(parentRef, &parentTile, &parentPoly);
 
-			for (unsigned int i = bestPoly->firstLink; i != DT_NULL_LINK; i = bestTile->links[i].next)
+			for (unsigned int i = bestPoly.firstLink; i != DT_NULL_LINK; i = bestTile.links[i].next)
 			{
-				dtPolyRef neighbourRef = bestTile->links[i].ref;
+				dtPoly neighbourRef = bestTile.links[i].ref;
 
 				// Skip invalid ids and do not expand back to where we came from.
 				if (!neighbourRef || neighbourRef == parentRef)
@@ -1052,12 +1054,12 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 				// The API input has been cheked already, skip checking internal data.
 				const dtMeshTile* neighbourTile = 0;
 				const dtPoly* neighbourPoly = 0;
-				m_nav->getTileAndPolyByRefUnsafe(neighbourRef, &neighbourTile, &neighbourPoly);
+				m_nav.getTileAndPolyByRefUnsafe(neighbourRef, &neighbourTile, &neighbourPoly);
 
-				if (!filter->passFilter(neighbourRef, neighbourTile, neighbourPoly))
+				if (!filter.passFilter(neighbourRef, neighbourTile, neighbourPoly))
 					continue;
 
-				dtNode* neighbourNode = m_nodePool->getNode(neighbourRef);
+				dtNode* neighbourNode = m_nodePool.getNode(neighbourRef);
 				if (!neighbourNode)
 				{
 					status |= DT_OUT_OF_NODES;
@@ -1065,11 +1067,11 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 				}
 
 				// If the node is visited the first time, calculate node position.
-				if (neighbourNode->flags == 0)
+				if (neighbourNode.flags == 0)
 				{
 					getEdgeMidPoint(bestRef, bestPoly, bestTile,
 									neighbourRef, neighbourPoly, neighbourTile,
-									neighbourNode->pos);
+									neighbourNode.pos);
 				}
 
 				// Calculate cost and heuristic.
@@ -1080,55 +1082,55 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 				if (neighbourRef == endRef)
 				{
 					// Cost
-					const float curCost = filter->getCost(bestNode->pos, neighbourNode->pos,
+					const float curCost = filter.getCost(bestNode.pos, neighbourNode.pos,
 														  parentRef, parentTile, parentPoly,
 														  bestRef, bestTile, bestPoly,
 														  neighbourRef, neighbourTile, neighbourPoly);
-					const float endCost = filter->getCost(neighbourNode->pos, endPos,
+					const float endCost = filter.getCost(neighbourNode.pos, endPos,
 														  bestRef, bestTile, bestPoly,
 														  neighbourRef, neighbourTile, neighbourPoly,
 														  0, 0, 0);
 
-					cost = bestNode->cost + curCost + endCost;
+					cost = bestNode.cost + curCost + endCost;
 					heuristic = 0;
 				}
 				else
 				{
 					// Cost
-					const float curCost = filter->getCost(bestNode->pos, neighbourNode->pos,
+					const float curCost = filter.getCost(bestNode.pos, neighbourNode.pos,
 														  parentRef, parentTile, parentPoly,
 														  bestRef, bestTile, bestPoly,
 														  neighbourRef, neighbourTile, neighbourPoly);
-					cost = bestNode->cost + curCost;
-					heuristic = dtVdist(neighbourNode->pos, endPos)*H_SCALE;
+					cost = bestNode.cost + curCost;
+					heuristic = dtVdist(neighbourNode.pos, endPos)*H_SCALE;
 				}
 
 				const float total = cost + heuristic;
 
 				// The node is already in open list and the new result is worse, skip.
-				if ((neighbourNode->flags & DT_NODE_OPEN) && total >= neighbourNode->total)
+				if ((neighbourNode.flags & DT_NODE_OPEN) && total >= neighbourNode.total)
 					continue;
 				// The node is already visited and process, and the new result is worse, skip.
-				if ((neighbourNode->flags & DT_NODE_CLOSED) && total >= neighbourNode->total)
+				if ((neighbourNode.flags & DT_NODE_CLOSED) && total >= neighbourNode.total)
 					continue;
 
 				// Add or update the node.
-				neighbourNode->pidx = m_nodePool->getNodeIdx(bestNode);
-				neighbourNode->id = neighbourRef;
-				neighbourNode->flags = (neighbourNode->flags & ~DT_NODE_CLOSED);
-				neighbourNode->cost = cost;
-				neighbourNode->total = total;
+				neighbourNode.pidx = m_nodePool.getNodeIdx(bestNode);
+				neighbourNode.id = neighbourRef;
+				neighbourNode.flags = (neighbourNode.flags & ~DT_NODE_CLOSED);
+				neighbourNode.cost = cost;
+				neighbourNode.total = total;
 
-				if (neighbourNode->flags & DT_NODE_OPEN)
+				if (neighbourNode.flags & DT_NODE_OPEN)
 				{
 					// Already in open, update node location.
-					m_openList->modify(neighbourNode);
+					m_openList.modify(neighbourNode);
 				}
 				else
 				{
 					// Put the node in open list.
-					neighbourNode->flags |= DT_NODE_OPEN;
-					m_openList->push(neighbourNode);
+					neighbourNode.flags |= DT_NODE_OPEN;
+					m_openList.push(neighbourNode);
 				}
 
 				// Update nearest node to target so far.
@@ -1140,7 +1142,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			}
 		}
 
-		if (lastBestNode->id != endRef)
+		if (lastBestNode.id != endRef)
 			status |= DT_PARTIAL_RESULT;
 
 		// Reverse the path.
@@ -1148,8 +1150,8 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		dtNode* node = lastBestNode;
 		do
 		{
-			dtNode* next = m_nodePool->getNodeAtIdx(node->pidx);
-			node->pidx = m_nodePool->getNodeIdx(prev);
+			dtNode* next = m_nodePool.getNodeAtIdx(node.pidx);
+			node.pidx = m_nodePool.getNodeIdx(prev);
 			prev = node;
 			node = next;
 		}
@@ -1160,13 +1162,13 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		int n = 0;
 		do
 		{
-			path[n++] = node->id;
+			path[n++] = node.id;
 			if (n >= maxPath)
 			{
 				status |= DT_BUFFER_TOO_SMALL;
 				break;
 			}
-			node = m_nodePool->getNodeAtIdx(node->pidx);
+			node = m_nodePool.getNodeAtIdx(node.pidx);
 		}
 		while (node);
 
@@ -1183,7 +1185,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	/// The @p filter pointer is stored and used for the duration of the sliced
 	/// path query.
 	///
-	dtStatus dtNavMeshQuery::initSlicedFindPath(dtPolyRef startRef, dtPolyRef endRef,
+	dtStatus initSlicedFindPath(dtPoly startRef, dtPoly endRef,
 												const float* startPos, const float* endPos,
 												const dtQueryFilter* filter)
 	{
@@ -1204,7 +1206,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			return DT_FAILURE | DT_INVALID_PARAM;
 
 		// Validate input
-		if (!m_nav->isValidPolyRef(startRef) || !m_nav->isValidPolyRef(endRef))
+		if (!m_nav.isValidPolyRef(startRef) || !m_nav.isValidPolyRef(endRef))
 			return DT_FAILURE | DT_INVALID_PARAM;
 
 		if (startRef == endRef)
@@ -1213,49 +1215,49 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			return DT_SUCCESS;
 		}
 
-		m_nodePool->clear();
-		m_openList->clear();
+		m_nodePool.clear();
+		m_openList.clear();
 
-		dtNode* startNode = m_nodePool->getNode(startRef);
-		dtVcopy(startNode->pos, startPos);
-		startNode->pidx = 0;
-		startNode->cost = 0;
-		startNode->total = dtVdist(startPos, endPos) * H_SCALE;
-		startNode->id = startRef;
-		startNode->flags = DT_NODE_OPEN;
-		m_openList->push(startNode);
+		dtNode* startNode = m_nodePool.getNode(startRef);
+		dtVcopy(startNode.pos, startPos);
+		startNode.pidx = 0;
+		startNode.cost = 0;
+		startNode.total = dtVdist(startPos, endPos) * H_SCALE;
+		startNode.id = startRef;
+		startNode.flags = DT_NODE_OPEN;
+		m_openList.push(startNode);
 
 		m_query.status = DT_IN_PROGRESS;
 		m_query.lastBestNode = startNode;
-		m_query.lastBestNodeCost = startNode->total;
+		m_query.lastBestNodeCost = startNode.total;
 
 		return m_query.status;
 	}
 
-	dtStatus dtNavMeshQuery::updateSlicedFindPath(const int maxIter, int* doneIters)
+	dtStatus updateSlicedFindPath(const int maxIter, int* doneIters)
 	{
 		if (!dtStatusInProgress(m_query.status))
 			return m_query.status;
 
 		// Make sure the request is still valid.
-		if (!m_nav->isValidPolyRef(m_query.startRef) || !m_nav->isValidPolyRef(m_query.endRef))
+		if (!m_nav.isValidPolyRef(m_query.startRef) || !m_nav.isValidPolyRef(m_query.endRef))
 		{
 			m_query.status = DT_FAILURE;
 			return DT_FAILURE;
 		}
 
 		int iter = 0;
-		while (iter < maxIter && !m_openList->empty())
+		while (iter < maxIter && !m_openList.empty())
 		{
 			iter++;
 
 			// Remove node from open list and put it in closed list.
-			dtNode* bestNode = m_openList->pop();
-			bestNode->flags &= ~DT_NODE_OPEN;
-			bestNode->flags |= DT_NODE_CLOSED;
+			dtNode* bestNode = m_openList.pop();
+			bestNode.flags &= ~DT_NODE_OPEN;
+			bestNode.flags |= DT_NODE_CLOSED;
 
 			// Reached the goal, stop searching.
-			if (bestNode->id == m_query.endRef)
+			if (bestNode.id == m_query.endRef)
 			{
 				m_query.lastBestNode = bestNode;
 				const dtStatus details = m_query.status & DT_STATUS_DETAIL_MASK;
@@ -1267,10 +1269,10 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 
 			// Get current poly and tile.
 			// The API input has been cheked already, skip checking internal data.
-			const dtPolyRef bestRef = bestNode->id;
+			const dtPoly bestRef = bestNode.id;
 			const dtMeshTile* bestTile = 0;
 			const dtPoly* bestPoly = 0;
-			if (dtStatusFailed(m_nav->getTileAndPolyByRef(bestRef, &bestTile, &bestPoly)))
+			if (dtStatusFailed(m_nav.getTileAndPolyByRef(bestRef, &bestTile, &bestPoly)))
 			{
 				// The polygon has disappeared during the sliced query, fail.
 				m_query.status = DT_FAILURE;
@@ -1280,14 +1282,14 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			}
 
 			// Get parent poly and tile.
-			dtPolyRef parentRef = 0;
+			dtPoly parentRef = 0;
 			const dtMeshTile* parentTile = 0;
 			const dtPoly* parentPoly = 0;
-			if (bestNode->pidx)
-				parentRef = m_nodePool->getNodeAtIdx(bestNode->pidx)->id;
+			if (bestNode.pidx)
+				parentRef = m_nodePool.getNodeAtIdx(bestNode.pidx).id;
 			if (parentRef)
 			{
-				if (dtStatusFailed(m_nav->getTileAndPolyByRef(parentRef, &parentTile, &parentPoly)))
+				if (dtStatusFailed(m_nav.getTileAndPolyByRef(parentRef, &parentTile, &parentPoly)))
 				{
 					// The polygon has disappeared during the sliced query, fail.
 					m_query.status = DT_FAILURE;
@@ -1297,9 +1299,9 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 				}
 			}
 
-			for (unsigned int i = bestPoly->firstLink; i != DT_NULL_LINK; i = bestTile->links[i].next)
+			for (unsigned int i = bestPoly.firstLink; i != DT_NULL_LINK; i = bestTile.links[i].next)
 			{
-				dtPolyRef neighbourRef = bestTile->links[i].ref;
+				dtPoly neighbourRef = bestTile.links[i].ref;
 
 				// Skip invalid ids and do not expand back to where we came from.
 				if (!neighbourRef || neighbourRef == parentRef)
@@ -1309,12 +1311,12 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 				// The API input has been cheked already, skip checking internal data.
 				const dtMeshTile* neighbourTile = 0;
 				const dtPoly* neighbourPoly = 0;
-				m_nav->getTileAndPolyByRefUnsafe(neighbourRef, &neighbourTile, &neighbourPoly);
+				m_nav.getTileAndPolyByRefUnsafe(neighbourRef, &neighbourTile, &neighbourPoly);
 
-				if (!m_query.filter->passFilter(neighbourRef, neighbourTile, neighbourPoly))
+				if (!m_query.filter.passFilter(neighbourRef, neighbourTile, neighbourPoly))
 					continue;
 
-				dtNode* neighbourNode = m_nodePool->getNode(neighbourRef);
+				dtNode* neighbourNode = m_nodePool.getNode(neighbourRef);
 				if (!neighbourNode)
 				{
 					m_query.status |= DT_OUT_OF_NODES;
@@ -1322,11 +1324,11 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 				}
 
 				// If the node is visited the first time, calculate node position.
-				if (neighbourNode->flags == 0)
+				if (neighbourNode.flags == 0)
 				{
 					getEdgeMidPoint(bestRef, bestPoly, bestTile,
 									neighbourRef, neighbourPoly, neighbourTile,
-									neighbourNode->pos);
+									neighbourNode.pos);
 				}
 
 				// Calculate cost and heuristic.
@@ -1337,55 +1339,55 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 				if (neighbourRef == m_query.endRef)
 				{
 					// Cost
-					const float curCost = m_query.filter->getCost(bestNode->pos, neighbourNode->pos,
+					const float curCost = m_query.filter.getCost(bestNode.pos, neighbourNode.pos,
 																  parentRef, parentTile, parentPoly,
 																  bestRef, bestTile, bestPoly,
 																  neighbourRef, neighbourTile, neighbourPoly);
-					const float endCost = m_query.filter->getCost(neighbourNode->pos, m_query.endPos,
+					const float endCost = m_query.filter.getCost(neighbourNode.pos, m_query.endPos,
 																  bestRef, bestTile, bestPoly,
 																  neighbourRef, neighbourTile, neighbourPoly,
 																  0, 0, 0);
 
-					cost = bestNode->cost + curCost + endCost;
+					cost = bestNode.cost + curCost + endCost;
 					heuristic = 0;
 				}
 				else
 				{
 					// Cost
-					const float curCost = m_query.filter->getCost(bestNode->pos, neighbourNode->pos,
+					const float curCost = m_query.filter.getCost(bestNode.pos, neighbourNode.pos,
 																  parentRef, parentTile, parentPoly,
 																  bestRef, bestTile, bestPoly,
 																  neighbourRef, neighbourTile, neighbourPoly);
-					cost = bestNode->cost + curCost;
-					heuristic = dtVdist(neighbourNode->pos, m_query.endPos)*H_SCALE;
+					cost = bestNode.cost + curCost;
+					heuristic = dtVdist(neighbourNode.pos, m_query.endPos)*H_SCALE;
 				}
 
 				const float total = cost + heuristic;
 
 				// The node is already in open list and the new result is worse, skip.
-				if ((neighbourNode->flags & DT_NODE_OPEN) && total >= neighbourNode->total)
+				if ((neighbourNode.flags & DT_NODE_OPEN) && total >= neighbourNode.total)
 					continue;
 				// The node is already visited and process, and the new result is worse, skip.
-				if ((neighbourNode->flags & DT_NODE_CLOSED) && total >= neighbourNode->total)
+				if ((neighbourNode.flags & DT_NODE_CLOSED) && total >= neighbourNode.total)
 					continue;
 
 				// Add or update the node.
-				neighbourNode->pidx = m_nodePool->getNodeIdx(bestNode);
-				neighbourNode->id = neighbourRef;
-				neighbourNode->flags = (neighbourNode->flags & ~DT_NODE_CLOSED);
-				neighbourNode->cost = cost;
-				neighbourNode->total = total;
+				neighbourNode.pidx = m_nodePool.getNodeIdx(bestNode);
+				neighbourNode.id = neighbourRef;
+				neighbourNode.flags = (neighbourNode.flags & ~DT_NODE_CLOSED);
+				neighbourNode.cost = cost;
+				neighbourNode.total = total;
 
-				if (neighbourNode->flags & DT_NODE_OPEN)
+				if (neighbourNode.flags & DT_NODE_OPEN)
 				{
 					// Already in open, update node location.
-					m_openList->modify(neighbourNode);
+					m_openList.modify(neighbourNode);
 				}
 				else
 				{
 					// Put the node in open list.
-					neighbourNode->flags |= DT_NODE_OPEN;
-					m_openList->push(neighbourNode);
+					neighbourNode.flags |= DT_NODE_OPEN;
+					m_openList.push(neighbourNode);
 				}
 
 				// Update nearest node to target so far.
@@ -1398,7 +1400,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		}
 
 		// Exhausted all nodes, but could not find path.
-		if (m_openList->empty())
+		if (m_openList.empty())
 		{
 			const dtStatus details = m_query.status & DT_STATUS_DETAIL_MASK;
 			m_query.status = DT_SUCCESS | details;
@@ -1410,7 +1412,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		return m_query.status;
 	}
 
-	dtStatus dtNavMeshQuery::finalizeSlicedFindPath(dtPolyRef* path, int* pathCount, const int maxPath)
+	dtStatus finalizeSlicedFindPath(dtPoly* path, int* pathCount, const int maxPath)
 	{
 		*pathCount = 0;
 
@@ -1433,15 +1435,15 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			// Reverse the path.
 			dtAssert(m_query.lastBestNode);
 
-			if (m_query.lastBestNode->id != m_query.endRef)
+			if (m_query.lastBestNode.id != m_query.endRef)
 				m_query.status |= DT_PARTIAL_RESULT;
 
 			dtNode* prev = 0;
 			dtNode* node = m_query.lastBestNode;
 			do
 			{
-				dtNode* next = m_nodePool->getNodeAtIdx(node->pidx);
-				node->pidx = m_nodePool->getNodeIdx(prev);
+				dtNode* next = m_nodePool.getNodeAtIdx(node.pidx);
+				node.pidx = m_nodePool.getNodeIdx(prev);
 				prev = node;
 				node = next;
 			}
@@ -1451,13 +1453,13 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			node = prev;
 			do
 			{
-				path[n++] = node->id;
+				path[n++] = node.id;
 				if (n >= maxPath)
 				{
 					m_query.status |= DT_BUFFER_TOO_SMALL;
 					break;
 				}
-				node = m_nodePool->getNodeAtIdx(node->pidx);
+				node = m_nodePool.getNodeAtIdx(node.pidx);
 			}
 			while (node);
 		}
@@ -1472,8 +1474,8 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		return DT_SUCCESS | details;
 	}
 
-	dtStatus dtNavMeshQuery::finalizeSlicedFindPathPartial(const dtPolyRef* existing, const int existingSize,
-														   dtPolyRef* path, int* pathCount, const int maxPath)
+	dtStatus finalizeSlicedFindPathPartial(const dtPoly* existing, const int existingSize,
+														   dtPoly* path, int* pathCount, const int maxPath)
 	{
 		*pathCount = 0;
 
@@ -1503,7 +1505,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			dtNode* node = 0;
 			for (int i = existingSize-1; i >= 0; --i)
 			{
-				node = m_nodePool->findNode(existing[i]);
+				node = m_nodePool.findNode(existing[i]);
 				if (node)
 					break;
 			}
@@ -1518,8 +1520,8 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			// Reverse the path.
 			do
 			{
-				dtNode* next = m_nodePool->getNodeAtIdx(node->pidx);
-				node->pidx = m_nodePool->getNodeIdx(prev);
+				dtNode* next = m_nodePool.getNodeAtIdx(node.pidx);
+				node.pidx = m_nodePool.getNodeIdx(prev);
 				prev = node;
 				node = next;
 			}
@@ -1529,13 +1531,13 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			node = prev;
 			do
 			{
-				path[n++] = node->id;
+				path[n++] = node.id;
 				if (n >= maxPath)
 				{
 					m_query.status |= DT_BUFFER_TOO_SMALL;
 					break;
 				}
-				node = m_nodePool->getNodeAtIdx(node->pidx);
+				node = m_nodePool.getNodeAtIdx(node.pidx);
 			}
 			while (node);
 		}
@@ -1551,8 +1553,8 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	}
 
 
-	dtStatus dtNavMeshQuery::appendVertex(const float* pos, const unsigned char flags, const dtPolyRef ref,
-										  float* straightPath, unsigned char* straightPathFlags, dtPolyRef* straightPathRefs,
+	dtStatus appendVertex(const float* pos, const unsigned char flags, const dtPoly ref,
+										  float* straightPath, unsigned char* straightPathFlags, dtPoly* straightPathRefs,
 										  int* straightPathCount, const int maxStraightPath) const
 	{
 		if ((*straightPathCount) > 0 && dtVequal(&straightPath[((*straightPathCount)-1)*3], pos))
@@ -1581,8 +1583,8 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		return DT_IN_PROGRESS;
 	}
 
-	dtStatus dtNavMeshQuery::appendPortals(const int startIdx, const int endIdx, const float* endPos, const dtPolyRef* path,
-										  float* straightPath, unsigned char* straightPathFlags, dtPolyRef* straightPathRefs,
+	dtStatus appendPortals(const int startIdx, const int endIdx, const float* endPos, const dtPoly* path,
+										  float* straightPath, unsigned char* straightPathFlags, dtPoly* straightPathRefs,
 										  int* straightPathCount, const int maxStraightPath, const int options) const
 	{
 		const float* startPos = &straightPath[(*straightPathCount-1)*3];
@@ -1591,16 +1593,16 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		for (int i = startIdx; i < endIdx; i++)
 		{
 			// Calculate portal
-			const dtPolyRef from = path[i];
+			const dtPoly from = path[i];
 			const dtMeshTile* fromTile = 0;
 			const dtPoly* fromPoly = 0;
-			if (dtStatusFailed(m_nav->getTileAndPolyByRef(from, &fromTile, &fromPoly)))
+			if (dtStatusFailed(m_nav.getTileAndPolyByRef(from, &fromTile, &fromPoly)))
 				return DT_FAILURE | DT_INVALID_PARAM;
 
-			const dtPolyRef to = path[i+1];
+			const dtPoly to = path[i+1];
 			const dtMeshTile* toTile = 0;
 			const dtPoly* toPoly = 0;
-			if (dtStatusFailed(m_nav->getTileAndPolyByRef(to, &toTile, &toPoly)))
+			if (dtStatusFailed(m_nav.getTileAndPolyByRef(to, &toTile, &toPoly)))
 				return DT_FAILURE | DT_INVALID_PARAM;
 
 			float left[3], right[3];
@@ -1610,7 +1612,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			if (options & DT_STRAIGHTPATH_AREA_CROSSINGS)
 			{
 				// Skip intersection if only area crossings are requested.
-				if (fromPoly->getArea() == toPoly->getArea())
+				if (fromPoly.getArea() == toPoly.getArea())
 					continue;
 			}
 
@@ -1648,9 +1650,9 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	/// they will be filled as far as possible from the start toward the end
 	/// position.
 	///
-	dtStatus dtNavMeshQuery::findStraightPath(const float* startPos, const float* endPos,
-											  const dtPolyRef* path, const int pathSize,
-											  float* straightPath, unsigned char* straightPathFlags, dtPolyRef* straightPathRefs,
+	dtStatus findStraightPath(const float* startPos, const float* endPos,
+											  const dtPoly* path, const int pathSize,
+											  float* straightPath, unsigned char* straightPathFlags, dtPoly* straightPathRefs,
 											  int* straightPathCount, const int maxStraightPath, const int options) const
 	{
 		dtAssert(m_nav);
@@ -1694,8 +1696,8 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			unsigned char leftPolyType = 0;
 			unsigned char rightPolyType = 0;
 
-			dtPolyRef leftPolyRef = path[0];
-			dtPolyRef rightPolyRef = path[0];
+			dtPoly leftPolyRef = path[0];
+			dtPoly rightPolyRef = path[0];
 
 			for (int i = 0; i < pathSize; ++i)
 			{
@@ -1778,7 +1780,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 							flags = DT_STRAIGHTPATH_END;
 						else if (leftPolyType == DT_POLYTYPE_OFFMESH_CONNECTION)
 							flags = DT_STRAIGHTPATH_OFFMESH_CONNECTION;
-						dtPolyRef ref = leftPolyRef;
+						dtPoly ref = leftPolyRef;
 
 						// Append or update vertex
 						stat = appendVertex(portalApex, flags, ref,
@@ -1829,7 +1831,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 							flags = DT_STRAIGHTPATH_END;
 						else if (rightPolyType == DT_POLYTYPE_OFFMESH_CONNECTION)
 							flags = DT_STRAIGHTPATH_OFFMESH_CONNECTION;
-						dtPolyRef ref = rightPolyRef;
+						dtPoly ref = rightPolyRef;
 
 						// Append or update vertex
 						stat = appendVertex(portalApex, flags, ref,
@@ -1867,7 +1869,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 							straightPathCount, maxStraightPath);
 
 		return DT_SUCCESS | ((*straightPathCount >= maxStraightPath) ? DT_BUFFER_TOO_SMALL : 0);
-	}
+	}*/
 
 	/// @par
 	///
@@ -1889,9 +1891,9 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	/// be filled as far as possible from the start position toward the end
 	/// position.
 	///
-	dtStatus dtNavMeshQuery::moveAlongSurface(dtPolyRef startRef, const float* startPos, const float* endPos,
+	/*dtStatus moveAlongSurface(dtPoly startRef, const float* startPos, const float* endPos,
 											  const dtQueryFilter* filter,
-											  float* resultPos, dtPolyRef* visited, int* visitedCount, const int maxVisitedSize) const
+											  float* resultPos, dtPoly* visited, int* visitedCount, const int maxVisitedSize) const
 	{
 		dtAssert(m_nav);
 		dtAssert(m_tinyNodePool);
@@ -1901,7 +1903,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		// Validate input
 		if (!startRef)
 			return DT_FAILURE | DT_INVALID_PARAM;
-		if (!m_nav->isValidPolyRef(startRef))
+		if (!m_nav.isValidPolyRef(startRef))
 			return DT_FAILURE | DT_INVALID_PARAM;
 
 		dtStatus status = DT_SUCCESS;
@@ -1910,14 +1912,14 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		dtNode* stack[MAX_STACK];
 		int nstack = 0;
 
-		m_tinyNodePool->clear();
+		m_tinyNodePool.clear();
 
-		dtNode* startNode = m_tinyNodePool->getNode(startRef);
-		startNode->pidx = 0;
-		startNode->cost = 0;
-		startNode->total = 0;
-		startNode->id = startRef;
-		startNode->flags = DT_NODE_CLOSED;
+		dtNode* startNode = m_tinyNodePool.getNode(startRef);
+		startNode.pidx = 0;
+		startNode.cost = 0;
+		startNode.total = 0;
+		startNode.id = startRef;
+		startNode.flags = DT_NODE_CLOSED;
 		stack[nstack++] = startNode;
 
 		float bestPos[3];
@@ -1942,15 +1944,15 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 
 			// Get poly and tile.
 			// The API input has been cheked already, skip checking internal data.
-			const dtPolyRef curRef = curNode->id;
+			const dtPoly curRef = curNode.id;
 			const dtMeshTile* curTile = 0;
 			const dtPoly* curPoly = 0;
-			m_nav->getTileAndPolyByRefUnsafe(curRef, &curTile, &curPoly);
+			m_nav.getTileAndPolyByRefUnsafe(curRef, &curTile, &curPoly);
 
 			// Collect vertices.
-			const int nverts = curPoly->vertCount;
+			const int nverts = curPoly.vertCount;
 			for (int i = 0; i < nverts; ++i)
-				dtVcopy(&verts[i*3], &curTile->verts[curPoly->verts[i]*3]);
+				dtVcopy(&verts[i*3], &curTile.verts[curPoly.verts[i]*3]);
 
 			// If target is inside the poly, stop search.
 			if (dtPointInPolygon(endPos, verts, nverts))
@@ -1961,40 +1963,40 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			}
 
 			// Find wall edges and find nearest point inside the walls.
-			for (int i = 0, j = (int)curPoly->vertCount-1; i < (int)curPoly->vertCount; j = i++)
+			for (int i = 0, j = (int)curPoly.vertCount-1; i < (int)curPoly.vertCount; j = i++)
 			{
 				// Find links to neighbours.
 				static const int MAX_NEIS = 8;
 				int nneis = 0;
-				dtPolyRef neis[MAX_NEIS];
+				dtPoly neis[MAX_NEIS];
 
-				if (curPoly->neis[j] & DT_EXT_LINK)
+				if (curPoly.neis[j] & DT_EXT_LINK)
 				{
 					// Tile border.
-					for (unsigned int k = curPoly->firstLink; k != DT_NULL_LINK; k = curTile->links[k].next)
+					for (unsigned int k = curPoly.firstLink; k != DT_NULL_LINK; k = curTile.links[k].next)
 					{
-						const dtLink* link = &curTile->links[k];
-						if (link->edge == j)
+						const dtLink* link = &curTile.links[k];
+						if (link.edge == j)
 						{
-							if (link->ref != 0)
+							if (link.ref != 0)
 							{
 								const dtMeshTile* neiTile = 0;
 								const dtPoly* neiPoly = 0;
-								m_nav->getTileAndPolyByRefUnsafe(link->ref, &neiTile, &neiPoly);
-								if (filter->passFilter(link->ref, neiTile, neiPoly))
+								m_nav.getTileAndPolyByRefUnsafe(link.ref, &neiTile, &neiPoly);
+								if (filter.passFilter(link.ref, neiTile, neiPoly))
 								{
 									if (nneis < MAX_NEIS)
-										neis[nneis++] = link->ref;
+										neis[nneis++] = link.ref;
 								}
 							}
 						}
 					}
 				}
-				else if (curPoly->neis[j])
+				else if (curPoly.neis[j])
 				{
-					const unsigned int idx = (unsigned int)(curPoly->neis[j]-1);
-					const dtPolyRef ref = m_nav->getPolyRefBase(curTile) | idx;
-					if (filter->passFilter(ref, curTile, &curTile->polys[idx]))
+					const unsigned int idx = (unsigned int)(curPoly.neis[j]-1);
+					const dtPoly ref = m_nav.getPolyRefBase(curTile) | idx;
+					if (filter.passFilter(ref, curTile, &curTile.polys[idx]))
 					{
 						// Internal edge, encode id.
 						neis[nneis++] = ref;
@@ -2021,11 +2023,11 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 					for (int k = 0; k < nneis; ++k)
 					{
 						// Skip if no node can be allocated.
-						dtNode* neighbourNode = m_tinyNodePool->getNode(neis[k]);
+						dtNode* neighbourNode = m_tinyNodePool.getNode(neis[k]);
 						if (!neighbourNode)
 							continue;
 						// Skip if already visited.
-						if (neighbourNode->flags & DT_NODE_CLOSED)
+						if (neighbourNode.flags & DT_NODE_CLOSED)
 							continue;
 
 						// Skip the link if it is too far from search constraint.
@@ -2040,8 +2042,8 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 						// Mark as the node as visited and push to queue.
 						if (nstack < MAX_STACK)
 						{
-							neighbourNode->pidx = m_tinyNodePool->getNodeIdx(curNode);
-							neighbourNode->flags |= DT_NODE_CLOSED;
+							neighbourNode.pidx = m_tinyNodePool.getNodeIdx(curNode);
+							neighbourNode.flags |= DT_NODE_CLOSED;
 							stack[nstack++] = neighbourNode;
 						}
 					}
@@ -2057,8 +2059,8 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			dtNode* node = bestNode;
 			do
 			{
-				dtNode* next = m_tinyNodePool->getNodeAtIdx(node->pidx);
-				node->pidx = m_tinyNodePool->getNodeIdx(prev);
+				dtNode* next = m_tinyNodePool.getNodeAtIdx(node.pidx);
+				node.pidx = m_tinyNodePool.getNodeIdx(prev);
 				prev = node;
 				node = next;
 			}
@@ -2068,13 +2070,13 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			node = prev;
 			do
 			{
-				visited[n++] = node->id;
+				visited[n++] = node.id;
 				if (n >= maxVisitedSize)
 				{
 					status |= DT_BUFFER_TOO_SMALL;
 					break;
 				}
-				node = m_tinyNodePool->getNodeAtIdx(node->pidx);
+				node = m_tinyNodePool.getNodeAtIdx(node.pidx);
 			}
 			while (node);
 		}
@@ -2087,38 +2089,38 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	}
 
 
-	dtStatus dtNavMeshQuery::getPortalPoints(dtPolyRef from, dtPolyRef to, float* left, float* right,
+	dtStatus getPortalPoints(dtPoly from, dtPoly to, float* left, float* right,
 											 unsigned char& fromType, unsigned char& toType) const
 	{
 		dtAssert(m_nav);
 
 		const dtMeshTile* fromTile = 0;
 		const dtPoly* fromPoly = 0;
-		if (dtStatusFailed(m_nav->getTileAndPolyByRef(from, &fromTile, &fromPoly)))
+		if (dtStatusFailed(m_nav.getTileAndPolyByRef(from, &fromTile, &fromPoly)))
 			return DT_FAILURE | DT_INVALID_PARAM;
-		fromType = fromPoly->getType();
+		fromType = fromPoly.getType();
 
 		const dtMeshTile* toTile = 0;
 		const dtPoly* toPoly = 0;
-		if (dtStatusFailed(m_nav->getTileAndPolyByRef(to, &toTile, &toPoly)))
+		if (dtStatusFailed(m_nav.getTileAndPolyByRef(to, &toTile, &toPoly)))
 			return DT_FAILURE | DT_INVALID_PARAM;
-		toType = toPoly->getType();
+		toType = toPoly.getType();
 
 		return getPortalPoints(from, fromPoly, fromTile, to, toPoly, toTile, left, right);
 	}
 
 	// Returns portal points between two polygons.
-	dtStatus dtNavMeshQuery::getPortalPoints(dtPolyRef from, const dtPoly* fromPoly, const dtMeshTile* fromTile,
-											 dtPolyRef to, const dtPoly* toPoly, const dtMeshTile* toTile,
+	dtStatus getPortalPoints(dtPoly from, const dtPoly* fromPoly, const dtMeshTile* fromTile,
+											 dtPoly to, const dtPoly* toPoly, const dtMeshTile* toTile,
 											 float* left, float* right) const
 	{
 		// Find the link that points to the 'to' polygon.
 		const dtLink* link = 0;
-		for (unsigned int i = fromPoly->firstLink; i != DT_NULL_LINK; i = fromTile->links[i].next)
+		for (unsigned int i = fromPoly.firstLink; i != DT_NULL_LINK; i = fromTile.links[i].next)
 		{
-			if (fromTile->links[i].ref == to)
+			if (fromTile.links[i].ref == to)
 			{
-				link = &fromTile->links[i];
+				link = &fromTile.links[i];
 				break;
 			}
 		}
@@ -2126,31 +2128,31 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			return DT_FAILURE | DT_INVALID_PARAM;
 
 		// Handle off-mesh connections.
-		if (fromPoly->getType() == DT_POLYTYPE_OFFMESH_CONNECTION)
+		if (fromPoly.getType() == DT_POLYTYPE_OFFMESH_CONNECTION)
 		{
 			// Find link that points to first vertex.
-			for (unsigned int i = fromPoly->firstLink; i != DT_NULL_LINK; i = fromTile->links[i].next)
+			for (unsigned int i = fromPoly.firstLink; i != DT_NULL_LINK; i = fromTile.links[i].next)
 			{
-				if (fromTile->links[i].ref == to)
+				if (fromTile.links[i].ref == to)
 				{
-					const int v = fromTile->links[i].edge;
-					dtVcopy(left, &fromTile->verts[fromPoly->verts[v]*3]);
-					dtVcopy(right, &fromTile->verts[fromPoly->verts[v]*3]);
+					const int v = fromTile.links[i].edge;
+					dtVcopy(left, &fromTile.verts[fromPoly.verts[v]*3]);
+					dtVcopy(right, &fromTile.verts[fromPoly.verts[v]*3]);
 					return DT_SUCCESS;
 				}
 			}
 			return DT_FAILURE | DT_INVALID_PARAM;
 		}
 
-		if (toPoly->getType() == DT_POLYTYPE_OFFMESH_CONNECTION)
+		if (toPoly.getType() == DT_POLYTYPE_OFFMESH_CONNECTION)
 		{
-			for (unsigned int i = toPoly->firstLink; i != DT_NULL_LINK; i = toTile->links[i].next)
+			for (unsigned int i = toPoly.firstLink; i != DT_NULL_LINK; i = toTile.links[i].next)
 			{
-				if (toTile->links[i].ref == from)
+				if (toTile.links[i].ref == from)
 				{
-					const int v = toTile->links[i].edge;
-					dtVcopy(left, &toTile->verts[toPoly->verts[v]*3]);
-					dtVcopy(right, &toTile->verts[toPoly->verts[v]*3]);
+					const int v = toTile.links[i].edge;
+					dtVcopy(left, &toTile.verts[toPoly.verts[v]*3]);
+					dtVcopy(right, &toTile.verts[toPoly.verts[v]*3]);
 					return DT_SUCCESS;
 				}
 			}
@@ -2158,23 +2160,23 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		}
 
 		// Find portal vertices.
-		const int v0 = fromPoly->verts[link->edge];
-		const int v1 = fromPoly->verts[(link->edge+1) % (int)fromPoly->vertCount];
-		dtVcopy(left, &fromTile->verts[v0*3]);
-		dtVcopy(right, &fromTile->verts[v1*3]);
+		const int v0 = fromPoly.verts[link.edge];
+		const int v1 = fromPoly.verts[(link.edge+1) % (int)fromPoly.vertCount];
+		dtVcopy(left, &fromTile.verts[v0*3]);
+		dtVcopy(right, &fromTile.verts[v1*3]);
 
 		// If the link is at tile boundary, dtClamp the vertices to
 		// the link width.
-		if (link->side != 0xff)
+		if (link.side != 0xff)
 		{
 			// Unpack portal limits.
-			if (link->bmin != 0 || link->bmax != 255)
+			if (link.bmin != 0 || link.bmax != 255)
 			{
 				const float s = 1.0f/255.0f;
-				const float tmin = link->bmin*s;
-				const float tmax = link->bmax*s;
-				dtVlerp(left, &fromTile->verts[v0*3], &fromTile->verts[v1*3], tmin);
-				dtVlerp(right, &fromTile->verts[v0*3], &fromTile->verts[v1*3], tmax);
+				const float tmin = link.bmin*s;
+				const float tmax = link.bmax*s;
+				dtVlerp(left, &fromTile.verts[v0*3], &fromTile.verts[v1*3], tmin);
+				dtVlerp(right, &fromTile.verts[v0*3], &fromTile.verts[v1*3], tmax);
 			}
 		}
 
@@ -2182,7 +2184,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	}
 
 	// Returns edge mid point between two polygons.
-	dtStatus dtNavMeshQuery::getEdgeMidPoint(dtPolyRef from, dtPolyRef to, float* mid) const
+	dtStatus getEdgeMidPoint(dtPoly from, dtPoly to, float* mid) const
 	{
 		float left[3], right[3];
 		unsigned char fromType, toType;
@@ -2194,8 +2196,8 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		return DT_SUCCESS;
 	}
 
-	dtStatus dtNavMeshQuery::getEdgeMidPoint(dtPolyRef from, const dtPoly* fromPoly, const dtMeshTile* fromTile,
-											 dtPolyRef to, const dtPoly* toPoly, const dtMeshTile* toTile,
+	dtStatus getEdgeMidPoint(dtPoly from, const dtPoly* fromPoly, const dtMeshTile* fromTile,
+											 dtPoly to, const dtPoly* toPoly, const dtMeshTile* toTile,
 											 float* mid) const
 	{
 		float left[3], right[3];
@@ -2245,9 +2247,9 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	/// (no wall hit), meaning it reached the end position. This is one example of why
 	/// this method is meant for short distance checks.
 	///
-	dtStatus dtNavMeshQuery::raycast(dtPolyRef startRef, const float* startPos, const float* endPos,
+	dtStatus raycast(dtPoly startRef, const float* startPos, const float* endPos,
 									 const dtQueryFilter* filter,
-									 float* t, float* hitNormal, dtPolyRef* path, int* pathCount, const int maxPath) const
+									 float* t, float* hitNormal, dtPoly* path, int* pathCount, const int maxPath) const
 	{
 		dtAssert(m_nav);
 
@@ -2256,10 +2258,10 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			*pathCount = 0;
 
 		// Validate input
-		if (!startRef || !m_nav->isValidPolyRef(startRef))
+		if (!startRef || !m_nav.isValidPolyRef(startRef))
 			return DT_FAILURE | DT_INVALID_PARAM;
 
-		dtPolyRef curRef = startRef;
+		dtPoly curRef = startRef;
 		float verts[DT_VERTS_PER_POLYGON*3];
 		int n = 0;
 
@@ -2276,13 +2278,13 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			// The API input has been cheked already, skip checking internal data.
 			const dtMeshTile* tile = 0;
 			const dtPoly* poly = 0;
-			m_nav->getTileAndPolyByRefUnsafe(curRef, &tile, &poly);
+			m_nav.getTileAndPolyByRefUnsafe(curRef, &tile, &poly);
 
 			// Collect vertices.
 			int nv = 0;
-			for (int i = 0; i < (int)poly->vertCount; ++i)
+			for (int i = 0; i < (int)poly.vertCount; ++i)
 			{
-				dtVcopy(&verts[nv*3], &tile->verts[poly->verts[i]*3]);
+				dtVcopy(&verts[nv*3], &tile.verts[poly.verts[i]*3]);
 				nv++;
 			}
 
@@ -2315,81 +2317,81 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			}
 
 			// Follow neighbours.
-			dtPolyRef nextRef = 0;
+			dtPoly nextRef = 0;
 
-			for (unsigned int i = poly->firstLink; i != DT_NULL_LINK; i = tile->links[i].next)
+			for (unsigned int i = poly.firstLink; i != DT_NULL_LINK; i = tile.links[i].next)
 			{
-				const dtLink* link = &tile->links[i];
+				const dtLink* link = &tile.links[i];
 
 				// Find link which contains this edge.
-				if ((int)link->edge != segMax)
+				if ((int)link.edge != segMax)
 					continue;
 
 				// Get pointer to the next polygon.
 				const dtMeshTile* nextTile = 0;
 				const dtPoly* nextPoly = 0;
-				m_nav->getTileAndPolyByRefUnsafe(link->ref, &nextTile, &nextPoly);
+				m_nav.getTileAndPolyByRefUnsafe(link.ref, &nextTile, &nextPoly);
 
 				// Skip off-mesh connections.
-				if (nextPoly->getType() == DT_POLYTYPE_OFFMESH_CONNECTION)
+				if (nextPoly.getType() == DT_POLYTYPE_OFFMESH_CONNECTION)
 					continue;
 
 				// Skip links based on filter.
-				if (!filter->passFilter(link->ref, nextTile, nextPoly))
+				if (!filter.passFilter(link.ref, nextTile, nextPoly))
 					continue;
 
 				// If the link is internal, just return the ref.
-				if (link->side == 0xff)
+				if (link.side == 0xff)
 				{
-					nextRef = link->ref;
+					nextRef = link.ref;
 					break;
 				}
 
 				// If the link is at tile boundary,
 
 				// Check if the link spans the whole edge, and accept.
-				if (link->bmin == 0 && link->bmax == 255)
+				if (link.bmin == 0 && link.bmax == 255)
 				{
-					nextRef = link->ref;
+					nextRef = link.ref;
 					break;
 				}
 
 				// Check for partial edge links.
-				const int v0 = poly->verts[link->edge];
-				const int v1 = poly->verts[(link->edge+1) % poly->vertCount];
-				const float* left = &tile->verts[v0*3];
-				const float* right = &tile->verts[v1*3];
+				const int v0 = poly.verts[link.edge];
+				const int v1 = poly.verts[(link.edge+1) % poly.vertCount];
+				const float* left = &tile.verts[v0*3];
+				const float* right = &tile.verts[v1*3];
 
 				// Check that the intersection lies inside the link portal.
-				if (link->side == 0 || link->side == 4)
+				if (link.side == 0 || link.side == 4)
 				{
 					// Calculate link size.
 					const float s = 1.0f/255.0f;
-					float lmin = left[2] + (right[2] - left[2])*(link->bmin*s);
-					float lmax = left[2] + (right[2] - left[2])*(link->bmax*s);
+					float lmin = left[2] + (right[2] - left[2])*(link.bmin*s);
+					float lmax = left[2] + (right[2] - left[2])*(link.bmax*s);
 					if (lmin > lmax) dtSwap(lmin, lmax);
 
 					// Find Z intersection.
 					float z = startPos[2] + (endPos[2]-startPos[2])*tmax;
 					if (z >= lmin && z <= lmax)
 					{
-						nextRef = link->ref;
+						nextRef = link.ref;
 						break;
 					}
 				}
-				else if (link->side == 2 || link->side == 6)
+				else if (link.side == 2 || link.side == 6)
 				{
 					// Calculate link size.
 					const float s = 1.0f/255.0f;
-					float lmin = left[0] + (right[0] - left[0])*(link->bmin*s);
-					float lmax = left[0] + (right[0] - left[0])*(link->bmax*s);
+					float lmin = left[0] + (right[0] - left[0])*(link.bmin*s);
+					float lmax = left[0] + (right[0] - left[0])*(link.bmax*s);
 					if (lmin > lmax) dtSwap(lmin, lmax);
 
 					// Find X intersection.
 					float x = startPos[0] + (endPos[0]-startPos[0])*tmax;
 					if (x >= lmin && x <= lmax)
 					{
-						nextRef = link->ref;
+						nextRef = link.ref;
 						break;
 					}
 				}
@@ -2424,7 +2426,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			*pathCount = n;
 
 		return status;
-	}
+	}*/
 
 	/// @par
 	///
@@ -2455,9 +2457,9 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	/// If the result arrays are to small to hold the entire result set, they will be
 	/// filled to capacity.
 	///
-	dtStatus dtNavMeshQuery::findPolysAroundCircle(dtPolyRef startRef, const float* centerPos, const float radius,
+/*	dtStatus findPolysAroundCircle(dtPoly startRef, const float* centerPos, const float radius,
 												   const dtQueryFilter* filter,
-												   dtPolyRef* resultRef, dtPolyRef* resultParent, float* resultCost,
+												   dtPoly* resultRef, dtPoly* resultParent, float* resultCost,
 												   int* resultCount, const int maxResult) const
 	{
 		dtAssert(m_nav);
@@ -2467,20 +2469,20 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		*resultCount = 0;
 
 		// Validate input
-		if (!startRef || !m_nav->isValidPolyRef(startRef))
+		if (!startRef || !m_nav.isValidPolyRef(startRef))
 			return DT_FAILURE | DT_INVALID_PARAM;
 
-		m_nodePool->clear();
-		m_openList->clear();
+		m_nodePool.clear();
+		m_openList.clear();
 
-		dtNode* startNode = m_nodePool->getNode(startRef);
-		dtVcopy(startNode->pos, centerPos);
-		startNode->pidx = 0;
-		startNode->cost = 0;
-		startNode->total = 0;
-		startNode->id = startRef;
-		startNode->flags = DT_NODE_OPEN;
-		m_openList->push(startNode);
+		dtNode* startNode = m_nodePool.getNode(startRef);
+		dtVcopy(startNode.pos, centerPos);
+		startNode.pidx = 0;
+		startNode.cost = 0;
+		startNode.total = 0;
+		startNode.id = startRef;
+		startNode.flags = DT_NODE_OPEN;
+		m_openList.push(startNode);
 
 		dtStatus status = DT_SUCCESS;
 
@@ -2488,7 +2490,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		if (n < maxResult)
 		{
 			if (resultRef)
-				resultRef[n] = startNode->id;
+				resultRef[n] = startNode.id;
 			if (resultParent)
 				resultParent[n] = 0;
 			if (resultCost)
@@ -2502,32 +2504,32 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 
 		const float radiusSqr = dtSqr(radius);
 
-		while (!m_openList->empty())
+		while (!m_openList.empty())
 		{
-			dtNode* bestNode = m_openList->pop();
-			bestNode->flags &= ~DT_NODE_OPEN;
-			bestNode->flags |= DT_NODE_CLOSED;
+			dtNode* bestNode = m_openList.pop();
+			bestNode.flags &= ~DT_NODE_OPEN;
+			bestNode.flags |= DT_NODE_CLOSED;
 
 			// Get poly and tile.
 			// The API input has been cheked already, skip checking internal data.
-			const dtPolyRef bestRef = bestNode->id;
+			const dtPoly bestRef = bestNode.id;
 			const dtMeshTile* bestTile = 0;
 			const dtPoly* bestPoly = 0;
-			m_nav->getTileAndPolyByRefUnsafe(bestRef, &bestTile, &bestPoly);
+			m_nav.getTileAndPolyByRefUnsafe(bestRef, &bestTile, &bestPoly);
 
 			// Get parent poly and tile.
-			dtPolyRef parentRef = 0;
+			dtPoly parentRef = 0;
 			const dtMeshTile* parentTile = 0;
 			const dtPoly* parentPoly = 0;
-			if (bestNode->pidx)
-				parentRef = m_nodePool->getNodeAtIdx(bestNode->pidx)->id;
+			if (bestNode.pidx)
+				parentRef = m_nodePool.getNodeAtIdx(bestNode.pidx).id;
 			if (parentRef)
-				m_nav->getTileAndPolyByRefUnsafe(parentRef, &parentTile, &parentPoly);
+				m_nav.getTileAndPolyByRefUnsafe(parentRef, &parentTile, &parentPoly);
 
-			for (unsigned int i = bestPoly->firstLink; i != DT_NULL_LINK; i = bestTile->links[i].next)
+			for (unsigned int i = bestPoly.firstLink; i != DT_NULL_LINK; i = bestTile.links[i].next)
 			{
-				const dtLink* link = &bestTile->links[i];
-				dtPolyRef neighbourRef = link->ref;
+				const dtLink* link = &bestTile.links[i];
+				dtPoly neighbourRef = link.ref;
 				// Skip invalid neighbours and do not follow back to parent.
 				if (!neighbourRef || neighbourRef == parentRef)
 					continue;
@@ -2535,10 +2537,10 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 				// Expand to neighbour
 				const dtMeshTile* neighbourTile = 0;
 				const dtPoly* neighbourPoly = 0;
-				m_nav->getTileAndPolyByRefUnsafe(neighbourRef, &neighbourTile, &neighbourPoly);
+				m_nav.getTileAndPolyByRefUnsafe(neighbourRef, &neighbourTile, &neighbourPoly);
 
 				// Do not advance if the polygon is excluded by the filter.
-				if (!filter->passFilter(neighbourRef, neighbourTile, neighbourPoly))
+				if (!filter.passFilter(neighbourRef, neighbourTile, neighbourPoly))
 					continue;
 
 				// Find edge and calc distance to the edge.
@@ -2552,53 +2554,53 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 				if (distSqr > radiusSqr)
 					continue;
 
-				dtNode* neighbourNode = m_nodePool->getNode(neighbourRef);
+				dtNode* neighbourNode = m_nodePool.getNode(neighbourRef);
 				if (!neighbourNode)
 				{
 					status |= DT_OUT_OF_NODES;
 					continue;
 				}
 
-				if (neighbourNode->flags & DT_NODE_CLOSED)
+				if (neighbourNode.flags & DT_NODE_CLOSED)
 					continue;
 
 				// Cost
-				if (neighbourNode->flags == 0)
-					dtVlerp(neighbourNode->pos, va, vb, 0.5f);
+				if (neighbourNode.flags == 0)
+					dtVlerp(neighbourNode.pos, va, vb, 0.5f);
 
-				const float total = bestNode->total + dtVdist(bestNode->pos, neighbourNode->pos);
+				const float total = bestNode.total + dtVdist(bestNode.pos, neighbourNode.pos);
 
 				// The node is already in open list and the new result is worse, skip.
-				if ((neighbourNode->flags & DT_NODE_OPEN) && total >= neighbourNode->total)
+				if ((neighbourNode.flags & DT_NODE_OPEN) && total >= neighbourNode.total)
 					continue;
 
-				neighbourNode->id = neighbourRef;
-				neighbourNode->flags = (neighbourNode->flags & ~DT_NODE_CLOSED);
-				neighbourNode->pidx = m_nodePool->getNodeIdx(bestNode);
-				neighbourNode->total = total;
+				neighbourNode.id = neighbourRef;
+				neighbourNode.flags = (neighbourNode.flags & ~DT_NODE_CLOSED);
+				neighbourNode.pidx = m_nodePool.getNodeIdx(bestNode);
+				neighbourNode.total = total;
 
-				if (neighbourNode->flags & DT_NODE_OPEN)
+				if (neighbourNode.flags & DT_NODE_OPEN)
 				{
-					m_openList->modify(neighbourNode);
+					m_openList.modify(neighbourNode);
 				}
 				else
 				{
 					if (n < maxResult)
 					{
 						if (resultRef)
-							resultRef[n] = neighbourNode->id;
+							resultRef[n] = neighbourNode.id;
 						if (resultParent)
-							resultParent[n] = m_nodePool->getNodeAtIdx(neighbourNode->pidx)->id;
+							resultParent[n] = m_nodePool.getNodeAtIdx(neighbourNode.pidx).id;
 						if (resultCost)
-							resultCost[n] = neighbourNode->total;
+							resultCost[n] = neighbourNode.total;
 						++n;
 					}
 					else
 					{
 						status |= DT_BUFFER_TOO_SMALL;
 					}
-					neighbourNode->flags = DT_NODE_OPEN;
-					m_openList->push(neighbourNode);
+					neighbourNode.flags = DT_NODE_OPEN;
+					m_openList.push(neighbourNode);
 				}
 			}
 		}
@@ -2630,9 +2632,9 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	/// If the result arrays are is too small to hold the entire result set, they will
 	/// be filled to capacity.
 	///
-	dtStatus dtNavMeshQuery::findPolysAroundShape(dtPolyRef startRef, const float* verts, const int nverts,
+	dtStatus findPolysAroundShape(dtPoly startRef, const float* verts, const int nverts,
 												  const dtQueryFilter* filter,
-												  dtPolyRef* resultRef, dtPolyRef* resultParent, float* resultCost,
+												  dtPoly* resultRef, dtPoly* resultParent, float* resultCost,
 												  int* resultCount, const int maxResult) const
 	{
 		dtAssert(m_nav);
@@ -2642,25 +2644,25 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		*resultCount = 0;
 
 		// Validate input
-		if (!startRef || !m_nav->isValidPolyRef(startRef))
+		if (!startRef || !m_nav.isValidPolyRef(startRef))
 			return DT_FAILURE | DT_INVALID_PARAM;
 
-		m_nodePool->clear();
-		m_openList->clear();
+		m_nodePool.clear();
+		m_openList.clear();
 
 		float centerPos[3] = {0,0,0};
 		for (int i = 0; i < nverts; ++i)
 			dtVadd(centerPos,centerPos,&verts[i*3]);
 		dtVscale(centerPos,centerPos,1.0f/nverts);
 
-		dtNode* startNode = m_nodePool->getNode(startRef);
-		dtVcopy(startNode->pos, centerPos);
-		startNode->pidx = 0;
-		startNode->cost = 0;
-		startNode->total = 0;
-		startNode->id = startRef;
-		startNode->flags = DT_NODE_OPEN;
-		m_openList->push(startNode);
+		dtNode* startNode = m_nodePool.getNode(startRef);
+		dtVcopy(startNode.pos, centerPos);
+		startNode.pidx = 0;
+		startNode.cost = 0;
+		startNode.total = 0;
+		startNode.id = startRef;
+		startNode.flags = DT_NODE_OPEN;
+		m_openList.push(startNode);
 
 		dtStatus status = DT_SUCCESS;
 
@@ -2668,7 +2670,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		if (n < maxResult)
 		{
 			if (resultRef)
-				resultRef[n] = startNode->id;
+				resultRef[n] = startNode.id;
 			if (resultParent)
 				resultParent[n] = 0;
 			if (resultCost)
@@ -2680,32 +2682,32 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			status |= DT_BUFFER_TOO_SMALL;
 		}
 
-		while (!m_openList->empty())
+		while (!m_openList.empty())
 		{
-			dtNode* bestNode = m_openList->pop();
-			bestNode->flags &= ~DT_NODE_OPEN;
-			bestNode->flags |= DT_NODE_CLOSED;
+			dtNode* bestNode = m_openList.pop();
+			bestNode.flags &= ~DT_NODE_OPEN;
+			bestNode.flags |= DT_NODE_CLOSED;
 
 			// Get poly and tile.
 			// The API input has been cheked already, skip checking internal data.
-			const dtPolyRef bestRef = bestNode->id;
+			const dtPoly bestRef = bestNode.id;
 			const dtMeshTile* bestTile = 0;
 			const dtPoly* bestPoly = 0;
-			m_nav->getTileAndPolyByRefUnsafe(bestRef, &bestTile, &bestPoly);
+			m_nav.getTileAndPolyByRefUnsafe(bestRef, &bestTile, &bestPoly);
 
 			// Get parent poly and tile.
-			dtPolyRef parentRef = 0;
+			dtPoly parentRef = 0;
 			const dtMeshTile* parentTile = 0;
 			const dtPoly* parentPoly = 0;
-			if (bestNode->pidx)
-				parentRef = m_nodePool->getNodeAtIdx(bestNode->pidx)->id;
+			if (bestNode.pidx)
+				parentRef = m_nodePool.getNodeAtIdx(bestNode.pidx).id;
 			if (parentRef)
-				m_nav->getTileAndPolyByRefUnsafe(parentRef, &parentTile, &parentPoly);
+				m_nav.getTileAndPolyByRefUnsafe(parentRef, &parentTile, &parentPoly);
 
-			for (unsigned int i = bestPoly->firstLink; i != DT_NULL_LINK; i = bestTile->links[i].next)
+			for (unsigned int i = bestPoly.firstLink; i != DT_NULL_LINK; i = bestTile.links[i].next)
 			{
-				const dtLink* link = &bestTile->links[i];
-				dtPolyRef neighbourRef = link->ref;
+				const dtLink* link = &bestTile.links[i];
+				dtPoly neighbourRef = link.ref;
 				// Skip invalid neighbours and do not follow back to parent.
 				if (!neighbourRef || neighbourRef == parentRef)
 					continue;
@@ -2713,10 +2715,10 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 				// Expand to neighbour
 				const dtMeshTile* neighbourTile = 0;
 				const dtPoly* neighbourPoly = 0;
-				m_nav->getTileAndPolyByRefUnsafe(neighbourRef, &neighbourTile, &neighbourPoly);
+				m_nav.getTileAndPolyByRefUnsafe(neighbourRef, &neighbourTile, &neighbourPoly);
 
 				// Do not advance if the polygon is excluded by the filter.
-				if (!filter->passFilter(neighbourRef, neighbourTile, neighbourPoly))
+				if (!filter.passFilter(neighbourRef, neighbourTile, neighbourPoly))
 					continue;
 
 				// Find edge and calc distance to the edge.
@@ -2732,53 +2734,53 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 				if (tmin > 1.0f || tmax < 0.0f)
 					continue;
 
-				dtNode* neighbourNode = m_nodePool->getNode(neighbourRef);
+				dtNode* neighbourNode = m_nodePool.getNode(neighbourRef);
 				if (!neighbourNode)
 				{
 					status |= DT_OUT_OF_NODES;
 					continue;
 				}
 
-				if (neighbourNode->flags & DT_NODE_CLOSED)
+				if (neighbourNode.flags & DT_NODE_CLOSED)
 					continue;
 
 				// Cost
-				if (neighbourNode->flags == 0)
-					dtVlerp(neighbourNode->pos, va, vb, 0.5f);
+				if (neighbourNode.flags == 0)
+					dtVlerp(neighbourNode.pos, va, vb, 0.5f);
 
-				const float total = bestNode->total + dtVdist(bestNode->pos, neighbourNode->pos);
+				const float total = bestNode.total + dtVdist(bestNode.pos, neighbourNode.pos);
 
 				// The node is already in open list and the new result is worse, skip.
-				if ((neighbourNode->flags & DT_NODE_OPEN) && total >= neighbourNode->total)
+				if ((neighbourNode.flags & DT_NODE_OPEN) && total >= neighbourNode.total)
 					continue;
 
-				neighbourNode->id = neighbourRef;
-				neighbourNode->flags = (neighbourNode->flags & ~DT_NODE_CLOSED);
-				neighbourNode->pidx = m_nodePool->getNodeIdx(bestNode);
-				neighbourNode->total = total;
+				neighbourNode.id = neighbourRef;
+				neighbourNode.flags = (neighbourNode.flags & ~DT_NODE_CLOSED);
+				neighbourNode.pidx = m_nodePool.getNodeIdx(bestNode);
+				neighbourNode.total = total;
 
-				if (neighbourNode->flags & DT_NODE_OPEN)
+				if (neighbourNode.flags & DT_NODE_OPEN)
 				{
-					m_openList->modify(neighbourNode);
+					m_openList.modify(neighbourNode);
 				}
 				else
 				{
 					if (n < maxResult)
 					{
 						if (resultRef)
-							resultRef[n] = neighbourNode->id;
+							resultRef[n] = neighbourNode.id;
 						if (resultParent)
-							resultParent[n] = m_nodePool->getNodeAtIdx(neighbourNode->pidx)->id;
+							resultParent[n] = m_nodePool.getNodeAtIdx(neighbourNode.pidx).id;
 						if (resultCost)
-							resultCost[n] = neighbourNode->total;
+							resultCost[n] = neighbourNode.total;
 						++n;
 					}
 					else
 					{
 						status |= DT_BUFFER_TOO_SMALL;
 					}
-					neighbourNode->flags = DT_NODE_OPEN;
-					m_openList->push(neighbourNode);
+					neighbourNode.flags = DT_NODE_OPEN;
+					m_openList.push(neighbourNode);
 				}
 			}
 		}
@@ -2786,7 +2788,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		*resultCount = n;
 
 		return status;
-	}
+	}*/
 
 	/// @par
 	///
@@ -2810,9 +2812,9 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	/// If the result arrays are is too small to hold the entire result set, they will
 	/// be filled to capacity.
 	///
-	dtStatus dtNavMeshQuery::findLocalNeighbourhood(dtPolyRef startRef, const float* centerPos, const float radius,
+/*	dtStatus findLocalNeighbourhood(dtPoly startRef, const float* centerPos, const float radius,
 													const dtQueryFilter* filter,
-													dtPolyRef* resultRef, dtPolyRef* resultParent,
+													dtPoly* resultRef, dtPoly* resultParent,
 													int* resultCount, const int maxResult) const
 	{
 		dtAssert(m_nav);
@@ -2821,19 +2823,19 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		*resultCount = 0;
 
 		// Validate input
-		if (!startRef || !m_nav->isValidPolyRef(startRef))
+		if (!startRef || !m_nav.isValidPolyRef(startRef))
 			return DT_FAILURE | DT_INVALID_PARAM;
 
 		static const int MAX_STACK = 48;
 		dtNode* stack[MAX_STACK];
 		int nstack = 0;
 
-		m_tinyNodePool->clear();
+		m_tinyNodePool.clear();
 
-		dtNode* startNode = m_tinyNodePool->getNode(startRef);
-		startNode->pidx = 0;
-		startNode->id = startRef;
-		startNode->flags = DT_NODE_CLOSED;
+		dtNode* startNode = m_tinyNodePool.getNode(startRef);
+		startNode.pidx = 0;
+		startNode.id = startRef;
+		startNode.flags = DT_NODE_CLOSED;
 		stack[nstack++] = startNode;
 
 		const float radiusSqr = dtSqr(radius);
@@ -2846,7 +2848,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		int n = 0;
 		if (n < maxResult)
 		{
-			resultRef[n] = startNode->id;
+			resultRef[n] = startNode.id;
 			if (resultParent)
 				resultParent[n] = 0;
 			++n;
@@ -2866,38 +2868,38 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 
 			// Get poly and tile.
 			// The API input has been cheked already, skip checking internal data.
-			const dtPolyRef curRef = curNode->id;
+			const dtPoly curRef = curNode.id;
 			const dtMeshTile* curTile = 0;
 			const dtPoly* curPoly = 0;
-			m_nav->getTileAndPolyByRefUnsafe(curRef, &curTile, &curPoly);
+			m_nav.getTileAndPolyByRefUnsafe(curRef, &curTile, &curPoly);
 
-			for (unsigned int i = curPoly->firstLink; i != DT_NULL_LINK; i = curTile->links[i].next)
+			for (unsigned int i = curPoly.firstLink; i != DT_NULL_LINK; i = curTile.links[i].next)
 			{
-				const dtLink* link = &curTile->links[i];
-				dtPolyRef neighbourRef = link->ref;
+				const dtLink* link = &curTile.links[i];
+				dtPoly neighbourRef = link.ref;
 				// Skip invalid neighbours.
 				if (!neighbourRef)
 					continue;
 
 				// Skip if cannot alloca more nodes.
-				dtNode* neighbourNode = m_tinyNodePool->getNode(neighbourRef);
+				dtNode* neighbourNode = m_tinyNodePool.getNode(neighbourRef);
 				if (!neighbourNode)
 					continue;
 				// Skip visited.
-				if (neighbourNode->flags & DT_NODE_CLOSED)
+				if (neighbourNode.flags & DT_NODE_CLOSED)
 					continue;
 
 				// Expand to neighbour
 				const dtMeshTile* neighbourTile = 0;
 				const dtPoly* neighbourPoly = 0;
-				m_nav->getTileAndPolyByRefUnsafe(neighbourRef, &neighbourTile, &neighbourPoly);
+				m_nav.getTileAndPolyByRefUnsafe(neighbourRef, &neighbourTile, &neighbourPoly);
 
 				// Skip off-mesh connections.
-				if (neighbourPoly->getType() == DT_POLYTYPE_OFFMESH_CONNECTION)
+				if (neighbourPoly.getType() == DT_POLYTYPE_OFFMESH_CONNECTION)
 					continue;
 
 				// Do not advance if the polygon is excluded by the filter.
-				if (!filter->passFilter(neighbourRef, neighbourTile, neighbourPoly))
+				if (!filter.passFilter(neighbourRef, neighbourTile, neighbourPoly))
 					continue;
 
 				// Find edge and calc distance to the edge.
@@ -2913,26 +2915,26 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 
 				// Mark node visited, this is done before the overlap test so that
 				// we will not visit the poly again if the test fails.
-				neighbourNode->flags |= DT_NODE_CLOSED;
-				neighbourNode->pidx = m_tinyNodePool->getNodeIdx(curNode);
+				neighbourNode.flags |= DT_NODE_CLOSED;
+				neighbourNode.pidx = m_tinyNodePool.getNodeIdx(curNode);
 
 				// Check that the polygon does not collide with existing polygons.
 
 				// Collect vertices of the neighbour poly.
-				const int npa = neighbourPoly->vertCount;
+				const int npa = neighbourPoly.vertCount;
 				for (int k = 0; k < npa; ++k)
-					dtVcopy(&pa[k*3], &neighbourTile->verts[neighbourPoly->verts[k]*3]);
+					dtVcopy(&pa[k*3], &neighbourTile.verts[neighbourPoly.verts[k]*3]);
 
 				bool overlap = false;
 				for (int j = 0; j < n; ++j)
 				{
-					dtPolyRef pastRef = resultRef[j];
+					dtPoly pastRef = resultRef[j];
 
 					// Connected polys do not overlap.
 					bool connected = false;
-					for (unsigned int k = curPoly->firstLink; k != DT_NULL_LINK; k = curTile->links[k].next)
+					for (unsigned int k = curPoly.firstLink; k != DT_NULL_LINK; k = curTile.links[k].next)
 					{
-						if (curTile->links[k].ref == pastRef)
+						if (curTile.links[k].ref == pastRef)
 						{
 							connected = true;
 							break;
@@ -2944,12 +2946,12 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 					// Potentially overlapping.
 					const dtMeshTile* pastTile = 0;
 					const dtPoly* pastPoly = 0;
-					m_nav->getTileAndPolyByRefUnsafe(pastRef, &pastTile, &pastPoly);
+					m_nav.getTileAndPolyByRefUnsafe(pastRef, &pastTile, &pastPoly);
 
 					// Get vertices and test overlap
-					const int npb = pastPoly->vertCount;
+					const int npb = pastPoly.vertCount;
 					for (int k = 0; k < npb; ++k)
-						dtVcopy(&pb[k*3], &pastTile->verts[pastPoly->verts[k]*3]);
+						dtVcopy(&pb[k*3], &pastTile.verts[pastPoly.verts[k]*3]);
 
 					if (dtOverlapPolyPoly2D(pa,npa, pb,npb))
 					{
@@ -2988,12 +2990,12 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 
 	struct dtSegInterval
 	{
-		dtPolyRef ref;
+		dtPoly ref;
 		short tmin, tmax;
 	};
 
 	static void insertInterval(dtSegInterval* ints, int& nints, const int maxInts,
-							   const short tmin, const short tmax, const dtPolyRef ref)
+							   const short tmin, const short tmax, const dtPoly ref)
 	{
 		if (nints+1 > maxInts) return;
 		// Find insertion point.
@@ -3012,7 +3014,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		ints[idx].tmin = tmin;
 		ints[idx].tmax = tmax;
 		nints++;
-	}
+	}*/
 
 	/// @par
 	///
@@ -3025,9 +3027,10 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	/// The @p segmentVerts and @p segmentRefs buffers should normally be sized for the
 	/// maximum segments per polygon of the source navigation mesh.
 	///
-	dtStatus dtNavMeshQuery::getPolyWallSegments(dtPolyRef ref, const dtQueryFilter* filter,
-												 float* segmentVerts, dtPolyRef* segmentRefs, int* segmentCount,
-												 const int maxSegments) const
+/*
+	dtStatus getPolyWallSegments(dtPoly ref, const dtQueryFilter* filter,
+                                                 float* segmentVerts, dtPoly* segmentRefs, int* segmentCount,
+                                                 const int maxSegments) const
 	{
 		dtAssert(m_nav);
 
@@ -3035,7 +3038,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 
 		const dtMeshTile* tile = 0;
 		const dtPoly* poly = 0;
-		if (dtStatusFailed(m_nav->getTileAndPolyByRef(ref, &tile, &poly)))
+		if (dtStatusFailed(m_nav.getTileAndPolyByRef(ref, &tile, &poly)))
 			return DT_FAILURE | DT_INVALID_PARAM;
 
 		int n = 0;
@@ -3047,26 +3050,26 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 
 		dtStatus status = DT_SUCCESS;
 
-		for (int i = 0, j = (int)poly->vertCount-1; i < (int)poly->vertCount; j = i++)
+		for (int i = 0, j = (int)poly.vertCount-1; i < (int)poly.vertCount; j = i++)
 		{
 			// Skip non-solid edges.
 			nints = 0;
-			if (poly->neis[j] & DT_EXT_LINK)
+			if (poly.neis[j] & DT_EXT_LINK)
 			{
 				// Tile border.
-				for (unsigned int k = poly->firstLink; k != DT_NULL_LINK; k = tile->links[k].next)
+				for (unsigned int k = poly.firstLink; k != DT_NULL_LINK; k = tile.links[k].next)
 				{
-					const dtLink* link = &tile->links[k];
-					if (link->edge == j)
+					const dtLink* link = &tile.links[k];
+					if (link.edge == j)
 					{
-						if (link->ref != 0)
+						if (link.ref != 0)
 						{
 							const dtMeshTile* neiTile = 0;
 							const dtPoly* neiPoly = 0;
-							m_nav->getTileAndPolyByRefUnsafe(link->ref, &neiTile, &neiPoly);
-							if (filter->passFilter(link->ref, neiTile, neiPoly))
+							m_nav.getTileAndPolyByRefUnsafe(link.ref, &neiTile, &neiPoly);
+							if (filter.passFilter(link.ref, neiTile, neiPoly))
 							{
-								insertInterval(ints, nints, MAX_INTERVAL, link->bmin, link->bmax, link->ref);
+								insertInterval(ints, nints, MAX_INTERVAL, link.bmin, link.bmax, link.ref);
 							}
 						}
 					}
@@ -3075,12 +3078,12 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			else
 			{
 				// Internal edge
-				dtPolyRef neiRef = 0;
-				if (poly->neis[j])
+				dtPoly neiRef = 0;
+				if (poly.neis[j])
 				{
-					const unsigned int idx = (unsigned int)(poly->neis[j]-1);
-					neiRef = m_nav->getPolyRefBase(tile) | idx;
-					if (!filter->passFilter(neiRef, tile, &tile->polys[idx]))
+					const unsigned int idx = (unsigned int)(poly.neis[j]-1);
+					neiRef = m_nav.getPolyRefBase(tile) | idx;
+					if (!filter.passFilter(neiRef, tile, &tile.polys[idx]))
 						neiRef = 0;
 				}
 
@@ -3090,8 +3093,8 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 
 				if (n < maxSegments)
 				{
-					const float* vj = &tile->verts[poly->verts[j]*3];
-					const float* vi = &tile->verts[poly->verts[i]*3];
+					const float* vj = &tile.verts[poly.verts[j]*3];
+					const float* vi = &tile.verts[poly.verts[i]*3];
 					float* seg = &segmentVerts[n*6];
 					dtVcopy(seg+0, vj);
 					dtVcopy(seg+3, vi);
@@ -3112,8 +3115,8 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			insertInterval(ints, nints, MAX_INTERVAL, 255, 256, 0);
 
 			// Store segments.
-			const float* vj = &tile->verts[poly->verts[j]*3];
-			const float* vi = &tile->verts[poly->verts[i]*3];
+			const float* vj = &tile.verts[poly.verts[j]*3];
+			const float* vi = &tile.verts[poly.verts[i]*3];
 			for (int k = 1; k < nints; ++k)
 			{
 				// Portal segment.
@@ -3164,6 +3167,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 
 		return status;
 	}
+*/
 
 	/// @par
 	///
@@ -3175,7 +3179,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	///
 	/// The normal will become unpredicable if @p hitDist is a very small number.
 	///
-	dtStatus dtNavMeshQuery::findDistanceToWall(dtPolyRef startRef, const float* centerPos, const float maxRadius,
+	/*dtStatus findDistanceToWall(dtPoly startRef, const float* centerPos, const float maxRadius,
 												const dtQueryFilter* filter,
 												float* hitDist, float* hitPos, float* hitNormal) const
 	{
@@ -3184,66 +3188,66 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		dtAssert(m_openList);
 
 		// Validate input
-		if (!startRef || !m_nav->isValidPolyRef(startRef))
+		if (!startRef || !m_nav.isValidPolyRef(startRef))
 			return DT_FAILURE | DT_INVALID_PARAM;
 
-		m_nodePool->clear();
-		m_openList->clear();
+		m_nodePool.clear();
+		m_openList.clear();
 
-		dtNode* startNode = m_nodePool->getNode(startRef);
-		dtVcopy(startNode->pos, centerPos);
-		startNode->pidx = 0;
-		startNode->cost = 0;
-		startNode->total = 0;
-		startNode->id = startRef;
-		startNode->flags = DT_NODE_OPEN;
-		m_openList->push(startNode);
+		dtNode* startNode = m_nodePool.getNode(startRef);
+		dtVcopy(startNode.pos, centerPos);
+		startNode.pidx = 0;
+		startNode.cost = 0;
+		startNode.total = 0;
+		startNode.id = startRef;
+		startNode.flags = DT_NODE_OPEN;
+		m_openList.push(startNode);
 
 		float radiusSqr = dtSqr(maxRadius);
 
 		dtStatus status = DT_SUCCESS;
 
-		while (!m_openList->empty())
+		while (!m_openList.empty())
 		{
-			dtNode* bestNode = m_openList->pop();
-			bestNode->flags &= ~DT_NODE_OPEN;
-			bestNode->flags |= DT_NODE_CLOSED;
+			dtNode* bestNode = m_openList.pop();
+			bestNode.flags &= ~DT_NODE_OPEN;
+			bestNode.flags |= DT_NODE_CLOSED;
 
 			// Get poly and tile.
 			// The API input has been cheked already, skip checking internal data.
-			const dtPolyRef bestRef = bestNode->id;
+			const dtPoly bestRef = bestNode.id;
 			const dtMeshTile* bestTile = 0;
 			const dtPoly* bestPoly = 0;
-			m_nav->getTileAndPolyByRefUnsafe(bestRef, &bestTile, &bestPoly);
+			m_nav.getTileAndPolyByRefUnsafe(bestRef, &bestTile, &bestPoly);
 
 			// Get parent poly and tile.
-			dtPolyRef parentRef = 0;
+			dtPoly parentRef = 0;
 			const dtMeshTile* parentTile = 0;
 			const dtPoly* parentPoly = 0;
-			if (bestNode->pidx)
-				parentRef = m_nodePool->getNodeAtIdx(bestNode->pidx)->id;
+			if (bestNode.pidx)
+				parentRef = m_nodePool.getNodeAtIdx(bestNode.pidx).id;
 			if (parentRef)
-				m_nav->getTileAndPolyByRefUnsafe(parentRef, &parentTile, &parentPoly);
+				m_nav.getTileAndPolyByRefUnsafe(parentRef, &parentTile, &parentPoly);
 
 			// Hit test walls.
-			for (int i = 0, j = (int)bestPoly->vertCount-1; i < (int)bestPoly->vertCount; j = i++)
+			for (int i = 0, j = (int)bestPoly.vertCount-1; i < (int)bestPoly.vertCount; j = i++)
 			{
 				// Skip non-solid edges.
-				if (bestPoly->neis[j] & DT_EXT_LINK)
+				if (bestPoly.neis[j] & DT_EXT_LINK)
 				{
 					// Tile border.
 					bool solid = true;
-					for (unsigned int k = bestPoly->firstLink; k != DT_NULL_LINK; k = bestTile->links[k].next)
+					for (unsigned int k = bestPoly.firstLink; k != DT_NULL_LINK; k = bestTile.links[k].next)
 					{
-						const dtLink* link = &bestTile->links[k];
-						if (link->edge == j)
+						const dtLink* link = &bestTile.links[k];
+						if (link.edge == j)
 						{
-							if (link->ref != 0)
+							if (link.ref != 0)
 							{
 								const dtMeshTile* neiTile = 0;
 								const dtPoly* neiPoly = 0;
-								m_nav->getTileAndPolyByRefUnsafe(link->ref, &neiTile, &neiPoly);
-								if (filter->passFilter(link->ref, neiTile, neiPoly))
+								m_nav.getTileAndPolyByRefUnsafe(link.ref, &neiTile, &neiPoly);
+								if (filter.passFilter(link.ref, neiTile, neiPoly))
 									solid = false;
 							}
 							break;
@@ -3251,18 +3255,18 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 					}
 					if (!solid) continue;
 				}
-				else if (bestPoly->neis[j])
+				else if (bestPoly.neis[j])
 				{
 					// Internal edge
-					const unsigned int idx = (unsigned int)(bestPoly->neis[j]-1);
-					const dtPolyRef ref = m_nav->getPolyRefBase(bestTile) | idx;
-					if (filter->passFilter(ref, bestTile, &bestTile->polys[idx]))
+					const unsigned int idx = (unsigned int)(bestPoly.neis[j]-1);
+					const dtPoly ref = m_nav.getPolyRefBase(bestTile) | idx;
+					if (filter.passFilter(ref, bestTile, &bestTile.polys[idx]))
 						continue;
 				}
 
 				// Calc distance to the edge.
-				const float* vj = &bestTile->verts[bestPoly->verts[j]*3];
-				const float* vi = &bestTile->verts[bestPoly->verts[i]*3];
+				const float* vj = &bestTile.verts[bestPoly.verts[j]*3];
+				const float* vi = &bestTile.verts[bestPoly.verts[i]*3];
 				float tseg;
 				float distSqr = dtDistancePtSegSqr2D(centerPos, vj, vi, tseg);
 
@@ -3278,10 +3282,10 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 				hitPos[2] = vj[2] + (vi[2] - vj[2])*tseg;
 			}
 
-			for (unsigned int i = bestPoly->firstLink; i != DT_NULL_LINK; i = bestTile->links[i].next)
+			for (unsigned int i = bestPoly.firstLink; i != DT_NULL_LINK; i = bestTile.links[i].next)
 			{
-				const dtLink* link = &bestTile->links[i];
-				dtPolyRef neighbourRef = link->ref;
+				const dtLink* link = &bestTile.links[i];
+				dtPoly neighbourRef = link.ref;
 				// Skip invalid neighbours and do not follow back to parent.
 				if (!neighbourRef || neighbourRef == parentRef)
 					continue;
@@ -3289,15 +3293,15 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 				// Expand to neighbour.
 				const dtMeshTile* neighbourTile = 0;
 				const dtPoly* neighbourPoly = 0;
-				m_nav->getTileAndPolyByRefUnsafe(neighbourRef, &neighbourTile, &neighbourPoly);
+				m_nav.getTileAndPolyByRefUnsafe(neighbourRef, &neighbourTile, &neighbourPoly);
 
 				// Skip off-mesh connections.
-				if (neighbourPoly->getType() == DT_POLYTYPE_OFFMESH_CONNECTION)
+				if (neighbourPoly.getType() == DT_POLYTYPE_OFFMESH_CONNECTION)
 					continue;
 
 				// Calc distance to the edge.
-				const float* va = &bestTile->verts[bestPoly->verts[link->edge]*3];
-				const float* vb = &bestTile->verts[bestPoly->verts[(link->edge+1) % bestPoly->vertCount]*3];
+				const float* va = &bestTile.verts[bestPoly.verts[link.edge]*3];
+				const float* vb = &bestTile.verts[bestPoly.verts[(link.edge+1) % bestPoly.vertCount]*3];
 				float tseg;
 				float distSqr = dtDistancePtSegSqr2D(centerPos, va, vb, tseg);
 
@@ -3305,45 +3309,45 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 				if (distSqr > radiusSqr)
 					continue;
 
-				if (!filter->passFilter(neighbourRef, neighbourTile, neighbourPoly))
+				if (!filter.passFilter(neighbourRef, neighbourTile, neighbourPoly))
 					continue;
 
-				dtNode* neighbourNode = m_nodePool->getNode(neighbourRef);
+				dtNode* neighbourNode = m_nodePool.getNode(neighbourRef);
 				if (!neighbourNode)
 				{
 					status |= DT_OUT_OF_NODES;
 					continue;
 				}
 
-				if (neighbourNode->flags & DT_NODE_CLOSED)
+				if (neighbourNode.flags & DT_NODE_CLOSED)
 					continue;
 
 				// Cost
-				if (neighbourNode->flags == 0)
+				if (neighbourNode.flags == 0)
 				{
 					getEdgeMidPoint(bestRef, bestPoly, bestTile,
-									neighbourRef, neighbourPoly, neighbourTile, neighbourNode->pos);
+									neighbourRef, neighbourPoly, neighbourTile, neighbourNode.pos);
 				}
 
-				const float total = bestNode->total + dtVdist(bestNode->pos, neighbourNode->pos);
+				const float total = bestNode.total + dtVdist(bestNode.pos, neighbourNode.pos);
 
 				// The node is already in open list and the new result is worse, skip.
-				if ((neighbourNode->flags & DT_NODE_OPEN) && total >= neighbourNode->total)
+				if ((neighbourNode.flags & DT_NODE_OPEN) && total >= neighbourNode.total)
 					continue;
 
-				neighbourNode->id = neighbourRef;
-				neighbourNode->flags = (neighbourNode->flags & ~DT_NODE_CLOSED);
-				neighbourNode->pidx = m_nodePool->getNodeIdx(bestNode);
-				neighbourNode->total = total;
+				neighbourNode.id = neighbourRef;
+				neighbourNode.flags = (neighbourNode.flags & ~DT_NODE_CLOSED);
+				neighbourNode.pidx = m_nodePool.getNodeIdx(bestNode);
+				neighbourNode.total = total;
 
-				if (neighbourNode->flags & DT_NODE_OPEN)
+				if (neighbourNode.flags & DT_NODE_OPEN)
 				{
-					m_openList->modify(neighbourNode);
+					m_openList.modify(neighbourNode);
 				}
 				else
 				{
-					neighbourNode->flags |= DT_NODE_OPEN;
-					m_openList->push(neighbourNode);
+					neighbourNode.flags |= DT_NODE_OPEN;
+					m_openList.push(neighbourNode);
 				}
 			}
 		}
@@ -3357,30 +3361,30 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		return status;
 	}
 
-	bool dtNavMeshQuery::isValidPolyRef(dtPolyRef ref, const dtQueryFilter* filter) const
+	bool isValidPolyRef(dtPoly ref, const dtQueryFilter* filter) const
 	{
 		const dtMeshTile* tile = 0;
 		const dtPoly* poly = 0;
-		dtStatus status = m_nav->getTileAndPolyByRef(ref, &tile, &poly);
+		dtStatus status = m_nav.getTileAndPolyByRef(ref, &tile, &poly);
 		// If cannot get polygon, assume it does not exists and boundary is invalid.
 		if (dtStatusFailed(status))
 			return false;
 		// If cannot pass filter, assume flags has changed and boundary is invalid.
-		if (!filter->passFilter(ref, tile, poly))
+		if (!filter.passFilter(ref, tile, poly))
 			return false;
 		return true;
-	}
+	}*/
 
 	/// @par
 	///
 	/// The closed list is the list of polygons that were fully evaluated during
 	/// the last navigation graph search. (A* or Dijkstra)
 	///
-	bool dtNavMeshQuery::isInClosedList(dtPolyRef ref) const
+	/*bool isInClosedList(dtPoly ref) const
 	{
 		if (!m_nodePool) return false;
-		const dtNode* node = m_nodePool->findNode(ref);
-		return node && node->flags & DT_NODE_CLOSED;
-	}
+		const dtNode* node = m_nodePool.findNode(ref);
+		return node && node.flags & DT_NODE_CLOSED;
+	}*/
 
 }
