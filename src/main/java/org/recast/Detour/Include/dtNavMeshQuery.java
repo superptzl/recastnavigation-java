@@ -188,10 +188,9 @@ public abstract class dtNavMeshQuery
 		///  @param[out]	nearestRef	The reference id of the nearest polygon.
 		///  @param[out]	nearestPt	The nearest point on the polygon. [opt] [(x, y, z)]
 		/// @returns The status flags for the query.
-		/*public abstract dtStatus findNearestPoly(const float* center, const float* extents,
-								 const dtQueryFilter* filter,
-								 dtPoly* nearestRef, float* nearestPt) const;
-*/
+		public abstract dtStatus findNearestPoly(float[] center, float[] extents,
+								 dtQueryFilter filter,
+								 dtPoly[] nearestRef, float[] nearestPt);
 		/// Finds polygons that overlap the search box.
 		///  @param[in]		center		The center of the search box. [(x, y, z)]
 		///  @param[in]		extents		The search distance along each axis. [(x, y, z)]
@@ -200,9 +199,9 @@ public abstract class dtNavMeshQuery
 		///  @param[out]	polyCount	The number of polygons in the search result.
 		///  @param[in]		maxPolys	The maximum number of polygons the search result can hold.
 		/// @returns The status flags for the query.
-		/*public abstract dtStatus queryPolygons(const float* center, const float* extents,
-							   const dtQueryFilter* filter,
-							   dtPoly* polys, int* polyCount, const int maxPolys) const;*/
+		public abstract dtStatus queryPolygons(float[] center, float[] extents,
+							   dtQueryFilter filter,
+							   dtPoly polys[], int[] polyCount, int maxPolys);
 
 		/// Finds the non-overlapping navigation polygons in the local neighbourhood around the center position.
 		///  @param[in]		startRef		The reference id of the polygon where the search starts.
@@ -307,7 +306,7 @@ public abstract class dtNavMeshQuery
 		///  @param[in]		pos			The position to check. [(x, y, z)]
 		///  @param[out]	closest		The closest point on the polygon. [(x, y, z)]
 		/// @returns The status flags for the query.
-//		public abstract dtStatus closestPointOnPoly(dtPoly ref, const float* pos, float* closest) const;
+		public abstract dtStatus closestPointOnPoly(dtPoly ref, float[] pos, float[] closest);
 
 		/// Returns a point on the boundary closest to the source point if the source point is outside the
 		/// polygon's xz-bounds.
@@ -354,13 +353,13 @@ public abstract class dtNavMeshQuery
 //	public abstract dtMeshTile* getNeighbourTileAt(int x, int y, int side) const;
 //
 //		/// Queries polygons within a tile.
-//		public abstract int queryPolygonsInTile(const dtMeshTile* tile, const float* qmin, const float* qmax, const dtQueryFilter* filter,
-//								dtPoly* polys, const int maxPolys) const;
+		public abstract int queryPolygonsInTile(dtMeshTile tile, float[] qmin, float[] qmax, dtQueryFilter filter,
+								dtPoly[] polys, int polysIndex, int maxPolys);
 //		/// Find nearest polygon within a tile.
 //		public abstract dtPoly findNearestPolyInTile(const dtMeshTile* tile, const float* center, const float* extents,
 //										const dtQueryFilter* filter, float* nearestPt) const;
 //		/// Returns closest point on polygon.
-//		public abstract void closestPointOnPolyInTile(const dtMeshTile* tile, const dtPoly* poly, const float* pos, float* closest) const;
+		public abstract void closestPointOnPolyInTile(dtMeshTile tile, dtPoly poly, float[] pos, float[] closest);
 //
 //		/// Returns portal points between two polygons.
 //		public abstract dtStatus getPortalPoints(dtPoly from, dtPoly to, float* left, float* right,

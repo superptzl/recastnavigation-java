@@ -1027,17 +1027,17 @@ public class dtNavMeshImpl extends dtNavMesh {
         ty[0] = (int) Math.floor((pos[2] - m_orig[2]) / m_tileHeight);
     }
 
-//    public dtStatus getTileAndPolyByRef(dtPoly ref, dtMeshTile[] tile, dtPoly[] poly) {
-//        if (ref == null) return new dtStatus(dtStatus.DT_FAILURE);
-//        unsigned int salt, it, ip;
-//        decodePolyId(ref, salt, it, ip);
-//        if (it >= (int)m_maxTiles)return DT_FAILURE | DT_INVALID_PARAM;
-//        if (m_tiles[it].salt != salt || m_tiles[it].header == 0) return DT_FAILURE | DT_INVALID_PARAM;
-//        if (ip >= (int)m_tiles[it].header.polyCount)return DT_FAILURE | DT_INVALID_PARAM;
-//        tile[0] = m_tiles[it];
-//        poly[0] = m_tiles[it].polys[ip];
-//        return new dtStatus(dtStatus.DT_SUCCESS);
-//    }
+    public dtStatus getTileAndPolyByRef(dtPoly ref, dtMeshTile[] tile, dtPoly[] poly) {
+        if (ref == null) return new dtStatus(dtStatus.DT_FAILURE);
+        int salt, it, ip;
+        decodePolyId(ref, salt, it, ip);
+        if (it >= (int)m_maxTiles)return DT_FAILURE | DT_INVALID_PARAM;
+        if (m_tiles[it].salt != salt || m_tiles[it].header == null) return DT_FAILURE | DT_INVALID_PARAM;
+        if (ip >= (int)m_tiles[it].header.polyCount)return DT_FAILURE | DT_INVALID_PARAM;
+        tile[0] = m_tiles[it];
+        poly[0] = m_tiles[it].polys[ip];
+        return new dtStatus(dtStatus.DT_SUCCESS);
+    }
 
     /// @par
     ///
@@ -1174,11 +1174,11 @@ public class dtNavMeshImpl extends dtNavMesh {
     ///     // Use the reference to access the polygon data.
     /// }
     /// @endcode
-//    dtPoly getPolyRefBase(dtMeshTile*tile) {
-//        if (!tile) return 0;
-//        unsigned int it = (unsigned int)(tile - m_tiles);
-//        return encodePolyId(tile.salt, it, 0);
-//    }
+    public dtPoly getPolyRefBase(dtMeshTile tile) {
+        if (!tile) return 0;
+        unsigned int it = (unsigned int)(tile - m_tiles);
+        return encodePolyId(tile.salt, it, 0);
+    }
 
     public static class dtTileState {
         public int magic;                                // Magic number, used to identify the data.

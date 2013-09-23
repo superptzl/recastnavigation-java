@@ -107,7 +107,7 @@ public abstract class dtNavMesh {
     ///  @param[out]	tile	The tile containing the polygon.
     ///  @param[out]	poly	The polygon.
     /// @return The status flags for the operation.
-//    public abstract dtStatus getTileAndPolyByRef(dtPoly ref, dtMeshTile tile, dtPoly poly);
+    public abstract dtStatus getTileAndPolyByRef(dtPoly ref, dtMeshTile tile, dtPoly poly);
 //
 //    /// Returns the tile and polygon for the specified polygon reference.
 //    ///  @param[in]		ref		A known valid reference for a polygon.
@@ -123,7 +123,7 @@ public abstract class dtNavMesh {
 //    /// Gets the polygon reference for the tile's base polygon.
 //    ///  @param[in]	tile		The tile.
 //    /// @return The polygon reference for the base polygon in the specified tile.
-//    public abstract dtPoly getPolyRefBase(dtMeshTile tile);
+    public abstract dtPoly getPolyRefBase(dtMeshTile tile);
 //
 //    /// Gets the endpoints for an off-mesh connection, ordered by "direction of travel".
 //    ///  @param[in]		prevRef		The reference of the polygon before the connection.
