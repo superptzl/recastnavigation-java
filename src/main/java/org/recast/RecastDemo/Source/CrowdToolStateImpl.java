@@ -1,9 +1,14 @@
 package org.recast.RecastDemo.Source;
 
+import org.recast.Detour.Include.DetourCommon;
+import org.recast.Detour.Include.UpdateFlags;
 import org.recast.Detour.Include.dtNavMesh;
+import org.recast.DetourCrowd.Include.dtCrowd;
+import org.recast.DetourCrowd.Include.dtCrowdAgentParams;
 import org.recast.DetourCrowd.Include.dtObstacleAvoidanceParams;
 import org.recast.RecastDemo.Include.CrowdToolState;
 import org.recast.RecastDemo.Include.Sample;
+import org.recast.RecastDemo.Include.SamplePolyFlags;
 
 public class CrowdToolStateImpl extends CrowdToolState {
     public CrowdToolStateImpl() 
@@ -60,9 +65,9 @@ public class CrowdToolStateImpl extends CrowdToolState {
         }
 
         dtNavMesh nav = m_sample.getNavMesh();
-        dtCrowd* crowd = m_sample.getCrowd();
+        dtCrowd crowd = m_sample.getCrowd();
 
-        if (nav && crowd && (m_nav != nav || m_crowd != crowd))
+        if (nav != null && crowd != null && (m_nav != nav || m_crowd != crowd))
         {
             m_nav = nav;
             m_crowd = crowd;
@@ -70,33 +75,33 @@ public class CrowdToolStateImpl extends CrowdToolState {
             crowd.init(MAX_AGENTS, m_sample.getAgentRadius(), nav);
 
             // Make polygons with 'disabled' flag invalid.
-            crowd.getEditableFilter().setExcludeFlags(SAMPLE_POLYFLAGS_DISABLED);
+            crowd.getEditableFilter().setExcludeFlags(SamplePolyFlags.SAMPLE_POLYFLAGS_DISABLED.v);
 
             // Setup local avoidance params to different qualities.
-            dtObstacleAvoidanceParams params;
+            dtObstacleAvoidanceParams params = crowd.getObstacleAvoidanceParams(0).clone();
             // Use mostly default settings, copy from dtCrowd.
-            memcpy(&params, crowd.getObstacleAvoidanceParams(0), sizeof(dtObstacleAvoidanceParams));
+//            memcpy(&params, , sizeof(dtObstacleAvoidanceParams));
 
             // Low (11)
             params.velBias = 0.5f;
             params.adaptiveDivs = 5;
             params.adaptiveRings = 2;
             params.adaptiveDepth = 1;
-            crowd.setObstacleAvoidanceParams(0, &params);
+            crowd.setObstacleAvoidanceParams(0, params);
 
             // Medium (22)
             params.velBias = 0.5f;
             params.adaptiveDivs = 5;
             params.adaptiveRings = 2;
             params.adaptiveDepth = 2;
-            crowd.setObstacleAvoidanceParams(1, &params);
+            crowd.setObstacleAvoidanceParams(1, params);
 
             // Good (45)
             params.velBias = 0.5f;
             params.adaptiveDivs = 7;
             params.adaptiveRings = 2;
             params.adaptiveDepth = 3;
-            crowd.setObstacleAvoidanceParams(2, &params);
+            crowd.setObstacleAvoidanceParams(2, params);
 
             // High (66)
             params.velBias = 0.5f;
@@ -104,14 +109,14 @@ public class CrowdToolStateImpl extends CrowdToolState {
             params.adaptiveRings = 3;
             params.adaptiveDepth = 3;
 
-            crowd.setObstacleAvoidanceParams(3, &params);
+            crowd.setObstacleAvoidanceParams(3, params);
         }
     }
 
-    /*void reset()
+    public void reset()
     {
     }
-
+	/*
     void handleRender()
     {
         DebugDrawGL dd;
@@ -552,11 +557,11 @@ public class CrowdToolStateImpl extends CrowdToolState {
 
     public void addAgent(float[] p)
     {
-        if (!m_sample) return;
-        dtCrowd* crowd = m_sample.getCrowd();
+        if (m_sample == null) return;
+        dtCrowd crowd = m_sample.getCrowd();
 
-        dtCrowdAgentParams ap;
-        memset(&ap, 0, sizeof(ap));
+        dtCrowdAgentParams ap = new dtCrowdAgentParams();
+//        memset(&ap, 0, sizeof(ap));
         ap.radius = m_sample.getAgentRadius();
         ap.height = m_sample.getAgentHeight();
         ap.maxAcceleration = 8.0f;
@@ -565,28 +570,28 @@ public class CrowdToolStateImpl extends CrowdToolState {
         ap.pathOptimizationRange = ap.radius * 30.0f;
         ap.updateFlags = 0;
         if (m_toolParams.m_anticipateTurns)
-            ap.updateFlags |= DT_CROWD_ANTICIPATE_TURNS;
+            ap.updateFlags |= UpdateFlags.DT_CROWD_ANTICIPATE_TURNS;
         if (m_toolParams.m_optimizeVis)
-            ap.updateFlags |= DT_CROWD_OPTIMIZE_VIS;
+            ap.updateFlags |= UpdateFlags.DT_CROWD_OPTIMIZE_VIS;
         if (m_toolParams.m_optimizeTopo)
-            ap.updateFlags |= DT_CROWD_OPTIMIZE_TOPO;
+            ap.updateFlags |= UpdateFlags.DT_CROWD_OPTIMIZE_TOPO;
         if (m_toolParams.m_obstacleAvoidance)
-            ap.updateFlags |= DT_CROWD_OBSTACLE_AVOIDANCE;
+            ap.updateFlags |= UpdateFlags.DT_CROWD_OBSTACLE_AVOIDANCE;
         if (m_toolParams.m_separation)
-            ap.updateFlags |= DT_CROWD_SEPARATION;
-        ap.obstacleAvoidanceType = (unsigned char)m_toolParams.m_obstacleAvoidanceType;
+            ap.updateFlags |= UpdateFlags.DT_CROWD_SEPARATION;
+        ap.obstacleAvoidanceType = (char)m_toolParams.m_obstacleAvoidanceType;
         ap.separationWeight = m_toolParams.m_separationWeight;
 
-        int idx = crowd.addAgent(p, &ap);
+        int idx = crowd.addAgent(p, ap);
         if (idx != -1)
         {
-            if (m_targetRef)
-                crowd.requestMoveTarget(idx, m_targetRef, m_targetPos);
+//            if (m_targetRef != null)
+//                crowd.requestMoveTarget(idx, m_targetRef, m_targetPos);
 
             // Init trail
-            AgentTrail* trail = &m_trails[idx];
+            AgentTrail trail = m_trails[idx];
             for (int i = 0; i < AGENT_MAX_TRAIL; ++i)
-                dtVcopy(&trail.trail[i*3], p);
+                DetourCommon.dtVcopy(trail.trail, i*3, p, 0);
             trail.htrail = 0;
         }
     }

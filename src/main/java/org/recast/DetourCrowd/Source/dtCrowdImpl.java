@@ -144,18 +144,19 @@ public class dtCrowdImpl extends dtCrowd {
         return true;
     }
 
-//    void setObstacleAvoidanceParams(const int idx, const dtObstacleAvoidanceParams* params)
-//    {
-//        if (idx >= 0 && idx < DT_CROWD_MAX_OBSTAVOIDANCE_PARAMS)
-//            memcpy(&m_obstacleQueryParams[idx], params, sizeof(dtObstacleAvoidanceParams));
-//    }
+    public void setObstacleAvoidanceParams(int idx, dtObstacleAvoidanceParams params)
+    {
+        if (idx >= 0 && idx < DT_CROWD_MAX_OBSTAVOIDANCE_PARAMS)
+			m_obstacleQueryParams[idx] = params.clone();
+//            memcpy(&, params, sizeof(dtObstacleAvoidanceParams));
+    }
 //
-//    const dtObstacleAvoidanceParams* getObstacleAvoidanceParams(const int idx) const
-//    {
-//        if (idx >= 0 && idx < DT_CROWD_MAX_OBSTAVOIDANCE_PARAMS)
-//            return &m_obstacleQueryParams[idx];
-//        return 0;
-//    }
+    public dtObstacleAvoidanceParams getObstacleAvoidanceParams(int idx)
+    {
+        if (idx >= 0 && idx < DT_CROWD_MAX_OBSTAVOIDANCE_PARAMS)
+            return m_obstacleQueryParams[idx];
+        return null;
+    }
 //
 //    const int getAgentCount() const
 //    {

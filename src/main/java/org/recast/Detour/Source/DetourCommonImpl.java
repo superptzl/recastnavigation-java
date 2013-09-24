@@ -39,4 +39,36 @@ public class DetourCommonImpl extends DetourCommon {
         return dx*dx + dz*dz;
     }
 
+
+	public boolean dtClosestHeightPointTriangle(float[] p, float[] a, int aIndex, float[] b, int bIndex, float[] c, int cIndex, float[] h)
+	{
+		float v0[] = new float[3], v1[] = new float[3], v2[] = new float[3];
+		dtVsub(v0, c, cIndex, a, aIndex);
+		dtVsub(v1, b, bIndex, a, aIndex);
+		dtVsub(v2, p, 0, a, aIndex);
+
+		float dot00 = dtVdot2D(v0, v0);
+		float dot01 = dtVdot2D(v0, v1);
+		float dot02 = dtVdot2D(v0, v2);
+		float dot11 = dtVdot2D(v1, v1);
+		float dot12 = dtVdot2D(v1, v2);
+
+		// Compute barycentric coordinates
+		float invDenom = 1.0f / (dot00 * dot11 - dot01 * dot01);
+		float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+		float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+		// The (sloppy) epsilon is needed to allow to get height of points which
+		// are interpolated along the edges of the triangles.
+		float EPS = 1e-4f;
+
+		// If point lies inside the triangle, return interpolated ycoord.
+		if (u >= -EPS && v >= -EPS && (u+v) <= 1+EPS)
+		{
+			h[0] = a[aIndex+1] + v0[1]*u + v1[1]*v;
+			return true;
+		}
+
+		return false;
+	}
 }

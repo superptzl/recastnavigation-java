@@ -3,46 +3,47 @@ package org.recast.DetourCrowd.Source;
 import org.recast.DetourCrowd.Include.dtObstacleAvoidanceDebugData;
 
 public class dtObstacleAvoidanceDebugDataImpl extends dtObstacleAvoidanceDebugData {
-    dtObstacleAvoidanceDebugData* dtAllocObstacleAvoidanceDebugData()
+//    dtObstacleAvoidanceDebugData* dtAllocObstacleAvoidanceDebugData()
+//    {
+//        void* mem = dtAlloc(sizeof(dtObstacleAvoidanceDebugData), DT_ALLOC_PERM);
+//        if (!mem) return 0;
+//        return new(mem) dtObstacleAvoidanceDebugData;
+//    }
+//
+//    void dtFreeObstacleAvoidanceDebugData(dtObstacleAvoidanceDebugData* ptr)
+//    {
+//        if (!ptr) return;
+//        ptr->~dtObstacleAvoidanceDebugData();
+//        dtFree(ptr);
+//    }
+
+
+    dtObstacleAvoidanceDebugDataImpl()
     {
-        void* mem = dtAlloc(sizeof(dtObstacleAvoidanceDebugData), DT_ALLOC_PERM);
-        if (!mem) return 0;
-        return new(mem) dtObstacleAvoidanceDebugData;
+//		:
+//	    m_nsamples(0),
+//	    m_maxSamples(0),
+//	    m_vel(0),
+//	    m_ssize(0),
+//	    m_pen(0),
+//	    m_vpen(0),
+//	    m_vcpen(0),
+//	    m_spen(0),
+//	    m_tpen(0)
     }
 
-    void dtFreeObstacleAvoidanceDebugData(dtObstacleAvoidanceDebugData* ptr)
-    {
-        if (!ptr) return;
-        ptr->~dtObstacleAvoidanceDebugData();
-        dtFree(ptr);
-    }
+//    ~dtObstacleAvoidanceDebugData()
+//    {
+//        dtFree(m_vel);
+//        dtFree(m_ssize);
+//        dtFree(m_pen);
+//        dtFree(m_vpen);
+//        dtFree(m_vcpen);
+//        dtFree(m_spen);
+//        dtFree(m_tpen);
+//    }
 
-
-    dtObstacleAvoidanceDebugData::dtObstacleAvoidanceDebugData() :
-    m_nsamples(0),
-    m_maxSamples(0),
-    m_vel(0),
-    m_ssize(0),
-    m_pen(0),
-    m_vpen(0),
-    m_vcpen(0),
-    m_spen(0),
-    m_tpen(0)
-    {
-    }
-
-    dtObstacleAvoidanceDebugData::~dtObstacleAvoidanceDebugData()
-    {
-        dtFree(m_vel);
-        dtFree(m_ssize);
-        dtFree(m_pen);
-        dtFree(m_vpen);
-        dtFree(m_vcpen);
-        dtFree(m_spen);
-        dtFree(m_tpen);
-    }
-
-    bool dtObstacleAvoidanceDebugData::init(const int maxSamples)
+    bool init(const int maxSamples)
     {
         dtAssert(maxSamples);
         m_maxSamples = maxSamples;
@@ -72,12 +73,12 @@ public class dtObstacleAvoidanceDebugDataImpl extends dtObstacleAvoidanceDebugDa
         return true;
     }
 
-    void dtObstacleAvoidanceDebugData::reset()
+    void reset()
     {
         m_nsamples = 0;
     }
 
-    void dtObstacleAvoidanceDebugData::addSample(const float* vel, const float ssize, const float pen,
+    void addSample(const float* vel, const float ssize, const float pen,
                                                  const float vpen, const float vcpen, const float spen, const float tpen)
     {
         if (m_nsamples >= m_maxSamples)
@@ -115,7 +116,7 @@ public class dtObstacleAvoidanceDebugDataImpl extends dtObstacleAvoidanceDebugDa
             arr[i] = dtClamp((arr[i]-minPen)*s, 0.0f, 1.0f);
     }
 
-    void dtObstacleAvoidanceDebugData::normalizeSamples()
+    void normalizeSamples()
     {
         normalizeArray(m_pen, m_nsamples);
         normalizeArray(m_vpen, m_nsamples);

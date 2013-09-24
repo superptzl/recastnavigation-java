@@ -95,9 +95,13 @@ public abstract class DetourCommon {
 ///  @param[in]		v2	A point. [(x, y, z)]
 /// @return The distance between the two points.
     public static float dtVdist(float[] v1, float[] v2) {
-        float dx = v2[0] - v1[0];
-        float dy = v2[1] - v1[1];
-        float dz = v2[2] - v1[2];
+		return dtVdist(v1, 0, v2, 0);
+	}
+
+    public static float dtVdist(float[] v1, int v1Index, float[] v2, int v2Index) {
+        float dx = v2[v2Index+0] - v1[v1Index+0];
+        float dy = v2[v2Index+1] - v1[v1Index+1];
+        float dz = v2[v2Index+2] - v1[v1Index+2];
         return dtSqrt(dx * dx + dy * dy + dz * dz);
     }
 
@@ -139,11 +143,16 @@ public abstract class DetourCommon {
 ///  @param[out]	dest	The result vector. [(x, y, z)]
 ///  @param[in]		v1		The base vector. [(x, y, z)]
 ///  @param[in]		v2		The vector to subtract from @p v1. [(x, y, z)]
-public static void dtVsub(float[] dest, float[] v1, float[] v2)
+	public static void dtVsub(float[] dest, float[] v1, float[] v2)
+	{
+		dtVsub(dest, v1, 0, v2, 0);
+	}
+
+	public static void dtVsub(float[] dest, float[] v1, int v1Index, float[] v2, int v2Index)
     {
-        dest[0] = v1[0]-v2[0];
-        dest[1] = v1[1]-v2[1];
-        dest[2] = v1[2]-v2[2];
+        dest[0] = v1[v1Index+0]-v2[v2Index+0];
+        dest[1] = v1[v1Index+1]-v2[v2Index+1];
+        dest[2] = v1[v1Index+2]-v2[v2Index+2];
     }
 
     /// Clamps the value to the specified range.
@@ -228,4 +237,29 @@ public static void dtVsub(float[] dest, float[] v1, float[] v2)
         float dz = v2[2] - v1[2];
         return dx*dx + dy*dy + dz*dz;
     }
+
+	/// Performs a linear interpolation between two vectors. (@p v1 toward @p v2)
+	///  @param[out]	dest	The result vector. [(x, y, x)]
+	///  @param[in]		v1		The starting vector.
+	///  @param[in]		v2		The destination vector.
+	///	 @param[in]		t		The interpolation factor. [Limits: 0 <= value <= 1.0]
+	public static void dtVlerp(float[] dest, float[] v1, int v1Index, float[]v2, int v2Index, float t)
+	{
+		dest[0] = v1[v1Index+0]+(v2[v2Index+0]-v1[v1Index+0])*t;
+		dest[1] = v1[v1Index+1]+(v2[v2Index+1]-v1[v1Index+1])*t;
+		dest[2] = v1[v1Index+2]+(v2[v2Index+2]-v1[v1Index+2])*t;
+	}
+
+	/// Derives the y-axis height of the closest point on the triangle from the specified reference point.
+	///  @param[in]		p		The reference point from which to test. [(x, y, z)]
+	///  @param[in]		a		Vertex A of triangle ABC. [(x, y, z)]
+	///  @param[in]		b		Vertex B of triangle ABC. [(x, y, z)]
+	///  @param[in]		c		Vertex C of triangle ABC. [(x, y, z)]
+	///  @param[out]	h		The resulting height.
+	public abstract boolean dtClosestHeightPointTriangle(float[] p, float[] a, int aIndex,  float[] b, int bIndex, float[] c, int cIndex, float[] h);
+
+	public static float dtVdot2D(float[] u, float[] v)
+	{
+		return u[0]*v[0] + u[2]*v[2];
+	}
 }

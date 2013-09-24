@@ -3,6 +3,7 @@ package org.recast.DetourCrowd.Include;
 import org.recast.Detour.Include.dtNavMesh;
 import org.recast.Detour.Include.dtNavMeshQuery;
 import org.recast.Detour.Include.dtPoly;
+import org.recast.Detour.Include.dtQueryFilter;
 
 public abstract class dtCrowd {
     public final static int MAX_PATHQUEUE_NODES = 4096;
@@ -41,7 +42,7 @@ public abstract class dtCrowd {
     public int m_maxPathResult;
 
     public float m_ext[] = new float[3];
-//    public dtQueryFilter m_filter;
+    public dtQueryFilter m_filter;
 
     public float m_maxAgentRadius;
 
@@ -73,13 +74,13 @@ public abstract class dtCrowd {
     /// Sets the shared avoidance configuration for the specified index.
     ///  @param[in]		idx		The index. [Limits: 0 <= value < #DT_CROWD_MAX_OBSTAVOIDANCE_PARAMS]
     ///  @param[in]		params	The new configuration.
-//    public void setObstacleAvoidanceParams(const int idx, const dtObstacleAvoidanceParams* params);
+    public abstract void setObstacleAvoidanceParams(int idx, dtObstacleAvoidanceParams params);
 
     /// Gets the shared avoidance configuration for the specified index.
     ///  @param[in]		idx		The index of the configuration to retreive.
     ///							[Limits:  0 <= value < #DT_CROWD_MAX_OBSTAVOIDANCE_PARAMS]
     /// @return The requested configuration.
-//    public const dtObstacleAvoidanceParams* getObstacleAvoidanceParams(const int idx) const;
+    public abstract dtObstacleAvoidanceParams getObstacleAvoidanceParams(int idx);
 
     /// Gets the specified agent from the pool.
     ///	 @param[in]		idx		The agent index. [Limits: 0 <= value < #getAgentCount()]
@@ -136,11 +137,11 @@ public abstract class dtCrowd {
 
     /// Gets the filter used by the crowd.
     /// @return The filter used by the crowd.
-//    public const dtQueryFilter* getFilter() const { return &m_filter; }
+    public dtQueryFilter getFilter() { return m_filter; }
 
     /// Gets the filter used by the crowd.
     /// @return The filter used by the crowd.
-//    public dtQueryFilter* getEditableFilter() { return &m_filter; }
+    public dtQueryFilter getEditableFilter() { return m_filter; }
 
     /// Gets the search extents [(x, y, z)] used by the crowd for query operations.
     /// @return The search extents used by the crowd. [(x, y, z)]

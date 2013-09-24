@@ -190,13 +190,13 @@ public class SampleImpl extends Sample {
         imguiSeparator();
     }
 */
-   /* public void handleClick(float[] s, float[] p, boolean shift)
+    public void handleClick(float[] s, float[] p, boolean shift)
     {
-        if (m_tool)
+        if (m_tool != null)
             m_tool.handleClick(s, p, shift);
     }
 
-    public void handleToggle()
+   /* public void handleToggle()
     {
         if (m_tool)
             m_tool.handleToggle();

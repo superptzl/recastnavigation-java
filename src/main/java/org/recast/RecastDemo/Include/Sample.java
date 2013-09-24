@@ -2,13 +2,17 @@ package org.recast.RecastDemo.Include;
 
 import org.recast.Detour.Include.dtNavMesh;
 import org.recast.Detour.Include.dtNavMeshQuery;
+import org.recast.DetourCrowd.Include.dtCrowd;
 import org.recast.Recast.Include.BuildContext;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class Sample {
     public InputGeom m_geom;
     public dtNavMesh m_navMesh;
     public dtNavMeshQuery m_navQuery;
-//    public dtCrowd m_crowd;
+    public dtCrowd m_crowd;
 
     public char m_navMeshDrawFlags;
 
@@ -27,8 +31,9 @@ public abstract class Sample {
     public float m_detailSampleDist;
     public float m_detailSampleMaxError;
 
-//    public SampleTool m_tool;
-//    public SampleToolState m_toolStates[MAX_TOOLS];
+    public SampleTool m_tool;
+//    public SampleToolState[] m_toolStates = new SampleToolState[SampleToolType.values().length];
+    public Map<SampleToolType, SampleToolState> m_toolStates = new HashMap<>();
 
     public BuildContext m_ctx;
 
@@ -38,14 +43,14 @@ public abstract class Sample {
 
     public void setContext(BuildContext ctx) { m_ctx = ctx; }
 
-//    public abstract void setTool(SampleTool tool);
-//    public SampleToolState getToolState(int type) { return m_toolStates[type]; }
-//    public void setToolState(int type, SampleToolState s) { m_toolStates[type] = s; }
+    public abstract void setTool(SampleTool tool);
+    public SampleToolState getToolState(SampleToolType type) { return m_toolStates.get(type); }
+    public void setToolState(SampleToolType type, SampleToolState s) { m_toolStates.put(type, s); }
 
 //    public abstract void handleSettings();
 //    public abstract void handleTools();
 //    public abstract void handleDebugMode();
-//    public abstract void handleClick(float[] s, float[] p, boolean shift);
+    public abstract void handleClick(float[] s, float[] p, boolean shift);
 //    public abstract void handleToggle();
 //    public abstract void handleStep();
 //    public abstract void handleRender();
@@ -57,7 +62,7 @@ public abstract class Sample {
     public InputGeom getInputGeom() { return m_geom; }
     public dtNavMesh getNavMesh() { return m_navMesh; }
     public dtNavMeshQuery getNavMeshQuery() { return m_navQuery; }
-//    public dtCrowd getCrowd() { return m_crowd; }
+    public dtCrowd getCrowd() { return m_crowd; }
     public float getAgentRadius() { return m_agentRadius; }
     public float getAgentHeight() { return m_agentHeight; }
     public float getAgentClimb() { return m_agentMaxClimb; }

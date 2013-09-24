@@ -679,6 +679,8 @@ public void handleRender(DrawingApplet drawing)
 
         m_totalBuildTimeMs = m_ctx.getAccumulatedTime(rcTimerLabel.RC_TIMER_TOTAL)/1000.0f;
 
+//		handleClick(rays, pos, processHitTestShift);
+
 //        if (m_tool != null)
 //            m_tool.init(this);
 //        initToolStates(this);

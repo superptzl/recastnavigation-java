@@ -532,30 +532,32 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 												   float[] pos, float[] closest)
 	{
 		// Off-mesh connections don't have detail polygons.
-		if (poly.getType() == DT_POLYTYPE_OFFMESH_CONNECTION)
+		if (poly.getType() == dtPolyTypes.DT_POLYTYPE_OFFMESH_CONNECTION)
 		{
-			 float* v0 = &tile.verts[poly.verts[0]*3];
-			 float* v1 = &tile.verts[poly.verts[1]*3];
-			 float d0 = DetourCommon.dtVdist(pos, v0);
-			 float d1 = DetourCommon.dtVdist(pos, v1);
+//			 float* v0 = &tile.verts[poly.verts[0]*3];
+//			 float* v1 = &tile.verts[poly.verts[1]*3];
+			 float d0 = DetourCommon.dtVdist(pos, 0, tile.verts, poly.verts[0]*3);
+			 float d1 = DetourCommon.dtVdist(pos, 0, tile.verts, poly.verts[1]*3);
 			 float u = d0 / (d0+d1);
-            DetourCommon.dtVlerp(closest, v0, v1, u);
+            DetourCommon.dtVlerp(closest, tile.verts, poly.verts[0]*3, tile.verts, poly.verts[1]*3, u);
 			return;
 		}
 
-		 int ip = ( int)(poly - tile.polys);
-		 dtPolyDetail pd = &tile.detailMeshes[ip];
+//		 int ip = ( int)(poly - tile.polys);
+		 int ip = -1;
+		 dtPolyDetail pd = tile.detailMeshes[ip];
 
 		// Clamp point to be inside the polygon.
-		float verts[DT_VERTS_PER_POLYGON*3];
-		float edged[DT_VERTS_PER_POLYGON];
-		float edget[DT_VERTS_PER_POLYGON];
+		float verts[] = new float[DetourNavMesh.DT_VERTS_PER_POLYGON*3];
+		float edged[] = new float[DetourNavMesh.DT_VERTS_PER_POLYGON];
+		float edget[] = new float[DetourNavMesh.DT_VERTS_PER_POLYGON];
 		 int nv = poly.vertCount;
-		for (int i = 0; i < nv; ++i)
-            DetourCommon.dtVcopy(&verts[i*3], &tile.verts[poly.verts[i]*3]);
+		for (int i = 0; i < nv; ++i) {
+            DetourCommon.dtVcopy(verts, i*3, tile.verts, poly.verts[i]*3);
+		}
 
         DetourCommon.dtVcopy(closest, pos);
-		if (!DetourCommon.dtDistancePtPolyEdgesSqr(pos, verts, nv, edged, edget))
+		if (!new DetourCommonImpl().dtDistancePtPolyEdgesSqr(pos, verts, nv, edged, edget))
 		{
 			// Point is outside the polygon, dtClamp to nearest edge.
 			float dmin = Float.MAX_VALUE;
@@ -568,27 +570,33 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 					imin = i;
 				}
 			}
-			 float* va = &verts[imin*3];
-			 float* vb = &verts[((imin+1)%nv)*3];
-            DetourCommon.dtVlerp(closest, va, vb, edget[imin]);
+//			 float* va = &verts[imin*3];
+//			 float* vb = &verts[((imin+1)%nv)*3];
+            DetourCommon.dtVlerp(closest, verts, imin*3, verts, ((imin+1)%nv)*3, edget[imin]);
 		}
 
 		// Find height at the location.
 		for (int j = 0; j < pd.triCount; ++j)
 		{
-			 char* t = &tile.detailTris[(pd.triBase+j)*4];
-			 float* v[3];
+			 char[] t = tile.detailTris;
+			 int tIndex = (pd.triBase+j)*4;
+			 float v[][] = new float[3][];
+			 int vIndexes[] = new int[3];
 			for (int k = 0; k < 3; ++k)
 			{
-				if (t[k] < poly.vertCount)
-					v[k] = &tile.verts[poly.verts[t[k]]*3];
-				else
-					v[k] = &tile.detailVerts[(pd.vertBase+(t[k]-poly.vertCount))*3];
+				if (t[tIndex+k] < poly.vertCount) {
+					vIndexes[k] = poly.verts[t[tIndex+k]]*3;
+					v[k] = tile.verts;
+				}
+				else {
+					vIndexes[k] = (pd.vertBase+(t[tIndex+k]-poly.vertCount))*3;
+					v[k] = tile.detailVerts;
+				}
 			}
-			float h;
-			if (dtClosestHeightPointTriangle(pos, v[0], v[1], v[2], h))
+			float h[] = new float[1];
+			if (new DetourCommonImpl().dtClosestHeightPointTriangle(pos, v[0], vIndexes[0], v[1], vIndexes[1], v[2], vIndexes[2], h))
 			{
-				closest[1] = h;
+				closest[1] = h[0];
 				break;
 			}
 		}
@@ -833,7 +841,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 
 				if (isLeafNode && overlap)
 				{
-					dtPoly ref = base | (dtPoly)node.i;
+					dtPoly ref = null;//base | (dtPoly)node.i;
 					if (filter.passFilter(ref, tile, tile.polys[node.i]))
 					{
 						if (n < maxPolys)
@@ -868,7 +876,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 				if (p.getType() == dtPolyTypes.DT_POLYTYPE_OFFMESH_CONNECTION)
 					continue;
 				// Must pass filter
-				 dtPoly ref = base | (dtPoly)i;
+				 dtPoly ref = null;//base | (dtPoly)i;
 				if (!filter.passFilter(ref, tile, p))
 					continue;
 				// Calc polygon bounds.

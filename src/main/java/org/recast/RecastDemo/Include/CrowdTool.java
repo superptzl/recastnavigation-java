@@ -1,6 +1,6 @@
 package org.recast.RecastDemo.Include;
 
-public abstract class CrowdTool {
+public abstract class CrowdTool extends SampleTool {
     public Sample m_sample;
     public CrowdToolState m_state;
 
@@ -10,10 +10,11 @@ public abstract class CrowdTool {
         TOOLMODE_MOVE_TARGET,
         TOOLMODE_SELECT,
         TOOLMODE_TOGGLE_POLYS,
-    };
+    }
+
     public ToolMode m_mode;
 
-    public abstract void updateAgentParams();
+//    public abstract void updateAgentParams();
 //    void updateTick(const float dt);
 
 //    public:
@@ -24,7 +25,7 @@ public abstract class CrowdTool {
     public abstract void init(Sample sample);
 //    public abstract void reset();
 //    public abstract void handleMenu();
-//    public abstract void handleClick(const float* s, const float* p, bool shift);
+    public abstract void handleClick(float[] s, float[] p, boolean shift);
 //    public abstract void handleToggle();
 //    public abstract void handleStep();
 //    public abstract void handleUpdate(const float dt);

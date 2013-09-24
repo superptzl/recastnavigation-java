@@ -1,6 +1,6 @@
 package org.recast.DetourCrowd.Include;
 
-public class dtObstacleAvoidanceParams {
+public class dtObstacleAvoidanceParams implements Cloneable {
     public float velBias;
     public float weightDesVel;
     public float weightCurVel;
@@ -11,4 +11,17 @@ public class dtObstacleAvoidanceParams {
     public char adaptiveDivs;	///< adaptive
     public char adaptiveRings;	///< adaptive
     public char adaptiveDepth;	///< adaptive
+
+	@Override
+	public dtObstacleAvoidanceParams clone()
+	{
+		try
+		{
+			return (dtObstacleAvoidanceParams)super.clone();
+		}
+		catch (CloneNotSupportedException e)
+		{
+			return null;
+		}
+	}
 }

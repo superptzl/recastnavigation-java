@@ -2,11 +2,12 @@ package org.recast.RecastDemo.Include;
 
 import org.recast.Detour.Include.dtNavMesh;
 import org.recast.Detour.Include.dtPoly;
+import org.recast.DetourCrowd.Include.dtCrowd;
 
-public abstract class CrowdToolState {
+public abstract class CrowdToolState extends SampleToolState {
     public Sample m_sample;
     public dtNavMesh m_nav;
-//    public dtCrowd m_crowd;
+    public dtCrowd m_crowd;
 
     public float m_targetPos[] = new float[3];
     public dtPoly m_targetRef;
@@ -18,8 +19,8 @@ public abstract class CrowdToolState {
     public final static int MAX_AGENTS = 128;
     public static class AgentTrail
     {
-        float trail[] = new float[AGENT_MAX_TRAIL*3];
-        int htrail;
+		public float trail[] = new float[AGENT_MAX_TRAIL*3];
+        public int htrail;
     }
     public AgentTrail[] m_trails = new AgentTrail[MAX_AGENTS];
 
