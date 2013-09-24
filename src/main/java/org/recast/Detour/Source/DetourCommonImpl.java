@@ -87,4 +87,97 @@ public class DetourCommonImpl extends DetourCommon {
         dz = p[2] + t[0]*pqz - pt[2];
         return dx*dx + dz*dz;
     }
+
+	public boolean dtIntersectSegmentPoly2D(float[] p0, float[] p1,
+								  float[] verts, int nverts,
+								  float[] tmin, float[] tmax,
+								  int[] segMin, int[] segMax)
+	{
+		float EPS = 0.00000001f;
+
+		tmin[0] = 0;
+		tmax[0] = 1;
+		segMin[0] = -1;
+		segMax[0] = -1;
+
+		float dir[] = new float[3];
+		dtVsub(dir, p1, p0);
+
+		for (int i = 0, j = nverts-1; i < nverts; j=i++)
+		{
+			float edge[] = new float[3], diff[] = new float[3];
+			dtVsub(edge, verts, i*3, verts, j*3);
+			dtVsub(diff, p0, 0, verts, j*3);
+			float n = dtVperp2D(edge, diff);
+			float d = dtVperp2D(dir, edge);
+			if (Math.abs(d) < EPS)
+			{
+				// S is nearly parallel to this edge
+				if (n < 0)
+					return false;
+				else
+					continue;
+			}
+			float t = n / d;
+			if (d < 0)
+			{
+				// segment S is entering across this edge
+				if (t > tmin[0])
+				{
+					tmin[0] = t;
+					segMin[0] = j;
+					// S enters after leaving polygon
+					if (tmin[0] > tmax[0])
+						return false;
+				}
+			}
+			else
+			{
+				// segment S is leaving across this edge
+				if (t < tmax[0])
+				{
+					tmax[0] = t;
+					segMax[0] = j;
+					// S leaves before entering polygon
+					if (tmax[0] < tmin[0])
+						return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	public boolean dtIntersectSegSeg2D(float[] ap, int apIndex, float[] aq,
+							 float[] bp, float[] bq,
+							 float[] s, float[] t)
+	{
+		float u[] = new float[3], v[] = new float[3], w[] = new float[3];
+		dtVsub(u,aq,0,ap,apIndex);
+		dtVsub(v,bq,bp);
+		dtVsub(w,ap,apIndex,bp,0);
+		float d = vperpXZ(u,v);
+		if (Math.abs(d) < 1e-6f) return false;
+		s[0] = vperpXZ(v,w) / d;
+		t[0] = vperpXZ(u,w) / d;
+		return true;
+	}
+
+	public static float vperpXZ(float[] a, float[] b) { return a[0]*b[2] - a[2]*b[0]; }
+
+	public boolean dtPointInPolygon(float[] pt, float[] verts, int nverts)
+	{
+		// TODO: Replace pnpoly with triArea2D tests?
+		int i, j;
+		boolean c = false;
+		for (i = 0, j = nverts-1; i < nverts; j = i++)
+		{
+			float[] vi = verts;//[i*3];
+			float[] vj = verts;//[j*3];
+			if (((vi[i*3+2] > pt[2]) != (vj[j*3+2] > pt[2])) &&
+				(pt[0] < (vj[j*3+0]-vi[i*3+0]) * (pt[2]-vi[i*3+2]) / (vj[j*3+2]-vi[i*3+2]) + vi[i*3+0]) )
+				c = !c;
+		}
+		return c;
+	}
 }

@@ -110,4 +110,13 @@ public abstract class dtPathCorridor {
 //    /// The number of polygons in the current corridor path.
 //    /// @return The number of polygons in the current corridor path.
     public int getPathCount()  { return m_npath; }
+
+	public abstract int dtMergeCorridorStartMoved(dtPoly[] path, int npath, int maxPath,
+								  dtPoly[] visited, int nvisited);
+
+//	int dtMergeCorridorEndMoved(dtPolyRef* path, const int npath, const int maxPath,
+//								const dtPolyRef* visited, const int nvisited);
+//
+//	int dtMergeCorridorStartShortcut(dtPolyRef* path, const int npath, const int maxPath,
+//									 const dtPolyRef* visited, const int nvisited);
 }

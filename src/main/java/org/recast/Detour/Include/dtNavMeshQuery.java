@@ -90,7 +90,7 @@ public abstract class dtNavMeshQuery
 		/// @returns The status flags for the query.
 		public abstract dtStatus findStraightPath(float[] startPos, float[] endPos,
 								  dtPoly[] path, int pathSize,
-								  float[] straightPath, char[] straightPathFlags, dtPoly straightPathRefs,
+								  float[] straightPath, char[] straightPathFlags, dtPoly[] straightPathRefs,
 								  int[] straightPathCount, int maxStraightPath, int options/* = 0*/);
 
 		///@}
@@ -231,7 +231,7 @@ public abstract class dtNavMeshQuery
 		/// @returns The status flags for the query.
 		public abstract dtStatus moveAlongSurface(dtPoly startRef, float[] startPos, float[] endPos,
 								  dtQueryFilter filter,
-								  float resultPos, dtPoly[] visited, int[] visitedCount, int maxVisitedSize);
+								  float[] resultPos, dtPoly[] visited, int[] visitedCount, int maxVisitedSize);
 		/// Casts a 'walkability' ray along the surface of the navigation mesh from
 		/// the start position toward the end position.
 		///  @param[in]		startRef	The reference id of the start polygon.
@@ -313,14 +313,14 @@ public abstract class dtNavMeshQuery
 		///  @param[in]		pos			The position to check. [(x, y, z)]
 		///  @param[out]	closest		The closest point. [(x, y, z)]
 		/// @returns The status flags for the query.
-//		public abstract dtStatus closestPointOnPolyBoundary(dtPoly ref, const float* pos, float* closest) const;
+		public abstract dtStatus closestPointOnPolyBoundary(dtPoly ref, float[] pos, float[] closest);
 
 		/// Gets the height of the polygon at the provided position using the height detail. (Most accurate.)
 		///  @param[in]		ref			The reference id of the polygon.
 		///  @param[in]		pos			A position within the xz-bounds of the polygon. [(x, y, z)]
 		///  @param[out]	height		The height at the surface of the polygon.
 		/// @returns The status flags for the query.
-//		public abstract dtStatus getPolyHeight(dtPoly ref, const float* pos, float* height) const;
+		public abstract dtStatus getPolyHeight(dtPoly ref, float[] pos, float[] height);
 
 		/// @}
 		/// @name Miscellaneous Functions
@@ -374,14 +374,14 @@ public abstract class dtNavMeshQuery
 								 float[] mid);
 //
 //		// Appends vertex to a straight path
-//		public abstract dtStatus appendVertex(const float* pos, const unsigned char flags, const dtPoly ref,
-//							  float* straightPath, unsigned char* straightPathFlags, dtPoly* straightPathRefs,
-//							  int* straightPathCount, const int maxStraightPath) const;
+		public abstract dtStatus appendVertex(float[] pos, char flags, dtPoly ref,
+							  float[] straightPath, char[] straightPathFlags, dtPoly[] straightPathRefs,
+							  int[] straightPathCount, int maxStraightPath);
 //
 //		// Appends intermediate portal points to a straight path.
-//		public abstract dtStatus appendPortals(const int startIdx, const int endIdx, const float* endPos, const dtPoly path,
-//							   float* straightPath, unsigned char* straightPathFlags, dtPoly[] straightPathRefs,
-//							   int* straightPathCount, const int maxStraightPath, const int options) const;
+		public abstract dtStatus appendPortals(int startIdx, int endIdx, float[] endPos, dtPoly[] path,
+							   float[] straightPath, char[] straightPathFlags, dtPoly[] straightPathRefs,
+							   int[] straightPathCount, int maxStraightPath, int options);
 
 		public dtNavMesh m_nav;				///< Pointer to navmesh data.
 

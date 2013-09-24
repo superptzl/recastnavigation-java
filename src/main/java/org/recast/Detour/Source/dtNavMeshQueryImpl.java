@@ -602,7 +602,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		}
 
 
-	}/*
+	}
 
 	/// @par
 	///
@@ -615,36 +615,36 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	///
 	/// @p pos does not have to be within the bounds of the polybon or the navigation mesh.
 	///
-	dtStatus closestPointOnPolyBoundary(dtPoly ref,  float* pos, float* closest) 
+	public dtStatus closestPointOnPolyBoundary(dtPoly ref,  float[] pos, float[] closest)
 	{
-		dtAssert(m_nav);
+//		dtAssert(m_nav);
 
-		 dtMeshTile* tile = 0;
-		 dtPoly* poly = 0;
-		if (dtStatusFailed(m_nav.getTileAndPolyByRef(ref, &tile, &poly)))
-			return DT_FAILURE | DT_INVALID_PARAM;
+		 dtMeshTile[] tile = new dtMeshTile[1];
+		 dtPoly[] poly = new dtPoly[1];
+		if (dtStatus.dtStatusFailed(m_nav.getTileAndPolyByRef(ref, tile, poly)))
+			return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
 
 		// Collect vertices.
-		float verts[DT_VERTS_PER_POLYGON*3];
-		float edged[DT_VERTS_PER_POLYGON];
-		float edget[DT_VERTS_PER_POLYGON];
+		float[] verts = new float[DetourNavMesh.DT_VERTS_PER_POLYGON*3];
+		float[] edged = new float[DetourNavMesh.DT_VERTS_PER_POLYGON];
+		float[] edget = new float[DetourNavMesh.DT_VERTS_PER_POLYGON];
 		int nv = 0;
-		for (int i = 0; i < (int)poly.vertCount; ++i)
+		for (int i = 0; i < (int)poly[0].vertCount; ++i)
 		{
-			dtVcopy(&verts[nv*3], &tile.verts[poly.verts[i]*3]);
+			DetourCommon.dtVcopy(verts, nv*3, tile[0].verts, poly[0].verts[i]*3);
 			nv++;
 		}
 
-		bool inside = dtDistancePtPolyEdgesSqr(pos, verts, nv, edged, edget);
+		boolean inside = new DetourCommonImpl().dtDistancePtPolyEdgesSqr(pos, verts, nv, edged, edget);
 		if (inside)
 		{
 			// Point is inside the polygon, return the point.
-			dtVcopy(closest, pos);
+			DetourCommon.dtVcopy(closest, pos);
 		}
 		else
 		{
 			// Point is outside the polygon, dtClamp to nearest edge.
-			float dmin = FLT_MAX;
+			float dmin = Float.MAX_VALUE;
 			int imin = -1;
 			for (int i = 0; i < nv; ++i)
 			{
@@ -654,12 +654,12 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 					imin = i;
 				}
 			}
-			 float* va = &verts[imin*3];
-			 float* vb = &verts[((imin+1)%nv)*3];
-			dtVlerp(closest, va, vb, edget[imin]);
+//			 float* va = &verts[imin*3];
+//			 float* vb = &verts[((imin+1)%nv)*3];
+			DetourCommon.dtVlerp(closest, verts, imin*3, verts, ((imin+1)%nv)*3, edget[imin]);
 		}
 
-		return DT_SUCCESS;
+		return new dtStatus(dtStatus.DT_SUCCESS);
 	}
 
 	/// @par
@@ -667,53 +667,61 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	/// Will return #DT_FAILURE if the provided position is outside the xz-bounds
 	/// of the polygon.
 	///
-	dtStatus getPolyHeight(dtPoly ref,  float* pos, float* height) 
+	public dtStatus getPolyHeight(dtPoly ref,  float[] pos, float[] height)
 	{
-		dtAssert(m_nav);
+//		dtAssert(m_nav);
 
-		 dtMeshTile* tile = 0;
-		 dtPoly* poly = 0;
-		if (dtStatusFailed(m_nav.getTileAndPolyByRef(ref, &tile, &poly)))
-			return DT_FAILURE | DT_INVALID_PARAM;
+		 dtMeshTile tile[] = new dtMeshTile[1];
+		 dtPoly[] poly = new dtPoly[1];
+		if (dtStatus.dtStatusFailed(m_nav.getTileAndPolyByRef(ref, tile, poly)))
+			return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
 
-		if (poly.getType() == DT_POLYTYPE_OFFMESH_CONNECTION)
+		if (poly[0].getType() == dtPolyTypes.DT_POLYTYPE_OFFMESH_CONNECTION)
 		{
-			 float* v0 = &tile.verts[poly.verts[0]*3];
-			 float* v1 = &tile.verts[poly.verts[1]*3];
-			 float d0 = dtVdist(pos, v0);
-			 float d1 = dtVdist(pos, v1);
+			 float[] v0 = tile[0].verts;
+			int v0Index = poly[0].verts[0]*3;
+			 float[] v1 = tile[0].verts;
+			int v1Index = poly[0].verts[1]*3;
+			 float d0 = DetourCommon.dtVdist(pos, 0, v0, v0Index);
+			 float d1 = DetourCommon.dtVdist(pos, 0, v1, v1Index);
 			 float u = d0 / (d0+d1);
-			if (height)
-				*height = v0[1] + (v1[1] - v0[1]) * u;
-			return DT_SUCCESS;
+			if (height != null)
+				height[0] = v0[v0Index+1] + (v1[v1Index+1] - v0[v0Index+1]) * u;
+			return new dtStatus(dtStatus.DT_SUCCESS);
 		}
 		else
 		{
-			 unsigned int ip = (unsigned int)(poly - tile.polys);
-			 dtPolyDetail* pd = &tile.detailMeshes[ip];
+			 int ip = -1;//(int)(poly - tile[0].polys);
+			for (int i = 0; i < tile[0].polys.length; i++) {
+				if (tile[0].polys[i] == poly[0]) {
+					ip = i;
+				}
+			}
+			 dtPolyDetail pd = tile[0].detailMeshes[ip];
 			for (int j = 0; j < pd.triCount; ++j)
 			{
-				 unsigned char* t = &tile.detailTris[(pd.triBase+j)*4];
-				 float* v[3];
+				 char[] t = tile[0].detailTris;
+				int tIndex = (pd.triBase+j)*4;
+				 float v[] = new float[3];
 				for (int k = 0; k < 3; ++k)
 				{
-					if (t[k] < poly.vertCount)
-						v[k] = &tile.verts[poly.verts[t[k]]*3];
+					if (t[tIndex+k] < poly[0].vertCount)
+						v[k] = tile[0].verts[poly[0].verts[t[tIndex+k]]*3];
 					else
-						v[k] = &tile.detailVerts[(pd.vertBase+(t[k]-poly.vertCount))*3];
+						v[k] = tile[0].detailVerts[(pd.vertBase+(t[tIndex+k]-poly[0].vertCount))*3];
 				}
-				float h;
-				if (dtClosestHeightPointTriangle(pos, v[0], v[1], v[2], h))
+				float[] h = new float[1];
+				if (new DetourCommonImpl().dtClosestHeightPointTriangle(pos, v, 0, v, 1, v, 2, h))
 				{
-					if (height)
-						*height = h;
-					return DT_SUCCESS;
+					if (height != null)
+						height[0] = h[0];
+					return new dtStatus(dtStatus.DT_SUCCESS);
 				}
 			}
 		}
 
-		return DT_FAILURE | DT_INVALID_PARAM;
-	}*/
+		return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
+	}
 
 	/// @par
 	///
@@ -1557,84 +1565,86 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	}
 
 
-	/*dtStatus appendVertex( float* pos,  unsigned char flags,  dtPoly ref,
-										  float* straightPath, unsigned char* straightPathFlags, dtPoly* straightPathRefs,
-										  int* straightPathCount,  int maxStraightPath) 
+	public dtStatus appendVertex( float[] pos,  char flags,  dtPoly ref,
+										  float[] straightPath, char[] straightPathFlags, dtPoly[] straightPathRefs,
+										  int[] straightPathCount,  int maxStraightPath)
 	{
-		if ((*straightPathCount) > 0 && dtVequal(&straightPath[((*straightPathCount)-1)*3], pos))
+		if ((straightPathCount[0]) > 0 && DetourCommon.dtVequal(straightPath, ((straightPathCount[0])-1)*3, pos, 0))
 		{
 			// The vertices are equal, update flags and poly.
-			if (straightPathFlags)
-				straightPathFlags[(*straightPathCount)-1] = flags;
-			if (straightPathRefs)
-				straightPathRefs[(*straightPathCount)-1] = ref;
+			if (straightPathFlags != null)
+				straightPathFlags[(straightPathCount[0])-1] = flags;
+			if (straightPathRefs != null)
+				straightPathRefs[(straightPathCount[0])-1] = ref;
 		}
 		else
 		{
 			// Append new vertex.
-			dtVcopy(&straightPath[(*straightPathCount)*3], pos);
-			if (straightPathFlags)
-				straightPathFlags[(*straightPathCount)] = flags;
-			if (straightPathRefs)
-				straightPathRefs[(*straightPathCount)] = ref;
-			(*straightPathCount)++;
+			DetourCommon.dtVcopy(straightPath, (straightPathCount[0])*3, pos, 0);
+			if (straightPathFlags != null)
+				straightPathFlags[(straightPathCount[0])] = flags;
+			if (straightPathRefs != null)
+				straightPathRefs[(straightPathCount[0])] = ref;
+			(straightPathCount[0])++;
 			// If reached end of path or there is no space to append more vertices, return.
-			if (flags == DT_STRAIGHTPATH_END || (*straightPathCount) >= maxStraightPath)
+			if (flags == dtStraightPathFlags.DT_STRAIGHTPATH_END || (straightPathCount[0]) >= maxStraightPath)
 			{
-				return DT_SUCCESS | (((*straightPathCount) >= maxStraightPath) ? DT_BUFFER_TOO_SMALL : 0);
+				return new dtStatus(dtStatus.DT_SUCCESS | (((straightPathCount[0]) >= maxStraightPath) ? dtStatus.DT_BUFFER_TOO_SMALL : 0));
 			}
 		}
-		return DT_IN_PROGRESS;
+		return new dtStatus(dtStatus.DT_IN_PROGRESS);
 	}
 
-	dtStatus appendPortals( int startIdx,  int endIdx,  float* endPos,  dtPoly* path,
-										  float* straightPath, unsigned char* straightPathFlags, dtPoly* straightPathRefs,
-										  int* straightPathCount,  int maxStraightPath,  int options) 
+	public dtStatus appendPortals( int startIdx,  int endIdx,  float[] endPos,  dtPoly[] path,
+										  float[] straightPath, char[] straightPathFlags, dtPoly[] straightPathRefs,
+										  int[] straightPathCount,  int maxStraightPath,  int options)
 	{
-		 float* startPos = &straightPath[(*straightPathCount-1)*3];
+		 float[] startPos = straightPath;//[(straightPathCount[0]-1)*3];
+		int startPosIndex = (straightPathCount[0]-1)*3;
 		// Append or update last vertex
-		dtStatus stat = 0;
+		dtStatus stat = null;
 		for (int i = startIdx; i < endIdx; i++)
 		{
 			// Calculate portal
 			 dtPoly from = path[i];
-			 dtMeshTile* fromTile = 0;
-			 dtPoly* fromPoly = 0;
-			if (dtStatusFailed(m_nav.getTileAndPolyByRef(from, &fromTile, &fromPoly)))
-				return DT_FAILURE | DT_INVALID_PARAM;
+			 dtMeshTile[] fromTile = new dtMeshTile[1];
+			 dtPoly[] fromPoly = new dtPoly[1];
+			if (dtStatus.dtStatusFailed(m_nav.getTileAndPolyByRef(from, fromTile, fromPoly)))
+				return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
 
 			 dtPoly to = path[i+1];
-			 dtMeshTile* toTile = 0;
-			 dtPoly* toPoly = 0;
-			if (dtStatusFailed(m_nav.getTileAndPolyByRef(to, &toTile, &toPoly)))
-				return DT_FAILURE | DT_INVALID_PARAM;
+			 dtMeshTile[] toTile = new dtMeshTile[1];
+			 dtPoly[] toPoly = new dtPoly[1];
+			if (dtStatus.dtStatusFailed(m_nav.getTileAndPolyByRef(to, toTile, toPoly)))
+				return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
 
-			float left[3], right[3];
-			if (dtStatusFailed(getPortalPoints(from, fromPoly, fromTile, to, toPoly, toTile, left, right)))
+			float left[] = new float[3], right[] = new float[3];
+			if (dtStatus.dtStatusFailed(getPortalPoints(from, fromPoly[0], fromTile[0], to, toPoly[0], toTile[0], left, right)))
 				break;
 
-			if (options & DT_STRAIGHTPATH_AREA_CROSSINGS)
+			if ((options & dtStraightPathOptions.DT_STRAIGHTPATH_AREA_CROSSINGS) != 0)
 			{
 				// Skip intersection if only area crossings are requested.
-				if (fromPoly.getArea() == toPoly.getArea())
+				if (fromPoly[0].getArea() == toPoly[0].getArea())
 					continue;
 			}
 
 			// Append intersection
-			float s,t;
-			if (dtIntersectSegSeg2D(startPos, endPos, left, right, s, t))
+			float[] s = new float[1];
+			float [] t = new float[1];
+			if (new DetourCommonImpl().dtIntersectSegSeg2D(startPos, startPosIndex, endPos, left, right, s, t))
 			{
-				float pt[3];
-				dtVlerp(pt, left,right, t);
+				float pt[] = new float[3];
+				DetourCommon.dtVlerp(pt, left, 0, right, 0, t[0]);
 
-				stat = appendVertex(pt, 0, path[i+1],
+				stat = appendVertex(pt, (char)0, path[i+1],
 									straightPath, straightPathFlags, straightPathRefs,
 									straightPathCount, maxStraightPath);
-				if (stat != DT_IN_PROGRESS)
+				if (stat.dtStatus != dtStatus.DT_IN_PROGRESS)
 					return stat;
 			}
 		}
-		return DT_IN_PROGRESS;
+		return new dtStatus(dtStatus.DT_IN_PROGRESS);
 	}
 
 	/// @par
@@ -1654,147 +1664,148 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	/// they will be filled as far as possible from the start toward the end
 	/// position.
 	///
-	dtStatus findStraightPath( float* startPos,  float* endPos,
-											   dtPoly* path,  int pathSize,
-											  float* straightPath, unsigned char* straightPathFlags, dtPoly* straightPathRefs,
-											  int* straightPathCount,  int maxStraightPath,  int options) 
+	public dtStatus findStraightPath( float[] startPos,  float[] endPos,
+											   dtPoly[] path,  int pathSize,
+											  float[] straightPath, char[] straightPathFlags, dtPoly[] straightPathRefs,
+											  int[] straightPathCount,  int maxStraightPath,  int options)
 	{
-		dtAssert(m_nav);
+//		dtAssert(m_nav);
 
-		*straightPathCount = 0;
+		straightPathCount[0] = 0;
 
-		if (!maxStraightPath)
-			return DT_FAILURE | DT_INVALID_PARAM;
+		if (maxStraightPath == 0)
+			return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
 
-		if (!path[0])
-			return DT_FAILURE | DT_INVALID_PARAM;
+		if (path[0] == null)
+			return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
 
-		dtStatus stat = 0;
+		dtStatus stat = new dtStatus(0);
 
 		// TODO: Should this be callers responsibility?
-		float closestStartPos[3];
-		if (dtStatusFailed(closestPointOnPolyBoundary(path[0], startPos, closestStartPos)))
-			return DT_FAILURE | DT_INVALID_PARAM;
+		float closestStartPos[] = new float[3];
+		if (dtStatus.dtStatusFailed(closestPointOnPolyBoundary(path[0], startPos, closestStartPos)))
+			return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
 
-		float closestEndPos[3];
-		if (dtStatusFailed(closestPointOnPolyBoundary(path[pathSize-1], endPos, closestEndPos)))
-			return DT_FAILURE | DT_INVALID_PARAM;
+		float closestEndPos[] = new float[3];
+		if (dtStatus.dtStatusFailed(closestPointOnPolyBoundary(path[pathSize - 1], endPos, closestEndPos)))
+			return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
 
 		// Add start point.
-		stat = appendVertex(closestStartPos, DT_STRAIGHTPATH_START, path[0],
+		stat = appendVertex(closestStartPos, (char)dtStraightPathFlags.DT_STRAIGHTPATH_START, path[0],
 							straightPath, straightPathFlags, straightPathRefs,
 							straightPathCount, maxStraightPath);
-		if (stat != DT_IN_PROGRESS)
+		if (stat.dtStatus != dtStatus.DT_IN_PROGRESS)
 			return stat;
 
 		if (pathSize > 1)
 		{
-			float portalApex[3], portalLeft[3], portalRight[3];
-			dtVcopy(portalApex, closestStartPos);
-			dtVcopy(portalLeft, portalApex);
-			dtVcopy(portalRight, portalApex);
+			float portalApex[] = new float[3], portalLeft[] = new float[3], portalRight[] = new float[3];
+			DetourCommon.dtVcopy(portalApex, closestStartPos);
+			DetourCommon.dtVcopy(portalLeft, portalApex);
+			DetourCommon.dtVcopy(portalRight, portalApex);
 			int apexIndex = 0;
 			int leftIndex = 0;
 			int rightIndex = 0;
 
-			unsigned char leftPolyType = 0;
-			unsigned char rightPolyType = 0;
+			char leftPolyType = 0;
+			char rightPolyType = 0;
 
 			dtPoly leftPolyRef = path[0];
 			dtPoly rightPolyRef = path[0];
 
 			for (int i = 0; i < pathSize; ++i)
 			{
-				float left[3], right[3];
-				unsigned char fromType, toType;
+				float left[] = new float[3], right[] = new float[3];
+				char[] fromType= new char[1];
+				char toType[] = new char[1];
 
 				if (i+1 < pathSize)
 				{
 					// Next portal.
-					if (dtStatusFailed(getPortalPoints(path[i], path[i+1], left, right, fromType, toType)))
+					if (dtStatus.dtStatusFailed(getPortalPoints(path[i], path[i + 1], left, right, fromType, toType)))
 					{
 						// Failed to get portal points, in practice this means that path[i+1] is invalid polygon.
 						// Clamp the end point to path[i], and return the path so far.
 
-						if (dtStatusFailed(closestPointOnPolyBoundary(path[i], endPos, closestEndPos)))
+						if (dtStatus.dtStatusFailed(closestPointOnPolyBoundary(path[i], endPos, closestEndPos)))
 						{
 							// This should only happen when the first polygon is invalid.
-							return DT_FAILURE | DT_INVALID_PARAM;
+							return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
 						}
 
 						// Apeend portals along the current straight path segment.
-						if (options & (DT_STRAIGHTPATH_AREA_CROSSINGS | DT_STRAIGHTPATH_ALL_CROSSINGS))
+						if ((options & (dtStraightPathOptions.DT_STRAIGHTPATH_AREA_CROSSINGS | dtStraightPathOptions.DT_STRAIGHTPATH_ALL_CROSSINGS)) != 0)
 						{
 							stat = appendPortals(apexIndex, i, closestEndPos, path,
 												 straightPath, straightPathFlags, straightPathRefs,
 												 straightPathCount, maxStraightPath, options);
 						}
 
-						stat = appendVertex(closestEndPos, 0, path[i],
+						stat = appendVertex(closestEndPos, (char)0, path[i],
 											straightPath, straightPathFlags, straightPathRefs,
 											straightPathCount, maxStraightPath);
 
-						return DT_SUCCESS | DT_PARTIAL_RESULT | ((*straightPathCount >= maxStraightPath) ? DT_BUFFER_TOO_SMALL : 0);
+						return new dtStatus(dtStatus.DT_SUCCESS | dtStatus.DT_PARTIAL_RESULT | ((straightPathCount[0] >= maxStraightPath) ? dtStatus.DT_BUFFER_TOO_SMALL : 0));
 					}
 
 					// If starting really close the portal, advance.
 					if (i == 0)
 					{
-						float t;
-						if (dtDistancePtSegSqr2D(portalApex, left, right, t) < dtSqr(0.001f))
+						float[] t = new float[1];
+						if (new DetourCommonImpl().dtDistancePtSegSqr2D(portalApex, left, right, t) < DetourCommon.dtSqr(0.001f))
 							continue;
 					}
 				}
 				else
 				{
 					// End of the path.
-					dtVcopy(left, closestEndPos);
-					dtVcopy(right, closestEndPos);
+					DetourCommon.dtVcopy(left, closestEndPos);
+					DetourCommon.dtVcopy(right, closestEndPos);
 
-					fromType = toType = DT_POLYTYPE_GROUND;
+					fromType[0] = toType[0] = (char)dtPolyTypes.DT_POLYTYPE_GROUND;
 				}
 
 				// Right vertex.
-				if (dtTriArea2D(portalApex, portalRight, right) <= 0.0f)
+				if (DetourCommon.dtTriArea2D(portalApex, portalRight, right) <= 0.0f)
 				{
-					if (dtVequal(portalApex, portalRight) || dtTriArea2D(portalApex, portalLeft, right) > 0.0f)
+					if (DetourCommon.dtVequal(portalApex, portalRight) || DetourCommon.dtTriArea2D(portalApex, portalLeft, right) > 0.0f)
 					{
-						dtVcopy(portalRight, right);
-						rightPolyRef = (i+1 < pathSize) ? path[i+1] : 0;
-						rightPolyType = toType;
+						DetourCommon.dtVcopy(portalRight, right);
+						rightPolyRef = (i+1 < pathSize) ? path[i+1] : null;
+						rightPolyType = toType[0];
 						rightIndex = i;
 					}
 					else
 					{
 						// Append portals along the current straight path segment.
-						if (options & (DT_STRAIGHTPATH_AREA_CROSSINGS | DT_STRAIGHTPATH_ALL_CROSSINGS))
+						if ((options & (dtStraightPathOptions.DT_STRAIGHTPATH_AREA_CROSSINGS | dtStraightPathOptions.DT_STRAIGHTPATH_ALL_CROSSINGS)) != 0)
 						{
 							stat = appendPortals(apexIndex, leftIndex, portalLeft, path,
 												 straightPath, straightPathFlags, straightPathRefs,
 												 straightPathCount, maxStraightPath, options);
-							if (stat != DT_IN_PROGRESS)
+							if (stat.dtStatus != dtStatus.DT_IN_PROGRESS)
 								return stat;
 						}
 
-						dtVcopy(portalApex, portalLeft);
+						DetourCommon.dtVcopy(portalApex, portalLeft);
 						apexIndex = leftIndex;
 
-						unsigned char flags = 0;
-						if (!leftPolyRef)
-							flags = DT_STRAIGHTPATH_END;
-						else if (leftPolyType == DT_POLYTYPE_OFFMESH_CONNECTION)
-							flags = DT_STRAIGHTPATH_OFFMESH_CONNECTION;
+						char flags = 0;
+						if (leftPolyRef == null)
+							flags = dtStraightPathFlags.DT_STRAIGHTPATH_END;
+						else if (leftPolyType == dtPolyTypes.DT_POLYTYPE_OFFMESH_CONNECTION)
+							flags = dtStraightPathFlags.DT_STRAIGHTPATH_OFFMESH_CONNECTION;
 						dtPoly ref = leftPolyRef;
 
 						// Append or update vertex
 						stat = appendVertex(portalApex, flags, ref,
 											straightPath, straightPathFlags, straightPathRefs,
 											straightPathCount, maxStraightPath);
-						if (stat != DT_IN_PROGRESS)
+						if (stat.dtStatus != dtStatus.DT_IN_PROGRESS)
 							return stat;
 
-						dtVcopy(portalLeft, portalApex);
-						dtVcopy(portalRight, portalApex);
+						DetourCommon.dtVcopy(portalLeft, portalApex);
+						DetourCommon.dtVcopy(portalRight, portalApex);
 						leftIndex = apexIndex;
 						rightIndex = apexIndex;
 
@@ -1806,46 +1817,46 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 				}
 
 				// Left vertex.
-				if (dtTriArea2D(portalApex, portalLeft, left) >= 0.0f)
+				if (DetourCommon.dtTriArea2D(portalApex, portalLeft, left) >= 0.0f)
 				{
-					if (dtVequal(portalApex, portalLeft) || dtTriArea2D(portalApex, portalRight, left) < 0.0f)
+					if (DetourCommon.dtVequal(portalApex, portalLeft) || DetourCommon.dtTriArea2D(portalApex, portalRight, left) < 0.0f)
 					{
-						dtVcopy(portalLeft, left);
-						leftPolyRef = (i+1 < pathSize) ? path[i+1] : 0;
-						leftPolyType = toType;
+						DetourCommon.dtVcopy(portalLeft, left);
+						leftPolyRef = (i+1 < pathSize) ? path[i+1] : null;
+						leftPolyType = toType[0];
 						leftIndex = i;
 					}
 					else
 					{
 						// Append portals along the current straight path segment.
-						if (options & (DT_STRAIGHTPATH_AREA_CROSSINGS | DT_STRAIGHTPATH_ALL_CROSSINGS))
+						if ((options & (dtStraightPathOptions.DT_STRAIGHTPATH_AREA_CROSSINGS | dtStraightPathOptions.DT_STRAIGHTPATH_ALL_CROSSINGS)) != 0)
 						{
 							stat = appendPortals(apexIndex, rightIndex, portalRight, path,
 												 straightPath, straightPathFlags, straightPathRefs,
 												 straightPathCount, maxStraightPath, options);
-							if (stat != DT_IN_PROGRESS)
+							if (stat.dtStatus != dtStatus.DT_IN_PROGRESS)
 								return stat;
 						}
 
-						dtVcopy(portalApex, portalRight);
+						DetourCommon.dtVcopy(portalApex, portalRight);
 						apexIndex = rightIndex;
 
-						unsigned char flags = 0;
-						if (!rightPolyRef)
-							flags = DT_STRAIGHTPATH_END;
-						else if (rightPolyType == DT_POLYTYPE_OFFMESH_CONNECTION)
-							flags = DT_STRAIGHTPATH_OFFMESH_CONNECTION;
+						char flags = 0;
+						if (rightPolyRef == null)
+							flags = dtStraightPathFlags.DT_STRAIGHTPATH_END;
+						else if (rightPolyType == dtPolyTypes.DT_POLYTYPE_OFFMESH_CONNECTION)
+							flags = dtStraightPathFlags.DT_STRAIGHTPATH_OFFMESH_CONNECTION;
 						dtPoly ref = rightPolyRef;
 
 						// Append or update vertex
 						stat = appendVertex(portalApex, flags, ref,
 											straightPath, straightPathFlags, straightPathRefs,
 											straightPathCount, maxStraightPath);
-						if (stat != DT_IN_PROGRESS)
+						if (stat.dtStatus != dtStatus.DT_IN_PROGRESS)
 							return stat;
 
-						dtVcopy(portalLeft, portalApex);
-						dtVcopy(portalRight, portalApex);
+						DetourCommon.dtVcopy(portalLeft, portalApex);
+						DetourCommon.dtVcopy(portalRight, portalApex);
 						leftIndex = apexIndex;
 						rightIndex = apexIndex;
 
@@ -1858,22 +1869,22 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			}
 
 			// Append portals along the current straight path segment.
-			if (options & (DT_STRAIGHTPATH_AREA_CROSSINGS | DT_STRAIGHTPATH_ALL_CROSSINGS))
+			if ((options & (dtStraightPathOptions.DT_STRAIGHTPATH_AREA_CROSSINGS | dtStraightPathOptions.DT_STRAIGHTPATH_ALL_CROSSINGS)) != 0)
 			{
 				stat = appendPortals(apexIndex, pathSize-1, closestEndPos, path,
 									 straightPath, straightPathFlags, straightPathRefs,
 									 straightPathCount, maxStraightPath, options);
-				if (stat != DT_IN_PROGRESS)
+				if (stat.dtStatus != dtStatus.DT_IN_PROGRESS)
 					return stat;
 			}
 		}
 
-		stat = appendVertex(closestEndPos, DT_STRAIGHTPATH_END, 0,
+		stat = appendVertex(closestEndPos, (char)dtStraightPathFlags.DT_STRAIGHTPATH_END, null,
 							straightPath, straightPathFlags, straightPathRefs,
 							straightPathCount, maxStraightPath);
 
-		return DT_SUCCESS | ((*straightPathCount >= maxStraightPath) ? DT_BUFFER_TOO_SMALL : 0);
-	}*/
+		return new dtStatus(dtStatus.DT_SUCCESS | ((straightPathCount[0] >= maxStraightPath) ? dtStatus.DT_BUFFER_TOO_SMALL : 0));
+	}
 
 	/// @par
 	///
@@ -1895,53 +1906,53 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	/// be filled as far as possible from the start position toward the end
 	/// position.
 	///
-	/*dtStatus moveAlongSurface(dtPoly startRef,  float* startPos,  float* endPos,
-											   dtQueryFilter* filter,
-											  float* resultPos, dtPoly* visited, int* visitedCount,  int maxVisitedSize) 
+	public dtStatus moveAlongSurface(dtPoly startRef,  float[] startPos,  float[] endPos,
+											   dtQueryFilter filter,
+											  float[] resultPos, dtPoly[] visited, int[] visitedCount,  int maxVisitedSize)
 	{
-		dtAssert(m_nav);
-		dtAssert(m_tinyNodePool);
+//		dtAssert(m_nav);
+//		dtAssert(m_tinyNodePool);
 
-		*visitedCount = 0;
+		visitedCount[0] = 0;
 
 		// Validate input
-		if (!startRef)
-			return DT_FAILURE | DT_INVALID_PARAM;
+		if (startRef == null)
+			return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
 		if (!m_nav.isValidPolyRef(startRef))
-			return DT_FAILURE | DT_INVALID_PARAM;
+			return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
 
-		dtStatus status = DT_SUCCESS;
+		dtStatus status = new dtStatus(dtStatus.DT_SUCCESS);
 
-		static  int MAX_STACK = 48;
-		dtNode* stack[MAX_STACK];
+		int MAX_STACK = 48;
+		dtNode stack[] = new dtNode[MAX_STACK];
 		int nstack = 0;
 
 		m_tinyNodePool.clear();
 
-		dtNode* startNode = m_tinyNodePool.getNode(startRef);
+		dtNode startNode = m_tinyNodePool.getNode(startRef);
 		startNode.pidx = 0;
 		startNode.cost = 0;
 		startNode.total = 0;
 		startNode.id = startRef;
-		startNode.flags = DT_NODE_CLOSED;
+		startNode.flags = dtNodeFlags.DT_NODE_CLOSED;
 		stack[nstack++] = startNode;
 
-		float bestPos[3];
-		float bestDist = FLT_MAX;
-		dtNode* bestNode = 0;
-		dtVcopy(bestPos, startPos);
+		float bestPos[] = new float[3];
+		float bestDist = Float.MAX_VALUE;
+		dtNode bestNode = null;
+		DetourCommon.dtVcopy(bestPos, startPos);
 
 		// Search raints
-		float searchPos[3], searchRadSqr;
-		dtVlerp(searchPos, startPos, endPos, 0.5f);
-		searchRadSqr = dtSqr(dtVdist(startPos, endPos)/2.0f + 0.001f);
+		float searchPos[] = new float[3], searchRadSqr;
+		DetourCommon.dtVlerp(searchPos, startPos, 0, endPos, 0, 0.5f);
+		searchRadSqr = DetourCommon.dtSqr(DetourCommon.dtVdist(startPos, endPos) / 2.0f + 0.001f);
 
-		float verts[DT_VERTS_PER_POLYGON*3];
+		float verts[] = new float[DetourNavMesh.DT_VERTS_PER_POLYGON*3];
 
-		while (nstack)
+		while (nstack != 0)
 		{
 			// Pop front.
-			dtNode* curNode = stack[0];
+			dtNode curNode = stack[0];
 			for (int i = 0; i < nstack-1; ++i)
 				stack[i] = stack[i+1];
 			nstack--;
@@ -1949,44 +1960,44 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			// Get poly and tile.
 			// The API input has been cheked already, skip checking internal data.
 			 dtPoly curRef = curNode.id;
-			 dtMeshTile* curTile = 0;
-			 dtPoly* curPoly = 0;
-			m_nav.getTileAndPolyByRefUnsafe(curRef, &curTile, &curPoly);
+			 dtMeshTile[] curTile = new dtMeshTile[1];
+			 dtPoly curPoly[] = new dtPoly[1];
+			m_nav.getTileAndPolyByRefUnsafe(curRef, curTile, curPoly);
 
 			// Collect vertices.
-			 int nverts = curPoly.vertCount;
+			 int nverts = curPoly[0].vertCount;
 			for (int i = 0; i < nverts; ++i)
-				dtVcopy(&verts[i*3], &curTile.verts[curPoly.verts[i]*3]);
+				DetourCommon.dtVcopy(verts, i*3, curTile[0].verts, curPoly[0].verts[i]*3);
 
 			// If target is inside the poly, stop search.
-			if (dtPointInPolygon(endPos, verts, nverts))
+			if (new DetourCommonImpl().dtPointInPolygon(endPos, verts, nverts))
 			{
 				bestNode = curNode;
-				dtVcopy(bestPos, endPos);
+				DetourCommon.dtVcopy(bestPos, endPos);
 				break;
 			}
 
 			// Find wall edges and find nearest point inside the walls.
-			for (int i = 0, j = (int)curPoly.vertCount-1; i < (int)curPoly.vertCount; j = i++)
+			for (int i = 0, j = (int)curPoly[0].vertCount-1; i < (int)curPoly[0].vertCount; j = i++)
 			{
 				// Find links to neighbours.
-				static  int MAX_NEIS = 8;
+				int MAX_NEIS = 8;
 				int nneis = 0;
-				dtPoly neis[MAX_NEIS];
+				dtPoly[] neis= new dtPoly[MAX_NEIS];
 
-				if (curPoly.neis[j] & DT_EXT_LINK)
+				if ((curPoly[0].neis[j] & DetourNavMesh.DT_EXT_LINK) != 0)
 				{
 					// Tile border.
-					for (unsigned int k = curPoly.firstLink; k != DT_NULL_LINK; k = curTile.links[k].next)
+					for (int k = curPoly[0].firstLink; k != DetourNavMesh.DT_NULL_LINK; k = curTile[0].links[k].next)
 					{
-						 dtLink* link = &curTile.links[k];
+						 dtLink link = curTile[0].links[k];
 						if (link.edge == j)
 						{
-							if (link.ref != 0)
+							if (link.ref != null)
 							{
-								 dtMeshTile* neiTile = 0;
-								 dtPoly* neiPoly = 0;
-								m_nav.getTileAndPolyByRefUnsafe(link.ref, &neiTile, &neiPoly);
+								 dtMeshTile[] neiTile = new dtMeshTile[1];
+								 dtPoly[] neiPoly = new dtPoly[1];
+								m_nav.getTileAndPolyByRefUnsafe(link.ref, neiTile, neiPoly);
 								if (filter.passFilter(link.ref, neiTile, neiPoly))
 								{
 									if (nneis < MAX_NEIS)
@@ -1996,28 +2007,29 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 						}
 					}
 				}
-				else if (curPoly.neis[j])
+				else if (curPoly[0].neis[j] != 0)
 				{
-					 unsigned int idx = (unsigned int)(curPoly.neis[j]-1);
-					 dtPoly ref = m_nav.getPolyRefBase(curTile) | idx;
-					if (filter.passFilter(ref, curTile, &curTile.polys[idx]))
-					{
-						// Internal edge, encode id.
-						neis[nneis++] = ref;
-					}
+					//todo [IZ]
+//					 int idx = (int)(curPoly[0].neis[j]-1);
+//					 dtPoly ref = m_nav.getPolyRefBase(curTile[0]) | idx;
+//					if (filter.passFilter(ref, curTile[0], curTile[0].polys[idx]))
+//					{
+//						// Internal edge, encode id.
+//						neis[nneis++] = ref;
+//					}
 				}
 
-				if (!nneis)
+				if (nneis == 0)
 				{
 					// Wall edge, calc distance.
-					 float* vj = &verts[j*3];
-					 float* vi = &verts[i*3];
-					float tseg;
-					 float distSqr = dtDistancePtSegSqr2D(endPos, vj, vi, tseg);
+//					 float* vj = &verts[j*3];
+//					 float* vi = &verts[i*3];
+					float[] tseg = new float[1];
+					 float distSqr = new DetourCommonImpl().dtDistancePtSegSqr2D(endPos, verts, j*3, verts, i*3, tseg, 0);
 					if (distSqr < bestDist)
 					{
 	                    // Update nearest distance.
-						dtVlerp(bestPos, vj,vi, tseg);
+						DetourCommon.dtVlerp(bestPos, verts, j*3, verts, i*3, tseg[0]);
 						bestDist = distSqr;
 						bestNode = curNode;
 					}
@@ -2027,19 +2039,19 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 					for (int k = 0; k < nneis; ++k)
 					{
 						// Skip if no node can be allocated.
-						dtNode* neighbourNode = m_tinyNodePool.getNode(neis[k]);
-						if (!neighbourNode)
+						dtNode neighbourNode = m_tinyNodePool.getNode(neis[k]);
+						if (neighbourNode == null)
 							continue;
 						// Skip if already visited.
-						if (neighbourNode.flags & DT_NODE_CLOSED)
+						if ((neighbourNode.flags & dtNodeFlags.DT_NODE_CLOSED) != 0)
 							continue;
 
 						// Skip the link if it is too far from search raint.
 						// TODO: Maybe should use getPortalPoints(), but this one is way faster.
-						 float* vj = &verts[j*3];
-						 float* vi = &verts[i*3];
-						float tseg;
-						float distSqr = dtDistancePtSegSqr2D(searchPos, vj, vi, tseg);
+//						 float* vj = &verts[j*3];
+//						 float* vi = &verts[i*3];
+						float[] tseg = new float[3];
+						float distSqr = new DetourCommonImpl().dtDistancePtSegSqr2D(searchPos, verts, j * 3, verts, i * 3, tseg, 0);
 						if (distSqr > searchRadSqr)
 							continue;
 
@@ -2047,7 +2059,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 						if (nstack < MAX_STACK)
 						{
 							neighbourNode.pidx = m_tinyNodePool.getNodeIdx(curNode);
-							neighbourNode.flags |= DT_NODE_CLOSED;
+							neighbourNode.flags |= dtNodeFlags.DT_NODE_CLOSED;
 							stack[nstack++] = neighbourNode;
 						}
 					}
@@ -2056,19 +2068,19 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		}
 
 		int n = 0;
-		if (bestNode)
+		if (bestNode != null)
 		{
 			// Reverse the path.
-			dtNode* prev = 0;
-			dtNode* node = bestNode;
+			dtNode prev = null;
+			dtNode node = bestNode;
 			do
 			{
-				dtNode* next = m_tinyNodePool.getNodeAtIdx(node.pidx);
+				dtNode next = m_tinyNodePool.getNodeAtIdx(node.pidx);
 				node.pidx = m_tinyNodePool.getNodeIdx(prev);
 				prev = node;
 				node = next;
 			}
-			while (node);
+			while (node != null);
 
 			// Store result
 			node = prev;
@@ -2077,20 +2089,20 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 				visited[n++] = node.id;
 				if (n >= maxVisitedSize)
 				{
-					status |= DT_BUFFER_TOO_SMALL;
+					status.dtStatus |= dtStatus.DT_BUFFER_TOO_SMALL;
 					break;
 				}
 				node = m_tinyNodePool.getNodeAtIdx(node.pidx);
 			}
-			while (node);
+			while (node != null);
 		}
 
-		dtVcopy(resultPos, bestPos);
+		DetourCommon.dtVcopy(resultPos, bestPos);
 
-		*visitedCount = n;
+		visitedCount[0] = n;
 
 		return status;
-	}*/
+	}
 
 
 	public dtStatus getPortalPoints(dtPoly from, dtPoly to, float[] left, float[] right,
@@ -2211,7 +2223,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		mid[1] = (left[1]+right[1])*0.5f;
 		mid[2] = (left[2]+right[2])*0.5f;
 		return DT_SUCCESS;
-	}
+	} */
 
 	/// @par
 	///
@@ -2251,93 +2263,94 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	/// (no wall hit), meaning it reached the end position. This is one example of why
 	/// this method is meant for short distance checks.
 	///
-	dtStatus raycast(dtPoly startRef,  float* startPos,  float* endPos,
-									  dtQueryFilter* filter,
-									 float* t, float* hitNormal, dtPoly* path, int* pathCount,  int maxPath) 
+	public dtStatus raycast(dtPoly startRef,  float[] startPos,  float[] endPos,
+									  dtQueryFilter filter,
+									 float[] t, float[] hitNormal, dtPoly[] path, int[] pathCount,  int maxPath)
 	{
-		dtAssert(m_nav);
+//		dtAssert(m_nav);
 
-		*t = 0;
-		if (pathCount)
-			*pathCount = 0;
+		t[0] = 0;
+		if (pathCount != null)
+			pathCount[0] = 0;
 
 		// Validate input
-		if (!startRef || !m_nav.isValidPolyRef(startRef))
-			return DT_FAILURE | DT_INVALID_PARAM;
+		if (startRef == null || !m_nav.isValidPolyRef(startRef))
+			return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
 
 		dtPoly curRef = startRef;
-		float verts[DT_VERTS_PER_POLYGON*3];
+		float verts[] = new float[DetourNavMesh.DT_VERTS_PER_POLYGON*3];
 		int n = 0;
 
 		hitNormal[0] = 0;
 		hitNormal[1] = 0;
 		hitNormal[2] = 0;
 
-		dtStatus status = DT_SUCCESS;
+		dtStatus status = new dtStatus(dtStatus.DT_SUCCESS);
 
-		while (curRef)
+		while (curRef != null)
 		{
 			// Cast ray against current polygon.
 
 			// The API input has been cheked already, skip checking internal data.
-			 dtMeshTile* tile = 0;
-			 dtPoly* poly = 0;
-			m_nav.getTileAndPolyByRefUnsafe(curRef, &tile, &poly);
+			 dtMeshTile tile[] = new dtMeshTile[1];
+			 dtPoly poly[] = new dtPoly[1];
+			m_nav.getTileAndPolyByRefUnsafe(curRef, tile, poly);
 
 			// Collect vertices.
 			int nv = 0;
-			for (int i = 0; i < (int)poly.vertCount; ++i)
+			for (int i = 0; i < (int)poly[0].vertCount; ++i)
 			{
-				dtVcopy(&verts[nv*3], &tile.verts[poly.verts[i]*3]);
+				DetourCommon.dtVcopy(verts, nv*3, tile[0].verts, poly[0].verts[i]*3);
 				nv++;
 			}
 
-			float tmin, tmax;
-			int segMin, segMax;
-			if (!dtIntersectSegmentPoly2D(startPos, endPos, verts, nv, tmin, tmax, segMin, segMax))
+			float[] tmin = new float[1];
+			float tmax[] = new float[1];
+			int segMin[] = new int[1], segMax[] = new int[1];
+			if (!new DetourCommonImpl().dtIntersectSegmentPoly2D(startPos, endPos, verts, nv, tmin, tmax, segMin, segMax))
 			{
 				// Could not hit the polygon, keep the old t and report hit.
-				if (pathCount)
-					*pathCount = n;
+				if (pathCount != null)
+					pathCount[0] = n;
 				return status;
 			}
 			// Keep track of furthest t so far.
-			if (tmax > *t)
-				*t = tmax;
+			if (tmax[0] > t[0])
+				t[0] = tmax[0];
 
 			// Store visited polygons.
 			if (n < maxPath)
 				path[n++] = curRef;
 			else
-				status |= DT_BUFFER_TOO_SMALL;
+				status.dtStatus |= dtStatus.DT_BUFFER_TOO_SMALL;
 
 			// Ray end is completely inside the polygon.
-			if (segMax == -1)
+			if (segMax[0] == -1)
 			{
-				*t = FLT_MAX;
-				if (pathCount)
-					*pathCount = n;
+				t[0] = Float.MAX_VALUE;
+				if (pathCount != null)
+					pathCount[0] = n;
 				return status;
 			}
 
 			// Follow neighbours.
-			dtPoly nextRef = 0;
+			dtPoly nextRef = null;
 
-			for (unsigned int i = poly.firstLink; i != DT_NULL_LINK; i = tile.links[i].next)
+			for (int i = poly[0].firstLink; i != DetourNavMesh.DT_NULL_LINK; i = tile[0].links[i].next)
 			{
-				 dtLink* link = &tile.links[i];
+				 dtLink link = tile[0].links[i];
 
 				// Find link which contains this edge.
-				if ((int)link.edge != segMax)
+				if ((int)link.edge != segMax[0])
 					continue;
 
 				// Get pointer to the next polygon.
-				 dtMeshTile* nextTile = 0;
-				 dtPoly* nextPoly = 0;
-				m_nav.getTileAndPolyByRefUnsafe(link.ref, &nextTile, &nextPoly);
+				 dtMeshTile[] nextTile = new dtMeshTile[1];
+				 dtPoly[] nextPoly = new dtPoly[1];
+				m_nav.getTileAndPolyByRefUnsafe(link.ref, nextTile, nextPoly);
 
 				// Skip off-mesh connections.
-				if (nextPoly.getType() == DT_POLYTYPE_OFFMESH_CONNECTION)
+				if (nextPoly[0].getType() == dtPolyTypes.DT_POLYTYPE_OFFMESH_CONNECTION)
 					continue;
 
 				// Skip links based on filter.
@@ -2361,22 +2374,30 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 				}
 
 				// Check for partial edge links.
-				 int v0 = poly.verts[link.edge];
-				 int v1 = poly.verts[(link.edge+1) % poly.vertCount];
-				 float* left = &tile.verts[v0*3];
-				 float* right = &tile.verts[v1*3];
+				 int v0 = poly[0].verts[link.edge];
+				 int v1 = poly[0].verts[(link.edge+1) % poly[0].vertCount];
+				 float[] left = tile[0].verts;
+				int leftIndex = v0*3;
+				 float[] right = tile[0].verts;
+				int rightIndex = v1*3;
 
 				// Check that the intersection lies inside the link portal.
 				if (link.side == 0 || link.side == 4)
 				{
 					// Calculate link size.
 					 float s = 1.0f/255.0f;
-					float lmin = left[2] + (right[2] - left[2])*(link.bmin*s);
-					float lmax = left[2] + (right[2] - left[2])*(link.bmax*s);
-					if (lmin > lmax) dtSwap(lmin, lmax);
+					float lmin = left[leftIndex+2] + (right[rightIndex+2] - left[leftIndex+2])*(link.bmin*s);
+					float lmax = left[leftIndex+2] + (right[rightIndex+2] - left[leftIndex+2])*(link.bmax*s);
+					if (lmin > lmax)
+					{
+						float tmp = lmax;
+						lmax = lmin;
+						lmin = tmp;
+					}
+//						DetourCommon.dtSwap(lmin, lmax);
 
 					// Find Z intersection.
-					float z = startPos[2] + (endPos[2]-startPos[2])*tmax;
+					float z = startPos[2] + (endPos[2]-startPos[2])*tmax[0];
 					if (z >= lmin && z <= lmax)
 					{
 						nextRef = link.ref;
@@ -2387,12 +2408,17 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 				{
 					// Calculate link size.
 					 float s = 1.0f/255.0f;
-					float lmin = left[0] + (right[0] - left[0])*(link.bmin*s);
-					float lmax = left[0] + (right[0] - left[0])*(link.bmax*s);
-					if (lmin > lmax) dtSwap(lmin, lmax);
+					float lmin = left[leftIndex+0] + (right[rightIndex+0] - left[leftIndex+0])*(link.bmin*s);
+					float lmax = left[leftIndex+0] + (right[rightIndex+0] - left[leftIndex+0])*(link.bmax*s);
+					if (lmin > lmax) {
+						float tmp = lmax;
+						lmax = lmin;
+						lmin = tmp;
+//						DetourCommon.dtSwap(lmin, lmax);
+					}
 
 					// Find X intersection.
-					float x = startPos[0] + (endPos[0]-startPos[0])*tmax;
+					float x = startPos[0] + (endPos[0]-startPos[0])*tmax[0];
 					if (x >= lmin && x <= lmax)
 					{
 						nextRef = link.ref;
@@ -2401,24 +2427,26 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 				}
 			}
 
-			if (!nextRef)
+			if (nextRef == null)
 			{
 				// No neighbour, we hit a wall.
 
 				// Calculate hit normal.
-				 int a = segMax;
-				 int b = segMax+1 < nv ? segMax+1 : 0;
-				 float* va = &verts[a*3];
-				 float* vb = &verts[b*3];
-				 float dx = vb[0] - va[0];
-				 float dz = vb[2] - va[2];
+				 int a = segMax[0];
+				 int b = segMax[0]+1 < nv ? segMax[0]+1 : 0;
+				 float[] va = verts;//[a*3];
+				int vaIndex = a*3;
+				 float[] vb = verts;//[b*3];
+				int vbIndex = b*3;
+				 float dx = vb[vbIndex+0] - va[vaIndex+0];
+				 float dz = vb[vbIndex+2] - va[vaIndex+2];
 				hitNormal[0] = dz;
 				hitNormal[1] = 0;
 				hitNormal[2] = -dx;
-				dtVnormalize(hitNormal);
+				DetourCommon.dtVnormalize(hitNormal);
 
-				if (pathCount)
-					*pathCount = n;
+				if (pathCount != null)
+					pathCount[0] = n;
 				return status;
 			}
 
@@ -2426,11 +2454,11 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			curRef = nextRef;
 		}
 
-		if (pathCount)
-			*pathCount = n;
+		if (pathCount != null)
+			pathCount[0] = n;
 
 		return status;
-	}*/
+	}
 
 	/// @par
 	///

@@ -235,10 +235,15 @@ public abstract class DetourCommon {
 ///  @param[in]		v2	A point. [(x, y, z)]
 /// @return The square of the distance between the two points.
     public static float dtVdistSqr(float[] v1, float[] v2)
+	{
+		return dtVdistSqr(v1, 0, v2, 0);
+	}
+
+    public static float dtVdistSqr(float[] v1, int v1Index, float[] v2, int v2Index)
     {
-        float dx = v2[0] - v1[0];
-        float dy = v2[1] - v1[1];
-        float dz = v2[2] - v1[2];
+        float dx = v2[v2Index+0] - v1[v1Index+0];
+        float dy = v2[v2Index+1] - v1[v1Index+1];
+        float dz = v2[v2Index+2] - v1[v1Index+2];
         return dx*dx + dy*dy + dz*dz;
     }
 
@@ -384,4 +389,34 @@ public abstract class DetourCommon {
     {
         return u[2]*v[0] - u[0]*v[2];
     }
+
+	public abstract boolean dtIntersectSegmentPoly2D(float[] p0, float[] p1,
+								  float[] verts, int nverts,
+								  float[] tmin, float[] tmax,
+								  int[] segMin, int[] segMax);
+
+	/// Performs a 'sloppy' colocation check of the specified points.
+	///  @param[in]		p0	A point. [(x, y, z)]
+	///  @param[in]		p1	A point. [(x, y, z)]
+	/// @return True if the points are considered to be at the same location.
+	///
+	/// Basically, this function will return true if the specified points are
+	/// close enough to eachother to be considered colocated.
+	public static boolean dtVequal(float[] p0, float[] p1)
+	{
+		return dtVequal(p0, 0, p1, 0);
+	}
+
+	public static boolean dtVequal(float[] p0, int p0Index, float[] p1, int p1Index)
+	{
+		float thr = dtSqr(1.0f/16384.0f);
+		float d = dtVdistSqr(p0, p0Index, p1, p1Index);
+		return d < thr;
+	}
+
+	public abstract boolean dtIntersectSegSeg2D(float[] ap, int apIndex, float[] aq,
+							 float[] bp, float[] bq,
+							 float[] s, float[] t);
+
+	public abstract boolean dtPointInPolygon(float[] pt, float[] verts, int nverts);
 }

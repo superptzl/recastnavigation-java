@@ -65,36 +65,39 @@ public class dtPathCorridorImpl extends dtPathCorridor {
 
         float MIN_TARGET_DIST = 0.01f;
 
-        int ncorners = 0;
+        int ncorners[] = new int[1];
         navquery.findStraightPath(m_pos, m_target, m_path, m_npath,
-                cornerVerts, cornerFlags, cornerPolys, ncorners, maxCorners);
+                cornerVerts, cornerFlags, cornerPolys, ncorners, maxCorners, 0);
 
         // Prune points in the beginning of the path which are too close.
-        while (ncorners != 0)
+        while (ncorners[0] != 0)
         {
-            if ((cornerFlags[0] & dtStraightPathFlags.DT_STRAIGHTPATH_OFFMESH_CONNECTION) ||
-                    DetourCommon.dtVdist2DSqr(cornerVerts[0], m_pos) > DetourCommon.dtSqr(MIN_TARGET_DIST))
+            if ((cornerFlags[0] & dtStraightPathFlags.DT_STRAIGHTPATH_OFFMESH_CONNECTION)!=0 ||
+                    DetourCommon.dtVdist2DSqr(cornerVerts, m_pos) > DetourCommon.dtSqr(MIN_TARGET_DIST))
             break;
-            ncorners--;
-            if (ncorners)
+            ncorners[0]--;
+            if (ncorners[0] != 0)
             {
-                memmove(cornerFlags, cornerFlags+1, sizeof(unsigned char)*ncorners);
-                memmove(cornerPolys, cornerPolys+1, sizeof(dtPolyRef)*ncorners);
-                memmove(cornerVerts, cornerVerts+3, sizeof(float)*3*ncorners);
+//                memmove(cornerFlags, cornerFlags+1, sizeof(unsigned char)*ncorners);
+				System.arraycopy(cornerFlags, 1, cornerFlags, 0, ncorners[0]);
+//                memmove(cornerPolys, cornerPolys+1, sizeof(dtPolyRef)*ncorners);
+				System.arraycopy(cornerPolys, 1, cornerPolys, 0, ncorners[0]);
+//                memmove(cornerVerts, cornerVerts+3, sizeof(float)*3*ncorners);
+				System.arraycopy(cornerVerts, 3, cornerVerts, 0, 3*ncorners[0]);
             }
         }
 
         // Prune points after an off-mesh connection.
-        for (int i = 0; i < ncorners; ++i)
+        for (int i = 0; i < ncorners[0]; ++i)
         {
             if ((cornerFlags[i] & dtStraightPathFlags.DT_STRAIGHTPATH_OFFMESH_CONNECTION) != 0)
             {
-                ncorners = i+1;
+                ncorners[0] = i+1;
                 break;
             }
         }
 
-        return ncorners;
+        return ncorners[0];
     }
 //
 //    /**
@@ -139,12 +142,12 @@ public class dtPathCorridorImpl extends dtPathCorridor {
 
         int MAX_RES = 32;
         dtPoly res[] = new dtPoly[MAX_RES];
-        float t, norm[] = new float[3];
-        int nres = 0;
-        navquery.raycast(m_path[0], m_pos, goal, filter, &t, norm, res, &nres, MAX_RES);
-        if (nres > 1 && t > 0.99f)
+        float t[] = new float[1], norm[] = new float[3];
+        int nres[] = new int[1];
+        navquery.raycast(m_path[0], m_pos, goal, filter, t, norm, res, nres, MAX_RES);
+        if (nres[0] > 1 && t[0] > 0.99f)
         {
-            m_npath = dtMergeCorridorStartShortcut(m_path, m_npath, m_maxPath, res, nres);
+            m_npath = dtMergeCorridorStartShortcut(m_path, m_npath, m_maxPath, res, nres[0]);
         }
     }
 //
@@ -253,14 +256,14 @@ public class dtPathCorridorImpl extends dtPathCorridor {
         float result[] = new float[3];
         int MAX_VISITED = 16;
         dtPoly visited[] = new dtPoly[MAX_VISITED];
-        int nvisited = 0;
+        int nvisited[] = new int[1];
         navquery.moveAlongSurface(m_path[0], m_pos, npos, filter,
-                result, visited, &nvisited, MAX_VISITED);
-        m_npath = dtMergeCorridorStartMoved(m_path, m_npath, m_maxPath, visited, nvisited);
+                result, visited, nvisited, MAX_VISITED);
+        m_npath = dtMergeCorridorStartMoved(m_path, m_npath, m_maxPath, visited, nvisited[0]);
 
         // Adjust the position to stay on top of the navmesh.
         float h = m_pos[1];
-        navquery.getPolyHeight(m_path[0], result, &h);
+        navquery.getPolyHeight(m_path[0], result, h);
         result[1] = h;
         DetourCommon.dtVcopy(m_pos, result);
     }
@@ -307,14 +310,14 @@ public class dtPathCorridorImpl extends dtPathCorridor {
 ///// is expected to be in the last polygon.
 /////
 ///// @warning The size of the path must not exceed the size of corridor's path buffer set during #init().
-    public void setCorridor(float[] target, dtPolyRef[] path, int npath)
+    public void setCorridor(float[] target, dtPoly[] path, int npath)
     {
 //        dtAssert(m_path);
 //        dtAssert(npath > 0);
 //        dtAssert(npath < m_maxPath);
 
         DetourCommon.dtVcopy(m_target, target);
-        memcpy(m_path, path, sizeof(dtPolyRef)*npath);
+//        memcpy(m_path, path, sizeof(dtPolyRef)*npath);
         m_npath = npath;
     }
 
@@ -327,13 +330,13 @@ public class dtPathCorridorImpl extends dtPathCorridor {
         {
             m_path[2] = m_path[m_npath-1];
             m_path[0] = safeRef;
-            m_path[1] = 0;
+            m_path[1] = null;
             m_npath = 3;
         }
         else
         {
             m_path[0] = safeRef;
-            m_path[1] = 0;
+            m_path[1] = null;
         }
 
         return true;
@@ -444,4 +447,51 @@ public class dtPathCorridorImpl extends dtPathCorridor {
 
         return req+size;
     }
+
+	public int dtMergeCorridorStartMoved(dtPoly[] path, int npath, int maxPath,
+								  dtPoly[] visited, int nvisited)
+	{
+		int furthestPath = -1;
+		int furthestVisited = -1;
+
+		// Find furthest common polygon.
+		for (int i = npath-1; i >= 0; --i)
+		{
+			boolean found = false;
+			for (int j = nvisited-1; j >= 0; --j)
+			{
+				if (path[i] == visited[j])
+				{
+					furthestPath = i;
+					furthestVisited = j;
+					found = true;
+				}
+			}
+			if (found)
+				break;
+		}
+
+		// If no intersection found just return current path.
+		if (furthestPath == -1 || furthestVisited == -1)
+			return npath;
+
+		// Concatenate paths.
+
+		// Adjust beginning of the buffer to include the visited.
+		int req = nvisited - furthestVisited;
+		int orig = DetourCommon.dtMin(furthestPath+1, npath);
+		int size = DetourCommon.dtMax(0, npath-orig);
+		if (req+size > maxPath)
+			size = maxPath-req;
+		if (size != 0) {
+//			memmove(path+req, path+orig, size*sizeof(dtPolyRef));
+			System.arraycopy(path, orig, path, req, size);
+		}
+
+		// Store visited
+		for (int i = 0; i < req; ++i)
+			path[i] = visited[(nvisited-1)-i];
+
+		return req+size;
+	}
 }
