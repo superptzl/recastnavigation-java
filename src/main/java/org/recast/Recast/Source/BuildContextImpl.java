@@ -75,7 +75,7 @@ public class BuildContextImpl extends BuildContext {
         m_startTime.put(label, getPerfTime());
     }
 
-    private Long getPerfTime() {
+    public Long getPerfTime() {
         return System.currentTimeMillis();
     }
 

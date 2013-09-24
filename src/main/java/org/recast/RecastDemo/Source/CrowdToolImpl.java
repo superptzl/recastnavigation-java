@@ -1,10 +1,7 @@
 package org.recast.RecastDemo.Source;
 
 import org.recast.DetourCrowd.Include.dtCrowd;
-import org.recast.RecastDemo.Include.CrowdTool;
-import org.recast.RecastDemo.Include.CrowdToolState;
-import org.recast.RecastDemo.Include.InputGeom;
-import org.recast.RecastDemo.Include.Sample;
+import org.recast.RecastDemo.Include.*;
 
 public class CrowdToolImpl extends CrowdTool {
     public CrowdToolImpl() 
@@ -42,24 +39,24 @@ public class CrowdToolImpl extends CrowdTool {
     {
     }
 
-	/*public void handleMenu()
+	public void handleMenu()
     {
-        if (!m_state)
+        if (m_state == null)
             return;
-        CrowdToolParams* params = m_state.getToolParams();
+//        CrowdToolParams params = m_state.getToolParams();
 
-        if (imguiCheck("Create Agents", m_mode == TOOLMODE_CREATE))
-            m_mode = TOOLMODE_CREATE;
-        if (imguiCheck("Move Target", m_mode == TOOLMODE_MOVE_TARGET))
-            m_mode = TOOLMODE_MOVE_TARGET;
-        if (imguiCheck("Select Agent", m_mode == TOOLMODE_SELECT))
-            m_mode = TOOLMODE_SELECT;
-        if (imguiCheck("Toggle Polys", m_mode == TOOLMODE_TOGGLE_POLYS))
-            m_mode = TOOLMODE_TOGGLE_POLYS;
+        /*if (imguiCheck("Create Agents", m_mode == ToolMode.TOOLMODE_CREATE))
+            m_mode = ToolMode.TOOLMODE_CREATE;
+        if (imguiCheck("Move Target", m_mode == ToolMode.TOOLMODE_MOVE_TARGET))
+            m_mode = ToolMode.TOOLMODE_MOVE_TARGET;
+        if (imguiCheck("Select Agent", m_mode == ToolMode.TOOLMODE_SELECT))
+            m_mode = ToolMode.TOOLMODE_SELECT;
+        if (imguiCheck("Toggle Polys", m_mode == ToolMode.TOOLMODE_TOGGLE_POLYS))
+            m_mode = ToolMode.TOOLMODE_TOGGLE_POLYS;*/
 
-        imguiSeparatorLine();
+//        imguiSeparatorLine();
 
-        if (imguiCollapse("Options", 0, params.m_expandOptions))
+        /*if (imguiCollapse("Options", 0, params.m_expandOptions))
             params.m_expandOptions = !params.m_expandOptions;
 
         if (params.m_expandOptions)
@@ -140,8 +137,8 @@ public class CrowdToolImpl extends CrowdTool {
             if (imguiCheck("Show Detail All", params.m_showDetailAll))
                 params.m_showDetailAll = !params.m_showDetailAll;
             imguiUnindent();
-        }
-    }
+        }*/
+    } /*
 */
 	public void handleClick(float[] s, float[] p, boolean shift)
     {
@@ -167,11 +164,11 @@ public class CrowdToolImpl extends CrowdTool {
                 m_state.addAgent(p);
             }
         }
-        /*else if (m_mode == TOOLMODE_MOVE_TARGET)
+        else if (m_mode == ToolMode.TOOLMODE_MOVE_TARGET)
         {
             m_state.setMoveTarget(p, shift);
         }
-        else if (m_mode == TOOLMODE_SELECT)
+        /*else if (m_mode == TOOLMODE_SELECT)
         {
             // Highlight
             int ahit = m_state.hitTestAgents(s,p);
@@ -202,17 +199,17 @@ public class CrowdToolImpl extends CrowdTool {
 
     }
 
-    /*void handleStep()
+    public void handleStep()
     {
-        if (!m_state) return;
+        if (m_state == null) return;
 
-        const float dt = 1.0f/20.0f;
+        float dt = 1.0f/20.0f;
         m_state.updateTick(dt);
 
         m_state.setRunning(false);
     }
 
-    void handleToggle()
+    /*void handleToggle()
     {
         if (!m_state) return;
         m_state.setRunning(!m_state.isRunning());

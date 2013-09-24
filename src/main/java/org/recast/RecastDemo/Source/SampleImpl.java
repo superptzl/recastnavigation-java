@@ -202,11 +202,11 @@ public abstract class SampleImpl extends Sample {
             m_tool.handleToggle();
     }
 
-    public void handleStep()
+    */public void handleStep()
     {
-        if (m_tool)
+        if (m_tool != null)
             m_tool.handleStep();
-    }*/
+    }
 
     public boolean handleBuild()
     {

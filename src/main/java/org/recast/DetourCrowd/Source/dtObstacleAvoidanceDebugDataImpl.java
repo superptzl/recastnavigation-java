@@ -43,36 +43,36 @@ public class dtObstacleAvoidanceDebugDataImpl extends dtObstacleAvoidanceDebugDa
 //        dtFree(m_tpen);
 //    }
 
-//    bool init(const int maxSamples)
-//    {
+    public boolean init(int maxSamples)
+    {
 //        dtAssert(maxSamples);
-//        m_maxSamples = maxSamples;
-//
-//        m_vel = (float*)dtAlloc(sizeof(float)*3*m_maxSamples, DT_ALLOC_PERM);
+        m_maxSamples = maxSamples;
+
+        m_vel = new float[3*m_maxSamples];//(float*)dtAlloc(sizeof(float)*3*m_maxSamples, DT_ALLOC_PERM);
 //        if (!m_vel)
 //            return false;
-//        m_pen = (float*)dtAlloc(sizeof(float)*m_maxSamples, DT_ALLOC_PERM);
+        m_pen = new float[m_maxSamples];//(float*)dtAlloc(sizeof(float)*m_maxSamples, DT_ALLOC_PERM);
 //        if (!m_pen)
 //            return false;
-//        m_ssize = (float*)dtAlloc(sizeof(float)*m_maxSamples, DT_ALLOC_PERM);
+        m_ssize = new float[m_maxSamples];//(float*)dtAlloc(sizeof(float)*m_maxSamples, DT_ALLOC_PERM);
 //        if (!m_ssize)
 //            return false;
-//        m_vpen = (float*)dtAlloc(sizeof(float)*m_maxSamples, DT_ALLOC_PERM);
+        m_vpen = new float[m_maxSamples];//(float*)dtAlloc(sizeof(float)*m_maxSamples, DT_ALLOC_PERM);
 //        if (!m_vpen)
 //            return false;
-//        m_vcpen = (float*)dtAlloc(sizeof(float)*m_maxSamples, DT_ALLOC_PERM);
+        m_vcpen = new float[m_maxSamples];//(float*)dtAlloc(sizeof(float)*m_maxSamples, DT_ALLOC_PERM);
 //        if (!m_vcpen)
 //            return false;
-//        m_spen = (float*)dtAlloc(sizeof(float)*m_maxSamples, DT_ALLOC_PERM);
+        m_spen = new float[m_maxSamples];//(float*)dtAlloc(sizeof(float)*m_maxSamples, DT_ALLOC_PERM);
 //        if (!m_spen)
 //            return false;
-//        m_tpen = (float*)dtAlloc(sizeof(float)*m_maxSamples, DT_ALLOC_PERM);
+        m_tpen = new float[m_maxSamples];//(float*)dtAlloc(sizeof(float)*m_maxSamples, DT_ALLOC_PERM);
 //        if (!m_tpen)
 //            return false;
-//
-//        return true;
-//    }
-//
+
+        return true;
+    }
+
 //    void reset()
 //    {
 //        m_nsamples = 0;

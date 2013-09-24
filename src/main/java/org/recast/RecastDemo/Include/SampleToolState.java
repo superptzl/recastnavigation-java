@@ -11,5 +11,5 @@ public abstract class SampleToolState
 	public abstract void reset();
 //	public abstract void handleRender();
 //	public abstract void handleRenderOverlay(double* proj, double* model, int* view);
-//	public abstract void handleUpdate(float dt);
+	public abstract void handleUpdate(float dt);
 }

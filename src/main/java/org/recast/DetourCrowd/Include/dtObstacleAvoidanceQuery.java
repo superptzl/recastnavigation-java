@@ -7,22 +7,22 @@ public abstract class dtObstacleAvoidanceQuery {
 
     public abstract boolean init(int maxCircles, int maxSegments);
 //
-//    public abstract void reset();
+    public abstract void reset();
 //
-//    public abstract void addCircle(const float* pos, const float rad,
-//                   const float* vel, const float* dvel);
+    public abstract void addCircle(float[] pos, float rad,
+                   float[] vel, float[] dvel);
 //
-//    public abstract void addSegment(const float* p, const float* q);
+    public abstract void addSegment(float[] p, float[] q);
 //
-//    public abstract int sampleVelocityGrid(const float* pos, const float rad, const float vmax,
-//                           const float* vel, const float* dvel, float* nvel,
-//                           const dtObstacleAvoidanceParams* params,
-//                           dtObstacleAvoidanceDebugData* debug = 0);
+    public abstract int sampleVelocityGrid(float[] pos, float rad, float vmax,
+                           float[] vel, float[] dvel, float[] nvel,
+                           dtObstacleAvoidanceParams params,
+                           dtObstacleAvoidanceDebugData debug/* = 0*/);
 //
-//    public abstract int sampleVelocityAdaptive(const float* pos, const float rad, const float vmax,
-//                               const float* vel, const float* dvel, float* nvel,
-//                               const dtObstacleAvoidanceParams* params,
-//                               dtObstacleAvoidanceDebugData* debug = 0);
+    public abstract int sampleVelocityAdaptive(float[] pos, float rad, float vmax,
+                               float[] vel, float[] dvel, float[] nvel,
+                               dtObstacleAvoidanceParams params,
+                               dtObstacleAvoidanceDebugData debug/* = 0*/);
 //
 //    public abstract inline int getObstacleCircleCount() const { return m_ncircles; }
 //    public abstract const dtObstacleCircle* getObstacleCircle(const int i) { return &m_circles[i]; }

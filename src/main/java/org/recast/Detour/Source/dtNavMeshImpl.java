@@ -1030,15 +1030,15 @@ public class dtNavMeshImpl extends dtNavMesh {
         ty[0] = (int) Math.floor((pos[2] - m_orig[2]) / m_tileHeight);
     }
 
-    public dtStatus getTileAndPolyByRef(dtPoly ref, dtMeshTile tile, dtPoly poly) {
-//        if (ref == null) return new dtStatus(dtStatus.DT_FAILURE);
-//        int salt, it, ip;
-//        decodePolyId(ref, salt, it, ip);
-//        if (it >= (int)m_maxTiles)return DT_FAILURE | DT_INVALID_PARAM;
-//        if (m_tiles[it].salt != salt || m_tiles[it].header == null) return DT_FAILURE | DT_INVALID_PARAM;
-//        if (ip >= (int)m_tiles[it].header.polyCount)return DT_FAILURE | DT_INVALID_PARAM;
-//        tile[0] = m_tiles[it];
-//        poly[0] = m_tiles[it].polys[ip];
+    public dtStatus getTileAndPolyByRef(dtPoly ref, dtMeshTile[] tile, dtPoly[] poly) {
+        if (ref == null) return new dtStatus(dtStatus.DT_FAILURE);
+        int salt, it, ip;
+        decodePolyId(ref, salt, it, ip);
+        if (it >= (int)m_maxTiles)return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
+        if (m_tiles[it].salt != salt || m_tiles[it].header == null) return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
+        if (ip >= (int)m_tiles[it].header.polyCount)return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
+        tile[0] = m_tiles[it];
+        poly[0] = m_tiles[it].polys[ip];
         return new dtStatus(dtStatus.DT_SUCCESS);
     }
 

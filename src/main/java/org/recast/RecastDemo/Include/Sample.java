@@ -52,7 +52,7 @@ public abstract class Sample {
 //    public abstract void handleDebugMode();
     public abstract void handleClick(float[] s, float[] p, boolean shift);
 //    public abstract void handleToggle();
-//    public abstract void handleStep();
+    public abstract void handleStep();
 //    public abstract void handleRender();
 //    public abstract void handleRenderOverlay(double[] proj, double[] model, int[] view);
     public abstract void handleMeshChanged(InputGeom geom);

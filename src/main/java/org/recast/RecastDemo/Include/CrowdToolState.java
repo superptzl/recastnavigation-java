@@ -3,6 +3,8 @@ package org.recast.RecastDemo.Include;
 import org.recast.Detour.Include.dtNavMesh;
 import org.recast.Detour.Include.dtPoly;
 import org.recast.DetourCrowd.Include.dtCrowd;
+import org.recast.DetourCrowd.Include.dtCrowdAgentDebugInfo;
+import org.recast.DetourCrowd.Include.dtObstacleAvoidanceDebugData;
 
 public abstract class CrowdToolState extends SampleToolState {
     public Sample m_sample;
@@ -12,8 +14,8 @@ public abstract class CrowdToolState extends SampleToolState {
     public float m_targetPos[] = new float[3];
     public dtPoly m_targetRef;
 
-//    public dtCrowdAgentDebugInfo m_agentDebug;
-//    public dtObstacleAvoidanceDebugData m_vod;
+    public dtCrowdAgentDebugInfo m_agentDebug;
+    public dtObstacleAvoidanceDebugData m_vod;
 
     public final static int AGENT_MAX_TRAIL = 64;
     public final static int MAX_AGENTS = 128;
@@ -48,8 +50,8 @@ public abstract class CrowdToolState extends SampleToolState {
 //    void hilightAgent(const int idx);
 //    void updateAgentParams();
 //    int hitTestAgents(const float* s, const float* p);
-//    void setMoveTarget(const float* p, bool adjust);
-//    void updateTick(const float dt);
+    public abstract void setMoveTarget(float[] p, boolean adjust);
+    public abstract void updateTick(float dt);
 
     public CrowdToolParams getToolParams() { return m_toolParams; }
 }

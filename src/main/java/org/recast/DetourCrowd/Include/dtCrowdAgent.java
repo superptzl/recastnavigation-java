@@ -58,7 +58,7 @@ public class dtCrowdAgent {
     public MoveRequestState targetState;			///< State of the movement request.
     public dtPoly targetRef;				///< Target polyref of the movement request.
     public float targetPos[] = new float[3];					///< Target position of the movement request (or velocity in case of DT_CROWDAGENT_TARGET_VELOCITY).
-//    public dtPathQueue targetPathqRef;		///< Path finder ref.
+    public dtPathQueue targetPathqRef;		///< Path finder ref.
     public boolean targetReplan;					///< Flag indicating that the current path is being replanned.
     public float targetReplanTime;				/// <Time since the agent's target was replanned.
 }

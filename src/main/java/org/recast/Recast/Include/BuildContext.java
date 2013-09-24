@@ -41,4 +41,6 @@ public  abstract void doResetLog();
     public  abstract void doStopTimer(rcTimerLabel label);
     public  abstract int doGetAccumulatedTime(rcTimerLabel label) ;
     ///@}
+
+    public abstract Long getPerfTime();
 }

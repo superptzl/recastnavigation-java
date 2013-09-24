@@ -262,4 +262,94 @@ public abstract class DetourCommon {
 	{
 		return u[0]*v[0] + u[2]*v[2];
 	}
+
+    public static void dtVnormalize(float[] v)
+    {
+        float d = 1.0f / dtSqrt(dtSqr(v[0]) + dtSqr(v[1]) + dtSqr(v[2]));
+        v[0] *= d;
+        v[1] *= d;
+        v[2] *= d;
+    }
+
+    /// Scales the vector by the specified value. (@p v * @p t)
+///  @param[out]	dest	The result vector. [(x, y, z)]
+///  @param[in]		v		The vector to scale. [(x, y, z)]
+///  @param[in]		t		The scaling factor.
+    public static void dtVscale(float[] dest, float[] v, float t)
+    {
+        dest[0] = v[0]*t;
+        dest[1] = v[1]*t;
+        dest[2] = v[2]*t;
+    }
+    /// Derives the square of the distance between the specified points on the xz-plane.
+///  @param[in]		v1	A point. [(x, y, z)]
+///  @param[in]		v2	A point. [(x, y, z)]
+/// @return The square of the distance between the point on the xz-plane.
+    public static float dtVdist2DSqr(float[] v1, float[] v2)
+    {
+        float dx = v2[0] - v1[0];
+        float dz = v2[2] - v1[2];
+        return dx*dx + dz*dz;
+    }
+
+    /// Derives the distance between the specified points on the xz-plane.
+///  @param[in]		v1	A point. [(x, y, z)]
+///  @param[in]		v2	A point. [(x, y, z)]
+/// @return The distance between the point on the xz-plane.
+///
+/// The vectors are projected onto the xz-plane, so the y-values are ignored.
+    public static float dtVdist2D(float[] v1, float[] v2)
+    {
+        float dx = v2[0] - v1[0];
+        float dz = v2[2] - v1[2];
+        return dtSqrt(dx*dx + dz*dz);
+    }
+
+    /// Derives the scalar length of the vector.
+///  @param[in]		v The vector. [(x, y, z)]
+/// @return The scalar length of the vector.
+    public static float dtVlen(float[] v)
+    {
+        return dtSqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+    }
+
+    /// Derives the square of the scalar length of the vector. (len * len)
+///  @param[in]		v The vector. [(x, y, z)]
+/// @return The square of the scalar length of the vector.
+    public static float sqrtf(float v)
+    {
+        return (float)Math.sqrt(v);
+    }
+
+    public static float dtVlenSqr(float[] v)
+    {
+        return v[0]*v[0] + v[1]*v[1] + v[2]*v[2];
+    }
+
+
+/// Performs a scaled vector addition. (@p v1 + (@p v2 * @p s))
+///  @param[out]	dest	The result vector. [(x, y, z)]
+///  @param[in]		v1		The base vector. [(x, y, z)]
+///  @param[in]		v2		The vector to scale and add to @p v1. [(x, y, z)]
+///  @param[in]		s		The amount to scale @p v2 by before adding to @p v1.
+    public static void dtVmad(float[] dest, float[] v1, float[] v2, float s)
+    {
+        dest[0] = v1[0]+v2[0]*s;
+        dest[1] = v1[1]+v2[1]*s;
+        dest[2] = v1[2]+v2[2]*s;
+    }
+
+    /// Derives the signed xz-plane area of the triangle ABC, or the relationship of line AB to point C.
+///  @param[in]		a		Vertex A. [(x, y, z)]
+///  @param[in]		b		Vertex B. [(x, y, z)]
+///  @param[in]		c		Vertex C. [(x, y, z)]
+/// @return The signed xz-plane area of the triangle.
+    public static float dtTriArea2D(float[] a, float[] b, float[] c)
+    {
+        float abx = b[0] - a[0];
+        float abz = b[2] - a[2];
+        float acx = c[0] - a[0];
+        float acz = c[2] - a[2];
+        return acx*abz - abx*acz;
+    }
 }

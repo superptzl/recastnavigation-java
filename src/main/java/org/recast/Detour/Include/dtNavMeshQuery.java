@@ -108,15 +108,15 @@ public abstract class dtNavMeshQuery
 		///  @param[in]		endPos		A position within the end polygon. [(x, y, z)]
 		///  @param[in]		filter		The polygon filter to apply to the query.
 		/// @returns The status flags for the query.
-//		public abstract dtStatus initSlicedFindPath(dtPoly startRef, dtPoly endRef,
-//									float[] startPos, float[] endPos,
-//									dtQueryFilter filter);
+		public abstract dtStatus initSlicedFindPath(dtPoly startRef, dtPoly endRef,
+									float[] startPos, float[] endPos,
+									dtQueryFilter filter);
 
 		/// Updates an in-progress sliced path query.
 		///  @param[in]		maxIter		The maximum number of iterations to perform.
 		///  @param[out]	doneIters	The actual number of iterations completed. [opt]
 		/// @returns The status flags for the query.
-//		public abstract dtStatus updateSlicedFindPath(int maxIter, int[] doneIters);
+		public abstract dtStatus updateSlicedFindPath(int maxIter, int[] doneIters);
 
 		/// Finalizes and returns the results of a sliced path query.
 		///  @param[out]	path		An ordered list of polygon references representing the path. (Start to end.)
@@ -124,7 +124,7 @@ public abstract class dtNavMeshQuery
 		///  @param[out]	pathCount	The number of polygons returned in the @p path array.
 		///  @param[in]		maxPath		The max number of polygons the path array can hold. [Limit: >= 1]
 		/// @returns The status flags for the query.
-//		public abstract dtStatus finalizeSlicedFindPath(dtPoly path, int[] pathCount, int maxPath);
+		public abstract dtStatus finalizeSlicedFindPath(dtPoly path, int[] pathCount, int maxPath);
 
 		/// Finalizes and returns the results of an incomplete sliced path query, returning the path to the furthest
 		/// polygon on the existing path that was visited during the search.
@@ -135,8 +135,8 @@ public abstract class dtNavMeshQuery
 		///  @param[out]	pathCount		The number of polygons returned in the @p path array.
 		///  @param[in]		maxPath			The max number of polygons the @p path array can hold. [Limit: >= 1]
 		/// @returns The status flags for the query.
-//		public abstract dtStatus finalizeSlicedFindPathPartial(dtPoly existing, int existingSize,
-//											   dtPoly path, int[] pathCount, int maxPath);
+		public abstract dtStatus finalizeSlicedFindPathPartial(dtPoly existing, int existingSize,
+											   dtPoly path, int[] pathCount, int maxPath);
 
 		///@}
 		/// @name Dijkstra Search Functions
@@ -330,7 +330,7 @@ public abstract class dtNavMeshQuery
 		/// Returns true if the polygon reference is valid and passes the filter restrictions.
 		///  @param[in]		ref			The polygon reference to check.
 		///  @param[in]		filter		The filter to apply.
-//		public abstract boolean isValidPolyRef(dtPoly ref, const dtQueryFilter* filter) const;
+		public abstract boolean isValidPolyRef(dtPoly ref, dtQueryFilter filter);
 
 		/// Returns true if the polygon reference is in the closed list.
 		///  @param[in]		ref		The reference id of the polygon to check.

@@ -107,7 +107,7 @@ public abstract class dtNavMesh {
     ///  @param[out]	tile	The tile containing the polygon.
     ///  @param[out]	poly	The polygon.
     /// @return The status flags for the operation.
-    public abstract dtStatus getTileAndPolyByRef(dtPoly ref, dtMeshTile tile, dtPoly poly);
+    public abstract dtStatus getTileAndPolyByRef(dtPoly ref, dtMeshTile[] tile, dtPoly[] poly);
 //
 //    /// Returns the tile and polygon for the specified polygon reference.
 //    ///  @param[in]		ref		A known valid reference for a polygon.

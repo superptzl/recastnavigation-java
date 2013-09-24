@@ -27,11 +27,18 @@ public class AgentsTest {
         sample.handleMeshChanged(geom);
         sample.handleBuild();
 
-
-		sample.m_tool = new CrowdToolImpl();
+        CrowdToolImpl crowdTool = new CrowdToolImpl();
+		sample.m_tool = crowdTool;
         sample.m_tool.init(sample);
         sample.m_crowd = new dtCrowdImpl();
         sample.m_crowd.init(10, 1, sample.getNavMesh());
+
+        crowdTool.m_mode = CrowdTool.ToolMode.TOOLMODE_CREATE;
+
 		sample.handleClick(new float[]{76.728340f,84.241943f,24.204132f}, new float[]{38.056499f, 9.9981785f, 1.7914636f}, false);
+
+        crowdTool.m_mode = CrowdTool.ToolMode.TOOLMODE_MOVE_TARGET;
+        sample.handleClick(new float[]{76.728340f,84.241943f,24.204132f}, new float[]{38.056499f, 9.9981785f, 1.7914636f}, false);
+        sample.handleStep();
     }
 }

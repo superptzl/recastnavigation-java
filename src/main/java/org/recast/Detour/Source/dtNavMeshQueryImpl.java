@@ -1174,7 +1174,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		*pathCount = n;
 
 		return status;
-	}
+	}*/
 
 	/// @par
 	///
@@ -1184,13 +1184,13 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	/// The @p filter pointer is stored and used for the duration of the sliced
 	/// path query.
 	///
-	dtStatus initSlicedFindPath(dtPoly startRef, dtPoly endRef,
-												 float* startPos,  float* endPos,
-												 dtQueryFilter* filter)
+	public dtStatus initSlicedFindPath(dtPoly startRef, dtPoly endRef,
+												 float[] startPos,  float[] endPos,
+												 dtQueryFilter filter)
 	{
-		dtAssert(m_nav);
-		dtAssert(m_nodePool);
-		dtAssert(m_openList);
+//		dtAssert(m_nav);
+//		dtAssert(m_nodePool);
+//		dtAssert(m_openList);
 
 		// Init path state.
 		memset(&m_query, 0, sizeof(dtQueryData));
@@ -1233,7 +1233,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		return m_query.status;
 	}
 
-	dtStatus updateSlicedFindPath( int maxIter, int* doneIters)
+	public dtStatus updateSlicedFindPath( int maxIter, int[] doneIters)
 	{
 		if (!dtStatusInProgress(m_query.status))
 			return m_query.status;
@@ -1411,7 +1411,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		return m_query.status;
 	}
 
-	dtStatus finalizeSlicedFindPath(dtPoly* path, int* pathCount,  int maxPath)
+	public dtStatus finalizeSlicedFindPath(dtPoly[] path, int[] pathCount,  int maxPath)
 	{
 		*pathCount = 0;
 
@@ -1473,8 +1473,8 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		return DT_SUCCESS | details;
 	}
 
-	dtStatus finalizeSlicedFindPathPartial( dtPoly* existing,  int existingSize,
-														   dtPoly* path, int* pathCount,  int maxPath)
+	public dtStatus finalizeSlicedFindPathPartial( dtPoly existing,  int existingSize,
+														   dtPoly[] path, int[] pathCount,  int maxPath)
 	{
 		*pathCount = 0;
 
@@ -1552,7 +1552,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 	}
 
 
-	dtStatus appendVertex( float* pos,  unsigned char flags,  dtPoly ref,
+	/*dtStatus appendVertex( float* pos,  unsigned char flags,  dtPoly ref,
 										  float* straightPath, unsigned char* straightPathFlags, dtPoly* straightPathRefs,
 										  int* straightPathCount,  int maxStraightPath) 
 	{
@@ -3358,21 +3358,21 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		*hitDist = sqrtf(radiusSqr);
 
 		return status;
-	}
+	}*/
 
-	bool isValidPolyRef(dtPoly ref,  dtQueryFilter* filter) 
+	public boolean isValidPolyRef(dtPoly ref,  dtQueryFilter filter)
 	{
-		 dtMeshTile* tile = 0;
-		 dtPoly* poly = 0;
-		dtStatus status = m_nav.getTileAndPolyByRef(ref, &tile, &poly);
+		 dtMeshTile tile = null;
+		 dtPoly poly = null;
+		dtStatus status = m_nav.getTileAndPolyByRef(ref, tile, poly);
 		// If cannot get polygon, assume it does not exists and boundary is invalid.
-		if (dtStatusFailed(status))
+		if (dtStatus.dtStatusFailed(status))
 			return false;
 		// If cannot pass filter, assume flags has changed and boundary is invalid.
 		if (!filter.passFilter(ref, tile, poly))
 			return false;
 		return true;
-	}*/
+	}
 
 	/// @par
 	///

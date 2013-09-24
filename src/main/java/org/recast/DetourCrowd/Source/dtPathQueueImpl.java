@@ -1,8 +1,6 @@
 package org.recast.DetourCrowd.Source;
 
-import org.recast.Detour.Include.dtNavMesh;
-import org.recast.Detour.Include.dtPoly;
-import org.recast.Detour.Include.dtStatus;
+import org.recast.Detour.Include.*;
 import org.recast.Detour.Source.dtNavMeshQueryImpl;
 import org.recast.DetourCrowd.Include.dtPathQueue;
 
@@ -86,128 +84,128 @@ public class dtPathQueueImpl extends dtPathQueue {
         return true;
     }
 
-//    void update(const int maxIters)
-//    {
-//        static const int MAX_KEEP_ALIVE = 2; // in update ticks.
+    public void update(int maxIters)
+    {
+        static const int MAX_KEEP_ALIVE = 2; // in update ticks.
+
+        // Update path request until there is nothing to update
+        // or upto maxIters pathfinder iterations has been consumed.
+        int iterCount = maxIters;
+
+        for (int i = 0; i < MAX_QUEUE; ++i)
+        {
+            PathQuery q = m_queue[m_queueHead % MAX_QUEUE];
+
+            // Skip inactive requests.
+            if (q.ref == DT_PATHQ_INVALID)
+            {
+                m_queueHead++;
+                continue;
+            }
+
+            // Handle completed request.
+            if (dtStatusSucceed(q.status) || dtStatusFailed(q.status))
+            {
+                // If the path result has not been read in few frames, free the slot.
+                q.keepAlive++;
+                if (q.keepAlive > MAX_KEEP_ALIVE)
+                {
+                    q.ref = DT_PATHQ_INVALID;
+                    q.status = 0;
+                }
+
+                m_queueHead++;
+                continue;
+            }
+
+            // Handle query start.
+            if (q.status == 0)
+            {
+                q.status = m_navquery.initSlicedFindPath(q.startRef, q.endRef, q.startPos, q.endPos, q.filter);
+            }
+            // Handle query in progress.
+            if (dtStatusInProgress(q.status))
+            {
+                int iters = 0;
+                q.status = m_navquery.updateSlicedFindPath(iterCount, &iters);
+                iterCount -= iters;
+            }
+            if (dtStatusSucceed(q.status))
+            {
+                q.status = m_navquery.finalizeSlicedFindPath(q.path, &q.npath, m_maxPathSize);
+            }
+
+            if (iterCount <= 0)
+                break;
+
+            m_queueHead++;
+        }
+    }
 //
-//        // Update path request until there is nothing to update
-//        // or upto maxIters pathfinder iterations has been consumed.
-//        int iterCount = maxIters;
-//
-//        for (int i = 0; i < MAX_QUEUE; ++i)
-//        {
-//            PathQuery& q = m_queue[m_queueHead % MAX_QUEUE];
-//
-//            // Skip inactive requests.
-//            if (q.ref == DT_PATHQ_INVALID)
-//            {
-//                m_queueHead++;
-//                continue;
-//            }
-//
-//            // Handle completed request.
-//            if (dtStatusSucceed(q.status) || dtStatusFailed(q.status))
-//            {
-//                // If the path result has not been read in few frames, free the slot.
-//                q.keepAlive++;
-//                if (q.keepAlive > MAX_KEEP_ALIVE)
-//                {
-//                    q.ref = DT_PATHQ_INVALID;
-//                    q.status = 0;
-//                }
-//
-//                m_queueHead++;
-//                continue;
-//            }
-//
-//            // Handle query start.
-//            if (q.status == 0)
-//            {
-//                q.status = m_navquery.initSlicedFindPath(q.startRef, q.endRef, q.startPos, q.endPos, q.filter);
-//            }
-//            // Handle query in progress.
-//            if (dtStatusInProgress(q.status))
-//            {
-//                int iters = 0;
-//                q.status = m_navquery.updateSlicedFindPath(iterCount, &iters);
-//                iterCount -= iters;
-//            }
-//            if (dtStatusSucceed(q.status))
-//            {
-//                q.status = m_navquery.finalizeSlicedFindPath(q.path, &q.npath, m_maxPathSize);
-//            }
-//
-//            if (iterCount <= 0)
-//                break;
-//
-//            m_queueHead++;
-//        }
-//    }
-//
-//    dtPathQueueRef request(dtPolyRef startRef, dtPolyRef endRef,
-//                                        const float* startPos, const float* endPos,
-//                                        const dtQueryFilter* filter)
-//    {
-//        // Find empty slot
-//        int slot = -1;
-//        for (int i = 0; i < MAX_QUEUE; ++i)
-//        {
-//            if (m_queue[i].ref == DT_PATHQ_INVALID)
-//            {
-//                slot = i;
-//                break;
-//            }
-//        }
-//        // Could not find slot.
-//        if (slot == -1)
-//            return DT_PATHQ_INVALID;
-//
-//        dtPathQueueRef ref = m_nextHandle++;
-//        if (m_nextHandle == DT_PATHQ_INVALID) m_nextHandle++;
-//
-//        PathQuery& q = m_queue[slot];
-//        q.ref = ref;
-//        dtVcopy(q.startPos, startPos);
-//        q.startRef = startRef;
-//        dtVcopy(q.endPos, endPos);
-//        q.endRef = endRef;
-//
-//        q.status = 0;
-//        q.npath = 0;
-//        q.filter = filter;
-//        q.keepAlive = 0;
-//
-//        return ref;
-//    }
-//
-//    dtStatus getRequestStatus(dtPathQueueRef ref) const
-//    {
-//        for (int i = 0; i < MAX_QUEUE; ++i)
-//        {
-//            if (m_queue[i].ref == ref)
-//                return m_queue[i].status;
-//        }
-//        return DT_FAILURE;
-//    }
-//
-//    dtStatus getPathResult(dtPathQueueRef ref, dtPolyRef* path, int* pathSize, const int maxPath)
-//    {
-//        for (int i = 0; i < MAX_QUEUE; ++i)
-//        {
-//            if (m_queue[i].ref == ref)
-//            {
-//                PathQuery& q = m_queue[i];
-//                // Free request for reuse.
-//                q.ref = DT_PATHQ_INVALID;
-//                q.status = 0;
-//                // Copy path
-//                int n = dtMin(q.npath, maxPath);
-//                memcpy(path, q.path, sizeof(dtPolyRef)*n);
-//                *pathSize = n;
-//                return DT_SUCCESS;
-//            }
-//        }
-//        return DT_FAILURE;
-//    }
+    public dtPathQueue request(dtPoly startRef, dtPoly endRef,
+                                        float[] startPos, float[] endPos,
+                                        dtQueryFilter filter)
+    {
+        // Find empty slot
+        int slot = -1;
+        for (int i = 0; i < MAX_QUEUE; ++i)
+        {
+            if (m_queue[i].ref == DT_PATHQ_INVALID)
+            {
+                slot = i;
+                break;
+            }
+        }
+        // Could not find slot.
+        if (slot == -1)
+            return DT_PATHQ_INVALID;
+
+        dtPathQueue ref = m_nextHandle++;
+        if (m_nextHandle == DT_PATHQ_INVALID) m_nextHandle++;
+
+        PathQuery q = m_queue[slot];
+        q.ref = ref;
+        dtVcopy(q.startPos, startPos);
+        q.startRef = startRef;
+        dtVcopy(q.endPos, endPos);
+        q.endRef = endRef;
+
+        q.status = 0;
+        q.npath = 0;
+        q.filter = filter;
+        q.keepAlive = 0;
+
+        return ref;
+    }
+
+    public dtStatus getRequestStatus(dtPathQueue ref)
+    {
+        for (int i = 0; i < MAX_QUEUE; ++i)
+        {
+            if (m_queue[i].ref == ref)
+                return m_queue[i].status;
+        }
+        return new dtStatus(dtStatus.DT_FAILURE);
+    }
+
+    public dtStatus getPathResult(dtPathQueue ref, dtPoly[] path, int[] pathSize, int maxPath)
+    {
+        for (int i = 0; i < MAX_QUEUE; ++i)
+        {
+            if (m_queue[i].ref == ref)
+            {
+                PathQuery q = m_queue[i];
+                // Free request for reuse.
+                q.ref = DT_PATHQ_INVALID;
+                q.status = 0;
+                // Copy path
+                int n = DetourCommon.dtMin(q.npath, maxPath);
+                memcpy(path, q.path, sizeof(dtPolyRef)*n);
+                *pathSize = n;
+                return DT_SUCCESS;
+            }
+        }
+        return DT_FAILURE;
+    }
 
 }
