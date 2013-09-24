@@ -86,7 +86,7 @@ public class dtPathQueueImpl extends dtPathQueue {
 
     public void update(int maxIters)
     {
-        static const int MAX_KEEP_ALIVE = 2; // in update ticks.
+        int MAX_KEEP_ALIVE = 2; // in update ticks.
 
         // Update path request until there is nothing to update
         // or upto maxIters pathfinder iterations has been consumed.
@@ -97,21 +97,21 @@ public class dtPathQueueImpl extends dtPathQueue {
             PathQuery q = m_queue[m_queueHead % MAX_QUEUE];
 
             // Skip inactive requests.
-            if (q.ref == DT_PATHQ_INVALID)
+            if (q.ref == null/*DT_PATHQ_INVALID*/)
             {
                 m_queueHead++;
                 continue;
             }
 
             // Handle completed request.
-            if (dtStatusSucceed(q.status) || dtStatusFailed(q.status))
+            if (dtStatus.dtStatusSucceed(q.status) || dtStatus.dtStatusFailed(q.status))
             {
                 // If the path result has not been read in few frames, free the slot.
                 q.keepAlive++;
                 if (q.keepAlive > MAX_KEEP_ALIVE)
                 {
-                    q.ref = DT_PATHQ_INVALID;
-                    q.status = 0;
+                    q.ref = null;
+                    q.status = new dtStatus(0);
                 }
 
                 m_queueHead++;
@@ -119,20 +119,22 @@ public class dtPathQueueImpl extends dtPathQueue {
             }
 
             // Handle query start.
-            if (q.status == 0)
+            if (q.status.dtStatus == 0)
             {
                 q.status = m_navquery.initSlicedFindPath(q.startRef, q.endRef, q.startPos, q.endPos, q.filter);
             }
             // Handle query in progress.
-            if (dtStatusInProgress(q.status))
+            if (dtStatus.dtStatusInProgress(q.status))
             {
-                int iters = 0;
-                q.status = m_navquery.updateSlicedFindPath(iterCount, &iters);
-                iterCount -= iters;
+                int[] iters = new int[1];
+                q.status = m_navquery.updateSlicedFindPath(iterCount, iters);
+                iterCount -= iters[0];
             }
-            if (dtStatusSucceed(q.status))
+            if (dtStatus.dtStatusSucceed(q.status))
             {
-                q.status = m_navquery.finalizeSlicedFindPath(q.path, &q.npath, m_maxPathSize);
+                int[] tmp = new int[]{q.npath};
+                q.status = m_navquery.finalizeSlicedFindPath(q.path, tmp, m_maxPathSize);
+                q.npath = tmp[0];
             }
 
             if (iterCount <= 0)
@@ -150,7 +152,7 @@ public class dtPathQueueImpl extends dtPathQueue {
         int slot = -1;
         for (int i = 0; i < MAX_QUEUE; ++i)
         {
-            if (m_queue[i].ref == DT_PATHQ_INVALID)
+            if (m_queue[i].ref == null/*DT_PATHQ_INVALID*/)
             {
                 slot = i;
                 break;
@@ -158,24 +160,25 @@ public class dtPathQueueImpl extends dtPathQueue {
         }
         // Could not find slot.
         if (slot == -1)
-            return DT_PATHQ_INVALID;
+            return null;//DT_PATHQ_INVALID;
 
-        dtPathQueue ref = m_nextHandle++;
-        if (m_nextHandle == DT_PATHQ_INVALID) m_nextHandle++;
+        //todo [IZ]
+//        dtPathQueue ref = m_nextHandle++;
+//        if (m_nextHandle == null/*DT_PATHQ_INVALID*/) m_nextHandle++;
 
         PathQuery q = m_queue[slot];
-        q.ref = ref;
-        dtVcopy(q.startPos, startPos);
+//        q.ref = ref;
+        DetourCommon.dtVcopy(q.startPos, startPos);
         q.startRef = startRef;
-        dtVcopy(q.endPos, endPos);
+        DetourCommon.dtVcopy(q.endPos, endPos);
         q.endRef = endRef;
 
-        q.status = 0;
+        q.status.dtStatus = 0;
         q.npath = 0;
         q.filter = filter;
         q.keepAlive = 0;
 
-        return ref;
+        return null;
     }
 
     public dtStatus getRequestStatus(dtPathQueue ref)
@@ -196,16 +199,17 @@ public class dtPathQueueImpl extends dtPathQueue {
             {
                 PathQuery q = m_queue[i];
                 // Free request for reuse.
-                q.ref = DT_PATHQ_INVALID;
-                q.status = 0;
+                q.ref = null;//DT_PATHQ_INVALID;
+                q.status.dtStatus = 0;
                 // Copy path
                 int n = DetourCommon.dtMin(q.npath, maxPath);
-                memcpy(path, q.path, sizeof(dtPolyRef)*n);
-                *pathSize = n;
-                return DT_SUCCESS;
+//                memcpy(path, q.path, sizeof(dtPolyRef)*n);
+                System.arraycopy(q.path, 0, path, 0, n);
+                pathSize[0] = n;
+                return new dtStatus(dtStatus.DT_SUCCESS);
             }
         }
-        return DT_FAILURE;
+        return new dtStatus(dtStatus.DT_FAILURE);
     }
 
 }

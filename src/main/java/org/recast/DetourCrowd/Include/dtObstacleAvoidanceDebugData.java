@@ -15,7 +15,7 @@ public abstract class dtObstacleAvoidanceDebugData {
 //	public abstract void addSample(float[] vel, float ssize, float pen,
 //                   float vpen, float vcpen, float spen, float tpen);
 //
-//	public abstract void normalizeSamples();
+	public abstract void normalizeSamples();
 
     public int getSampleCount() { return m_nsamples; }
 //	public float[] getSampleVelocity(int i) { return m_vel[i*3]; }

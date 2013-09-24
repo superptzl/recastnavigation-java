@@ -287,8 +287,13 @@ public abstract class DetourCommon {
 /// @return The square of the distance between the point on the xz-plane.
     public static float dtVdist2DSqr(float[] v1, float[] v2)
     {
-        float dx = v2[0] - v1[0];
-        float dz = v2[2] - v1[2];
+        return dtVdist2DSqr(v1, 0, v2, 0);
+    }
+
+    public static float dtVdist2DSqr(float[] v1, int viIndex, float[] v2, int v2Index)
+    {
+        float dx = v2[v2Index+0] - v1[viIndex+0];
+        float dz = v2[v2Index+2] - v1[viIndex+2];
         return dx*dx + dz*dz;
     }
 
@@ -300,8 +305,13 @@ public abstract class DetourCommon {
 /// The vectors are projected onto the xz-plane, so the y-values are ignored.
     public static float dtVdist2D(float[] v1, float[] v2)
     {
-        float dx = v2[0] - v1[0];
-        float dz = v2[2] - v1[2];
+        return dtVdist2D(v1, 0, v2, 0);
+    }
+
+    public static float dtVdist2D(float[] v1, int v1Index, float[] v2, int v2Index)
+    {
+        float dx = v2[v2Index+0] - v1[v1Index+0];
+        float dz = v2[v2Index+2] - v1[v1Index+2];
         return dtSqrt(dx*dx + dz*dz);
     }
 

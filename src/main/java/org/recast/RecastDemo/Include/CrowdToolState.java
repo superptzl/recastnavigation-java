@@ -26,8 +26,8 @@ public abstract class CrowdToolState extends SampleToolState {
     }
     public AgentTrail[] m_trails = new AgentTrail[MAX_AGENTS];
 
-//    public ValueHistory m_crowdTotalTime;
-//    public ValueHistory m_crowdSampleCount;
+    public ValueHistory m_crowdTotalTime;
+    public ValueHistory m_crowdSampleCount;
 
     public CrowdToolParams m_toolParams;
 

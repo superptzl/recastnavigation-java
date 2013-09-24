@@ -109,7 +109,7 @@ public abstract class dtCrowd {
 
     /// Removes the agent from the crowd.
     ///  @param[in]		idx		The agent index. [Limits: 0 <= value < #getAgentCount()]
-//    public void removeAgent(const int idx);
+//    public void removeAgent( int idx);
 
     /// Submits a new move request for the specified agent.
     ///  @param[in]		idx		The agent index. [Limits: 0 <= value < #getAgentCount()]
@@ -127,7 +127,7 @@ public abstract class dtCrowd {
     /// Resets any request for the specified agent.
     ///  @param[in]		idx		The agent index. [Limits: 0 <= value < #getAgentCount()]
     /// @return True if the request was successfully reseted.
-//    public bool resetMoveTarget(const int idx);
+//    public bool resetMoveTarget( int idx);
 
     /// Gets the active agents int the agent pool.
     ///  @param[out]	agents		An array of agent pointers. [(#dtCrowdAgent *) * maxAgents]
@@ -154,28 +154,28 @@ public abstract class dtCrowd {
 
     /// Gets the velocity sample count.
     /// @return The velocity sample count.
-//    public  inline int getVelocitySampleCount() const { return m_velocitySampleCount; }
+    public int getVelocitySampleCount()  { return m_velocitySampleCount; }
 
     /// Gets the crowd's proximity grid.
     /// @return The crowd's proximity grid.
-//    public const dtProximityGrid* getGrid() const { return m_grid; }
+//    public  dtProximityGrid* getGrid()  { return m_grid; }
 
     /// Gets the crowd's path request queue.
     /// @return The crowd's path request queue.
-//    public  const dtPathQueue* getPathQueue() const { return &m_pathq; }
+//    public   dtPathQueue* getPathQueue()  { return &m_pathq; }
 
     /// Gets the query object used by the crowd.
-//    public const dtNavMeshQuery* getNavMeshQuery() const { return m_navquery; }
+//    public  dtNavMeshQuery* getNavMeshQuery()  { return m_navquery; }
 
     public static int addToPathQueue(dtCrowdAgent newag, dtCrowdAgent[] agents, int nagents, int maxAgents)
     {
         // Insert neighbour based on greatest time.
         int slot = 0;
-        if (!nagents)
+        if (nagents == 0)
         {
             slot = nagents;
         }
-        else if (newag->targetReplanTime <= agents[nagents-1]->targetReplanTime)
+        else if (newag.targetReplanTime <= agents[nagents-1].targetReplanTime)
         {
             if (nagents >= maxAgents)
                 return nagents;
@@ -185,16 +185,18 @@ public abstract class dtCrowd {
         {
             int i;
             for (i = 0; i < nagents; ++i)
-                if (newag->targetReplanTime >= agents[i]->targetReplanTime)
+                if (newag.targetReplanTime >= agents[i].targetReplanTime)
             break;
 
-            const int tgt = i+1;
-            const int n = dtMin(nagents-i, maxAgents-tgt);
+             int tgt = i+1;
+             int n = DetourCommon.dtMin(nagents-i, maxAgents-tgt);
 
-            dtAssert(tgt+n <= maxAgents);
+//            dtAssert(tgt+n <= maxAgents);
 
-            if (n > 0)
-                memmove(&agents[tgt], &agents[i], sizeof(dtCrowdAgent*)*n);
+            if (n > 0) {
+//                memmove(&agents[tgt], &agents[i], sizeof(dtCrowdAgent*)*n);
+                System.arraycopy(agents, i, agents, tgt, n);
+            }
             slot = i;
         }
 
@@ -207,11 +209,11 @@ public abstract class dtCrowd {
     {
         // Insert neighbour based on greatest time.
         int slot = 0;
-        if (!nagents)
+        if (nagents == 0)
         {
             slot = nagents;
         }
-        else if (newag->topologyOptTime <= agents[nagents-1]->topologyOptTime)
+        else if (newag.topologyOptTime <= agents[nagents-1].topologyOptTime)
         {
             if (nagents >= maxAgents)
                 return nagents;
@@ -221,16 +223,18 @@ public abstract class dtCrowd {
         {
             int i;
             for (i = 0; i < nagents; ++i)
-                if (newag->topologyOptTime >= agents[i]->topologyOptTime)
+                if (newag.topologyOptTime >= agents[i].topologyOptTime)
             break;
 
-            const int tgt = i+1;
-            const int n = dtMin(nagents-i, maxAgents-tgt);
+             int tgt = i+1;
+             int n = DetourCommon.dtMin(nagents-i, maxAgents-tgt);
 
 //            dtAssert(tgt+n <= maxAgents);
 
-            if (n > 0)
-                memmove(&agents[tgt], &agents[i], sizeof(dtCrowdAgent*)*n);
+            if (n > 0) {
+//                memmove(&agents[tgt], &agents[i], sizeof(dtCrowdAgent*)*n);
+                System.arraycopy(agents, i, agents, tgt, n);
+            }
             slot = i;
         }
 
@@ -258,13 +262,13 @@ public abstract class dtCrowd {
             if (ag == skip) continue;
 
             // Check for overlap.
-            float diff[3];
+            float diff[] = new float[3];
             DetourCommon.dtVsub(diff, pos, ag.npos);
-            if (fabsf(diff[1]) >= (height+ag.params.height)/2.0f)
+            if (Math.abs(diff[1]) >= (height+ag.params.height)/2.0f)
             continue;
             diff[1] = 0;
-            const float distSqr = dtVlenSqr(diff);
-            if (distSqr > dtSqr(range))
+             float distSqr = DetourCommon.dtVlenSqr(diff);
+            if (distSqr > DetourCommon.dtSqr(range))
                 continue;
 
             n = addNeighbour(ids[i], distSqr, result, n, maxResult);
@@ -276,16 +280,16 @@ public abstract class dtCrowd {
                             dtCrowdNeighbour[] neis, int nneis, int maxNeis)
     {
         // Insert neighbour based on the distance.
-        dtCrowdNeighbour* nei = 0;
-        if (!nneis)
+        dtCrowdNeighbour nei = null;
+        if (nneis == 0)
         {
-            nei = &neis[nneis];
+            nei = neis[nneis];
         }
         else if (dist >= neis[nneis-1].dist)
         {
             if (nneis >= maxNeis)
                 return nneis;
-            nei = &neis[nneis];
+            nei = neis[nneis];
         }
         else
         {
@@ -294,33 +298,36 @@ public abstract class dtCrowd {
                 if (dist <= neis[i].dist)
                     break;
 
-            const int tgt = i+1;
-            const int n = dtMin(nneis-i, maxNeis-tgt);
+             int tgt = i+1;
+             int n = DetourCommon.dtMin(nneis-i, maxNeis-tgt);
 
-            dtAssert(tgt+n <= maxNeis);
+//            dtAssert(tgt+n <= maxNeis);
 
-            if (n > 0)
-                memmove(&neis[tgt], &neis[i], sizeof(dtCrowdNeighbour)*n);
-            nei = &neis[i];
+            if (n > 0) {
+//                memmove(&neis[tgt], &neis[i], sizeof(dtCrowdNeighbour)*n);
+                System.arraycopy(nei, i, nei, tgt, n);
+            }
+            nei = neis[i];
         }
 
-        memset(nei, 0, sizeof(dtCrowdNeighbour));
+//        memset(nei, 0, sizeof(dtCrowdNeighbour));
+//        nei = null;
 
-        nei->idx = idx;
-        nei->dist = dist;
+        nei.idx = idx;
+        nei.dist = dist;
 
         return DetourCommon.dtMin(nneis+1, maxNeis);
     }
 
     public static boolean overOffmeshConnection(dtCrowdAgent ag, float radius)
     {
-        if (!ag->ncorners)
+        if (ag.ncorners == 0)
             return false;
 
-        boolean offMeshConnection = (ag->cornerFlags[ag->ncorners-1] & DT_STRAIGHTPATH_OFFMESH_CONNECTION) ? true : false;
+        boolean offMeshConnection = (ag.cornerFlags[ag.ncorners-1] & dtStraightPathFlags.DT_STRAIGHTPATH_OFFMESH_CONNECTION) != 0 ? true : false;
         if (offMeshConnection)
         {
-            const float distSq = DetourCommon.dtVdist2DSqr(ag->npos, &ag->cornerVerts[(ag->ncorners-1)*3]);
+             float distSq = DetourCommon.dtVdist2DSqr(ag.npos, 0, ag.cornerVerts, (ag.ncorners-1)*3);
             if (distSq < radius*radius)
                 return true;
         }
@@ -330,55 +337,55 @@ public abstract class dtCrowd {
 
     public static void calcSmoothSteerDirection(dtCrowdAgent ag, float[] dir)
     {
-        if (!ag->ncorners)
+        if (ag.ncorners == 0)
         {
-            dtVset(dir, 0,0,0);
+            DetourCommon.dtVset(dir, 0,0,0);
             return;
         }
 
-        const int ip0 = 0;
-        const int ip1 = dtMin(1, ag->ncorners-1);
-        const float* p0 = &ag->cornerVerts[ip0*3];
-        const float* p1 = &ag->cornerVerts[ip1*3];
+         int ip0 = 0;
+         int ip1 = DetourCommon.dtMin(1, ag.ncorners-1);
+//         float* p0 = &ag.cornerVerts[ip0*3];
+//         float* p1 = &ag.cornerVerts[ip1*3];
 
-        float dir0[3], dir1[3];
-        dtVsub(dir0, p0, ag->npos);
-        dtVsub(dir1, p1, ag->npos);
+        float dir0[] = new float[3], dir1[] = new float[3];
+        DetourCommon.dtVsub(dir0, ag.cornerVerts, ip0*3, ag.npos, 0);
+        DetourCommon.dtVsub(dir1, ag.cornerVerts, ip1*3, ag.npos, 0);
         dir0[1] = 0;
         dir1[1] = 0;
 
-        float len0 = dtVlen(dir0);
-        float len1 = dtVlen(dir1);
+        float len0 = DetourCommon.dtVlen(dir0);
+        float len1 = DetourCommon.dtVlen(dir1);
         if (len1 > 0.001f)
-            dtVscale(dir1,dir1,1.0f/len1);
+            DetourCommon.dtVscale(dir1,dir1,1.0f/len1);
 
         dir[0] = dir0[0] - dir1[0]*len0*0.5f;
         dir[1] = 0;
         dir[2] = dir0[2] - dir1[2]*len0*0.5f;
 
-        dtVnormalize(dir);
+        DetourCommon.dtVnormalize(dir);
     }
 
     public static void calcStraightSteerDirection(dtCrowdAgent ag, float[] dir)
     {
-        if (!ag->ncorners)
+        if (ag.ncorners == 0)
         {
-            dtVset(dir, 0,0,0);
+            DetourCommon.dtVset(dir, 0,0,0);
             return;
         }
-        dtVsub(dir, &ag->cornerVerts[0], ag->npos);
+        DetourCommon.dtVsub(dir, ag.cornerVerts, 0, ag.npos, 0);
         dir[1] = 0;
-        dtVnormalize(dir);
+        DetourCommon.dtVnormalize(dir);
     }
 
     public static float getDistanceToGoal(dtCrowdAgent ag, float range)
     {
-        if (!ag->ncorners)
+        if (ag.ncorners == 0)
             return range;
 
-        const bool endOfPath = (ag->cornerFlags[ag->ncorners-1] & DT_STRAIGHTPATH_END) ? true : false;
+        boolean endOfPath = (ag.cornerFlags[ag.ncorners-1] & dtStraightPathFlags.DT_STRAIGHTPATH_END) != 0? true : false;
         if (endOfPath)
-            return dtMin(dtVdist2D(ag->npos, &ag->cornerVerts[(ag->ncorners-1)*3]), range);
+            return DetourCommon.dtMin(DetourCommon.dtVdist2D(ag.npos, 0, ag.cornerVerts, (ag.ncorners-1)*3), range);
 
         return range;
     }
@@ -390,20 +397,20 @@ public abstract class dtCrowd {
 
     public static void integrate(dtCrowdAgent ag, float dt)
     {
-        // Fake dynamic constraint.
-        const float maxDelta = ag->params.maxAcceleration * dt;
-        float dv[3];
-        dtVsub(dv, ag->nvel, ag->vel);
-        float ds = dtVlen(dv);
+        // Fake dynamic raint.
+         float maxDelta = ag.params.maxAcceleration * dt;
+        float dv[] = new float[3];
+        DetourCommon.dtVsub(dv, ag.nvel, ag.vel);
+        float ds = DetourCommon.dtVlen(dv);
         if (ds > maxDelta)
-            dtVscale(dv, dv, maxDelta/ds);
-        dtVadd(ag->vel, ag->vel, dv);
+            DetourCommon.dtVscale(dv, dv, maxDelta/ds);
+        DetourCommon.dtVadd(ag.vel, ag.vel, dv);
 
         // Integrate
-        if (dtVlen(ag->vel) > 0.0001f)
-            dtVmad(ag->npos, ag->npos, ag->vel, dt);
+        if (DetourCommon.dtVlen(ag.vel) > 0.0001f)
+            DetourCommon.dtVmad(ag.npos, ag.npos, ag.vel, dt);
         else
-            dtVset(ag->vel,0,0,0);
+            DetourCommon.dtVset(ag.vel,0,0,0);
     }
 
 }

@@ -766,13 +766,13 @@ public class CrowdToolStateImpl extends CrowdToolState {
                 continue;
             // Update agent movement trail.
             trail.htrail = (trail.htrail + 1) % AGENT_MAX_TRAIL;
-            DetourCommon.dtVcopy(&trail.trail[trail.htrail*3], ag.npos);
+            DetourCommon.dtVcopy(trail.trail, trail.htrail*3, ag.npos, 0);
         }
 
         m_agentDebug.vod.normalizeSamples();
 
         m_crowdSampleCount.addSample((float)crowd.getVelocitySampleCount());
-        m_crowdTotalTime.addSample(getPerfDeltaTimeUsec(startTime, endTime) / 1000.0f);
+        m_crowdTotalTime.addSample(m_sample.m_ctx.getPerfDeltaTimeUsec(startTime, endTime) / 1000.0f);
     }
 
 

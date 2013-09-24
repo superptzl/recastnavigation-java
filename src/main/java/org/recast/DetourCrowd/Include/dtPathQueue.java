@@ -44,7 +44,7 @@ public abstract class dtPathQueue {
     public abstract dtStatus getRequestStatus(dtPathQueue ref);
 
 //    public abstract dtStatus getPathResult(dtPathQueue ref, dtPoly path, int[] pathSize, int maxPath);
-    public dtStatus getPathResult(dtPathQueue ref, dtPoly[] path, int[] pathSize, int maxPath)
+    public abstract dtStatus getPathResult(dtPathQueue ref, dtPoly[] path, int[] pathSize, int maxPath);
 
     /*public dtNavMeshQuery getNavQuery() { return m_navquery; }*/
 

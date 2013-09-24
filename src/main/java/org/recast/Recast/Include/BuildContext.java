@@ -43,4 +43,5 @@ public  abstract void doResetLog();
     ///@}
 
     public abstract Long getPerfTime();
+    public abstract int getPerfDeltaTimeUsec(long start, long end);
 }

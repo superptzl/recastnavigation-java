@@ -1,5 +1,6 @@
 package org.recast.DetourCrowd.Source;
 
+import org.recast.Detour.Include.DetourCommon;
 import org.recast.DetourCrowd.Include.dtObstacleAvoidanceDebugData;
 
 public class dtObstacleAvoidanceDebugDataImpl extends dtObstacleAvoidanceDebugData {
@@ -100,30 +101,30 @@ public class dtObstacleAvoidanceDebugDataImpl extends dtObstacleAvoidanceDebugDa
 //        m_nsamples++;
 //    }
 //
-//    static void normalizeArray(float* arr, const int n)
-//    {
-//        // Normalize penaly range.
-//        float minPen = FLT_MAX;
-//        float maxPen = -FLT_MAX;
-//        for (int i = 0; i < n; ++i)
-//        {
-//            minPen = dtMin(minPen, arr[i]);
-//            maxPen = dtMax(maxPen, arr[i]);
-//        }
-//        const float penRange = maxPen-minPen;
-//        const float s = penRange > 0.001f ? (1.0f / penRange) : 1;
-//        for (int i = 0; i < n; ++i)
-//            arr[i] = dtClamp((arr[i]-minPen)*s, 0.0f, 1.0f);
-//    }
-//
-//    void normalizeSamples()
-//    {
-//        normalizeArray(m_pen, m_nsamples);
-//        normalizeArray(m_vpen, m_nsamples);
-//        normalizeArray(m_vcpen, m_nsamples);
-//        normalizeArray(m_spen, m_nsamples);
-//        normalizeArray(m_tpen, m_nsamples);
-//    }
+    public static void normalizeArray(float[] arr, int n)
+    {
+        // Normalize penaly range.
+        float minPen = Float.MAX_VALUE;
+        float maxPen = -Float.MAX_VALUE;
+        for (int i = 0; i < n; ++i)
+        {
+            minPen = DetourCommon.dtMin(minPen, arr[i]);
+            maxPen = DetourCommon.dtMax(maxPen, arr[i]);
+        }
+        float penRange = maxPen-minPen;
+        float s = penRange > 0.001f ? (1.0f / penRange) : 1;
+        for (int i = 0; i < n; ++i)
+            arr[i] = DetourCommon.dtClamp((arr[i]-minPen)*s, 0.0f, 1.0f);
+    }
+
+    public void normalizeSamples()
+    {
+        normalizeArray(m_pen, m_nsamples);
+        normalizeArray(m_vpen, m_nsamples);
+        normalizeArray(m_vcpen, m_nsamples);
+        normalizeArray(m_spen, m_nsamples);
+        normalizeArray(m_tpen, m_nsamples);
+    }
 
 
 
