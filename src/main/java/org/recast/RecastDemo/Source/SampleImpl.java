@@ -3,8 +3,9 @@ package org.recast.RecastDemo.Source;
 import org.recast.Detour.Include.DrawNavMeshFlags;
 import org.recast.RecastDemo.Include.InputGeom;
 import org.recast.RecastDemo.Include.Sample;
+import org.recast.RecastDemo.Include.SampleTool;
 
-public class SampleImpl extends Sample {
+public abstract class SampleImpl extends Sample {
     //
 // Copyright (c) 2009-2010 Mikko Mononen memon@inside.org
 //
@@ -68,14 +69,13 @@ public class SampleImpl extends Sample {
         for (int i = 0; i < MAX_TOOLS; i++)
             delete m_toolStates[i];
     }*/
-/*
     public void setTool(SampleTool tool)
     {
-        delete m_tool;
+//        delete m_tool;
         m_tool = tool;
-        if (tool)
+        if (m_tool != null)
             m_tool.init(this);
-    }*/
+    }
 
   /*  public void handleSettings()
     {

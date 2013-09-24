@@ -809,7 +809,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 		{
             int nodeIndex = 0;
 			dtBVNode node = tile.bvTree[nodeIndex];
-			dtBVNode end = tile.bvTree[tile.header.bvNodeCount];
+//			dtBVNode end = tile.bvTree[tile.header.bvNodeCount];
 			float[] tbmin = tile.header.bmin;
 			float[] tbmax = tile.header.bmax;
 			float qfac = tile.header.bvQuantFactor;
@@ -836,7 +836,7 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 			int n = 0;
 			while (nodeIndex < tile.header.bvNodeCount)
 			{
-				 boolean overlap = DetourCommon.dtOverlapQuantBounds(bmin, bmax, node.bmin, node.bmax);
+				boolean overlap = DetourCommon.dtOverlapQuantBounds(bmin, bmax, node.bmin, node.bmax);
                 boolean isLeafNode = node.i >= 0;
 
 				if (isLeafNode && overlap)
@@ -851,7 +851,11 @@ public class dtNavMeshQueryImpl extends dtNavMeshQuery
 
 				if (overlap || isLeafNode) {
                     nodeIndex++;
-                    node = tile.bvTree[nodeIndex];
+                    if (nodeIndex == tile.bvTree.length) {
+                        node = null;
+                    } else {
+                        node = tile.bvTree[nodeIndex];
+                    }
 //					node++;
                 }
 				else

@@ -6,6 +6,7 @@ import org.recast.Detour.Include.dtNavMesh;
 import org.recast.DetourCrowd.Include.dtCrowd;
 import org.recast.DetourCrowd.Include.dtCrowdAgentParams;
 import org.recast.DetourCrowd.Include.dtObstacleAvoidanceParams;
+import org.recast.RecastDemo.Include.CrowdToolParams;
 import org.recast.RecastDemo.Include.CrowdToolState;
 import org.recast.RecastDemo.Include.Sample;
 import org.recast.RecastDemo.Include.SamplePolyFlags;
@@ -18,6 +19,7 @@ public class CrowdToolStateImpl extends CrowdToolState {
 //        m_crowd(0),
 //        m_targetRef(0),
         m_run = true;
+        m_toolParams = new CrowdToolParams();
         m_toolParams.m_expandSelectedDebugDraw = true;
         m_toolParams.m_showCorners = false;
         m_toolParams.m_showCollisionSegments = false;
@@ -40,6 +42,9 @@ public class CrowdToolStateImpl extends CrowdToolState {
         m_toolParams.m_separation = false;
         m_toolParams.m_separationWeight = 2.0f;
 
+        for (int i = 0; i < m_trails.length; i++) {
+            m_trails[i] = new AgentTrail();
+        }
 //        memset(m_trails, 0, sizeof(m_trails));
 
 //        m_vod = dtAllocObstacleAvoidanceDebugData();

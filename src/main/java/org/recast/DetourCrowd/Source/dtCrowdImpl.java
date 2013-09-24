@@ -105,7 +105,7 @@ public class dtCrowdImpl extends dtCrowd {
         m_pathResult = new dtPoly[m_maxPathResult];//(dtPolyRef*)dtAlloc(sizeof(dtPolyRef)*m_maxPathResult, DT_ALLOC_PERM);
 //        if (!m_pathResult)
 //            return false;
-
+        m_pathq = new dtPathQueueImpl();
         if (!m_pathq.init(m_maxPathResult, dtCrowd.MAX_PATHQUEUE_NODES, nav))
             return false;
 
@@ -131,6 +131,7 @@ public class dtCrowdImpl extends dtCrowd {
 
         for (int i = 0; i < m_maxAgents; ++i)
         {
+            m_agentAnims[i] = new dtCrowdAgentAnimation();
             m_agentAnims[i].active = 0;
         }
 

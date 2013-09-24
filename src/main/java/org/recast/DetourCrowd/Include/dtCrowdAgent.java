@@ -1,8 +1,15 @@
 package org.recast.DetourCrowd.Include;
 
 import org.recast.Detour.Include.dtPoly;
+import org.recast.DetourCrowd.Source.dtLocalBoundaryImpl;
+import org.recast.DetourCrowd.Source.dtPathCorridorImpl;
 
 public class dtCrowdAgent {
+    public dtCrowdAgent() {
+        boundary = new dtLocalBoundaryImpl();
+        corridor = new dtPathCorridorImpl();
+    }
+
     /// 1 if the agent is active, or 0 if the agent is in an unused slot in the agent pool.
     public char active;
 

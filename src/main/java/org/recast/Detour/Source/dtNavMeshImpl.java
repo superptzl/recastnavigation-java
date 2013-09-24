@@ -829,6 +829,9 @@ public class dtNavMeshImpl extends dtNavMesh {
         tile.detailVerts = new float[3 * header.detailVertCount];
         tile.detailTris = new char[4 * header.detailTriCount];
         tile.bvTree = new dtBVNode[header.bvNodeCount];
+        for (int i = 0; i < tile.bvTree.length; i++) {
+            tile.bvTree[i] = new dtBVNode();
+        }
         tile.offMeshCons = new dtOffMeshConnection[header.offMeshConCount];
 
         // If there are no items in the bvtree, reset the tree pointer.
@@ -1027,15 +1030,15 @@ public class dtNavMeshImpl extends dtNavMesh {
         ty[0] = (int) Math.floor((pos[2] - m_orig[2]) / m_tileHeight);
     }
 
-    public dtStatus getTileAndPolyByRef(dtPoly ref, dtMeshTile[] tile, dtPoly[] poly) {
-        if (ref == null) return new dtStatus(dtStatus.DT_FAILURE);
-        int salt, it, ip;
-        decodePolyId(ref, salt, it, ip);
-        if (it >= (int)m_maxTiles)return DT_FAILURE | DT_INVALID_PARAM;
-        if (m_tiles[it].salt != salt || m_tiles[it].header == null) return DT_FAILURE | DT_INVALID_PARAM;
-        if (ip >= (int)m_tiles[it].header.polyCount)return DT_FAILURE | DT_INVALID_PARAM;
-        tile[0] = m_tiles[it];
-        poly[0] = m_tiles[it].polys[ip];
+    public dtStatus getTileAndPolyByRef(dtPoly ref, dtMeshTile tile, dtPoly poly) {
+//        if (ref == null) return new dtStatus(dtStatus.DT_FAILURE);
+//        int salt, it, ip;
+//        decodePolyId(ref, salt, it, ip);
+//        if (it >= (int)m_maxTiles)return DT_FAILURE | DT_INVALID_PARAM;
+//        if (m_tiles[it].salt != salt || m_tiles[it].header == null) return DT_FAILURE | DT_INVALID_PARAM;
+//        if (ip >= (int)m_tiles[it].header.polyCount)return DT_FAILURE | DT_INVALID_PARAM;
+//        tile[0] = m_tiles[it];
+//        poly[0] = m_tiles[it].polys[ip];
         return new dtStatus(dtStatus.DT_SUCCESS);
     }
 
@@ -1175,9 +1178,10 @@ public class dtNavMeshImpl extends dtNavMesh {
     /// }
     /// @endcode
     public dtPoly getPolyRefBase(dtMeshTile tile) {
-        if (!tile) return 0;
-        unsigned int it = (unsigned int)(tile - m_tiles);
-        return encodePolyId(tile.salt, it, 0);
+//        if (!tile) return 0;
+//        unsigned int it = (unsigned int)(tile - m_tiles);
+//        return encodePolyId(tile.salt, it, 0);
+        return null;
     }
 
     public static class dtTileState {

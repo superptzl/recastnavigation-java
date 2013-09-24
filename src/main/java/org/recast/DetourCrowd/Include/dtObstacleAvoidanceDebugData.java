@@ -10,12 +10,12 @@ public abstract class dtObstacleAvoidanceDebugData {
 //    dtObstacleAvoidanceDebugData();
 //    ~dtObstacleAvoidanceDebugData();
 
-    public abstract boolean init(int maxSamples);
-	public abstract void reset();
-	public abstract void addSample(float[] vel, float ssize, float pen,
-                   float vpen, float vcpen, float spen, float tpen);
-
-	public abstract void normalizeSamples();
+//    public abstract boolean init(int maxSamples);
+//	public abstract void reset();
+//	public abstract void addSample(float[] vel, float ssize, float pen,
+//                   float vpen, float vcpen, float spen, float tpen);
+//
+//	public abstract void normalizeSamples();
 
     public int getSampleCount() { return m_nsamples; }
 //	public float[] getSampleVelocity(int i) { return m_vel[i*3]; }

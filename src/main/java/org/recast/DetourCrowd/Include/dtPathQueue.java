@@ -3,6 +3,8 @@ package org.recast.DetourCrowd.Include;
 import org.recast.Detour.Include.*;
 
 public abstract class dtPathQueue {
+    public final static int DT_PATHQ_INVALID = 0;
+
     public static class PathQuery
     {
         public dtPathQueue ref;
@@ -33,7 +35,7 @@ public abstract class dtPathQueue {
 
     public abstract boolean init(int maxPathSize, int maxSearchNodeCount, dtNavMesh nav);
 
-    public abstract void update(int maxIters);
+    /*public abstract void update(int maxIters);
 
     public abstract dtPathQueue request(dtPoly startRef, dtPoly endRef,
                            float[] startPos, float[] endPos,
@@ -43,6 +45,6 @@ public abstract class dtPathQueue {
 
     public abstract dtStatus getPathResult(dtPathQueue ref, dtPoly path, int[] pathSize, int maxPath);
 
-    public dtNavMeshQuery getNavQuery() { return m_navquery; }
+    public dtNavMeshQuery getNavQuery() { return m_navquery; }*/
 
 }

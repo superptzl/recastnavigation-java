@@ -1,6 +1,7 @@
 package com.recast;
 
 import org.junit.Test;
+import org.recast.DetourCrowd.Source.dtCrowdImpl;
 import org.recast.Recast.Source.BuildContextImpl;
 import org.recast.RecastDemo.Include.CrowdTool;
 import org.recast.RecastDemo.Include.Sample_SoloMesh;
@@ -28,6 +29,9 @@ public class AgentsTest {
 
 
 		sample.m_tool = new CrowdToolImpl();
+        sample.m_tool.init(sample);
+        sample.m_crowd = new dtCrowdImpl();
+        sample.m_crowd.init(10, 1, sample.getNavMesh());
 		sample.handleClick(new float[]{76.728340f,84.241943f,24.204132f}, new float[]{38.056499f, 9.9981785f, 1.7914636f}, false);
     }
 }
