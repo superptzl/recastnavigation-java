@@ -12,11 +12,16 @@ public abstract class dtNodePool {
     public abstract dtNode getNode(dtPoly id);
     public abstract dtNode findNode(dtPoly id);
 
-//    public int getNodeIdx( dtNode node)
-//    {
-//        if (node == null) return 0;
-//        return (int)(node - m_nodes)+1;
-//    }
+    public int getNodeIdx( dtNode node)
+    {
+        if (node == null) return 0;
+        for (int i = 0; i < m_nodes.length;i++) {
+            if (m_nodes[i] == node) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
     /*public dtNode getNodeAtIdx(int idx)
     {

@@ -370,7 +370,7 @@ public     int getAgentCount()
                 // Quick seach towards the goal.
                 int MAX_ITER = 20;
                 m_navquery.initSlicedFindPath(path[0], ag.targetRef, ag.npos, ag.targetPos, m_filter);
-                m_navquery.updateSlicedFindPath(MAX_ITER, 0);
+                m_navquery.updateSlicedFindPath(MAX_ITER, null);
                 dtStatus status = new dtStatus(0);
                 if (ag.targetReplan) // && npath > 10)
                 {

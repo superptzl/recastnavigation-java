@@ -80,12 +80,12 @@ public class dtQueryFilterImpl extends dtQueryFilter
 	}
 	
 //	#ifdef DT_VIRTUAL_QUERYFILTER
-//	bool passFilter(const dtPoly /*ref*/,
-//								   const dtMeshTile* /*tile*/,
-//								   const dtPoly* poly) const
-//	{
-//		return (poly.flags & m_includeFlags) != 0 && (poly.flags & m_excludeFlags) == 0;
-//	}
+	public boolean passFilter(dtPoly ref,
+								   dtMeshTile tile,
+								   dtPoly poly)
+	{
+		return (poly.flags & m_includeFlags) != 0 && (poly.flags & m_excludeFlags) == 0;
+	}
 //
 //	float getCost(const float* pa, const float* pb,
 //								 const dtPoly /*prevRef*/, const dtMeshTile* /*prevTile*/, const dtPoly* /*prevPoly*/,
@@ -96,10 +96,10 @@ public class dtQueryFilterImpl extends dtQueryFilter
 //	}
 //	#else
 	public boolean passFilter(dtPoly ref,
-										  dtMeshTile tile,
-										  dtPoly poly)
+										  dtMeshTile[] tile,
+										  dtPoly[] poly)
 	{
-		return (poly.flags & m_includeFlags) != 0 && (poly.flags & m_excludeFlags) == 0;
+		return (poly[0].flags & m_includeFlags) != 0 && (poly[0].flags & m_excludeFlags) == 0;
 	}
 	
 	public float getCost(float[] pa, float[] pb,

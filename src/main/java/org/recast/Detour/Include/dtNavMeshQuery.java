@@ -124,7 +124,7 @@ public abstract class dtNavMeshQuery
 		///  @param[out]	pathCount	The number of polygons returned in the @p path array.
 		///  @param[in]		maxPath		The max number of polygons the path array can hold. [Limit: >= 1]
 		/// @returns The status flags for the query.
-		public abstract dtStatus finalizeSlicedFindPath(dtPoly path, int[] pathCount, int maxPath);
+		public abstract dtStatus finalizeSlicedFindPath(dtPoly[] path, int[] pathCount, int maxPath);
 
 		/// Finalizes and returns the results of an incomplete sliced path query, returning the path to the furthest
 		/// polygon on the existing path that was visited during the search.
@@ -135,8 +135,8 @@ public abstract class dtNavMeshQuery
 		///  @param[out]	pathCount		The number of polygons returned in the @p path array.
 		///  @param[in]		maxPath			The max number of polygons the @p path array can hold. [Limit: >= 1]
 		/// @returns The status flags for the query.
-		public abstract dtStatus finalizeSlicedFindPathPartial(dtPoly existing, int existingSize,
-											   dtPoly path, int[] pathCount, int maxPath);
+		public abstract dtStatus finalizeSlicedFindPathPartial(dtPoly[] existing, int existingSize,
+											   dtPoly[] path, int[] pathCount, int maxPath);
 
 		///@}
 		/// @name Dijkstra Search Functions
@@ -362,17 +362,17 @@ public abstract class dtNavMeshQuery
 		public abstract void closestPointOnPolyInTile(dtMeshTile tile, dtPoly poly, float[] pos, float[] closest);
 //
 //		/// Returns portal points between two polygons.
-//		public abstract dtStatus getPortalPoints(dtPoly from, dtPoly to, float* left, float* right,
-//								 unsigned char& fromType, unsigned char& toType) const;
-//	public abstract dtStatus getPortalPoints(dtPoly from, const dtPoly* fromPoly, const dtMeshTile* fromTile,
-//								 dtPoly to, const dtPoly* toPoly, const dtMeshTile* toTile,
-//								 float* left, float* right) const;
+		public abstract dtStatus getPortalPoints(dtPoly from, dtPoly to, float[] left, float[] right,
+								 char[] fromType, char[] toType);
+	public abstract dtStatus getPortalPoints(dtPoly from, dtPoly fromPoly, dtMeshTile fromTile,
+								 dtPoly to, dtPoly toPoly, dtMeshTile toTile,
+								 float[] left, float[] right);
 //
 //		/// Returns edge mid point between two polygons.
-//		public abstract dtStatus getEdgeMidPoint(dtPoly from, dtPoly to, float* mid) const;
-//	public abstract dtStatus getEdgeMidPoint(dtPoly from, const dtPoly* fromPoly, const dtMeshTile* fromTile,
-//								 dtPoly to, const dtPoly* toPoly, const dtMeshTile* toTile,
-//								 float* mid) const;
+		public abstract dtStatus getEdgeMidPoint(dtPoly from, dtPoly to, float[] mid);
+	public abstract dtStatus getEdgeMidPoint(dtPoly from, dtPoly fromPoly, dtMeshTile fromTile,
+								 dtPoly to, dtPoly toPoly, dtMeshTile toTile,
+								 float[] mid);
 //
 //		// Appends vertex to a straight path
 //		public abstract dtStatus appendVertex(const float* pos, const unsigned char flags, const dtPoly ref,
@@ -389,7 +389,7 @@ public abstract class dtNavMeshQuery
 		public static class dtQueryData
 		{
 			public dtStatus status;
-//			public dtNode lastBestNode;
+			public dtNode lastBestNode;
 			public float lastBestNodeCost;
 			public dtPoly startRef, endRef;
 			public float startPos[] = new float[3], endPos[] = new float[3];

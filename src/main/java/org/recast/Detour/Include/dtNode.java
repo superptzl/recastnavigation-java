@@ -6,4 +6,5 @@ public class dtNode {
     public float total;				///< Cost up to the node.
     public int pidx;		///< Index to parent node.
     public int flags;		///< Node flags 0/open/closed.
+    public dtPoly id;				///< Polygon ref the node corresponds to.
 }

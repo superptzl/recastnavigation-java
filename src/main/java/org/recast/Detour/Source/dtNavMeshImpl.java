@@ -1047,22 +1047,22 @@ public class dtNavMeshImpl extends dtNavMesh {
     /// @warning Only use this function if it is known that the provided polygon
     /// reference is valid. This function is faster than #getTileAndPolyByRef, but
     /// it does not validate the reference.
-//    public void getTileAndPolyByRefUnsafe(dtPoly ref, dtMeshTile[] tile, dtPoly[] poly) {
-//        unsigned int salt, it, ip;
-//        decodePolyId(ref, salt, it, ip);
-//        *tile =&m_tiles[it];
-//        *poly =&m_tiles[it].polys[ip];
-//    }
+    public void getTileAndPolyByRefUnsafe(dtPoly ref, dtMeshTile[] tile, dtPoly[] poly) {
+        int salt, it, ip;
+        decodePolyId(ref, salt, it, ip);
+        tile[0] = m_tiles[it];
+        poly[0] = m_tiles[it].polys[ip];
+    }
 
-//    public boolean isValidPolyRef(dtPoly ref) {
-//        if (!ref) return false;
-//        unsigned int salt, it, ip;
-//        decodePolyId(ref, salt, it, ip);
-//        if (it >= (unsigned int)m_maxTiles)return false;
-//        if (m_tiles[it].salt != salt || m_tiles[it].header == 0) return false;
-//        if (ip >= (unsigned int)m_tiles[it].header.polyCount)return false;
-//        return true;
-//    }
+    public boolean isValidPolyRef(dtPoly ref) {
+        if (ref == null) return false;
+        int salt, it, ip;
+        decodePolyId(ref, salt, it, ip);
+        if (it >= (int)m_maxTiles)return false;
+        if (m_tiles[it].salt != salt || m_tiles[it].header == 0) return false;
+        if (ip >= (int)m_tiles[it].header.polyCount)return false;
+        return true;
+    }
 
     /// @par
     ///

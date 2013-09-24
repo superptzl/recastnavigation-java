@@ -113,12 +113,12 @@ public abstract class dtNavMesh {
 //    ///  @param[in]		ref		A known valid reference for a polygon.
 //    ///  @param[out]	tile	The tile containing the polygon.
 //    ///  @param[out]	poly	The polygon.
-//    public abstract void getTileAndPolyByRefUnsafe(dtPoly ref, dtMeshTile tile, dtPoly poly);
+    public abstract void getTileAndPolyByRefUnsafe(dtPoly ref, dtMeshTile[] tile, dtPoly[] poly);
 //
 //    /// Checks the validity of a polygon reference.
 //    ///  @param[in]	ref		The polygon reference to check.
 //    /// @return True if polygon reference is valid for the navigation mesh.
-//    public abstract boolean isValidPolyRef(dtPoly ref);
+    public abstract boolean isValidPolyRef(dtPoly ref);
 //
 //    /// Gets the polygon reference for the tile's base polygon.
 //    ///  @param[in]	tile		The tile.

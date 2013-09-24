@@ -19,13 +19,13 @@ public abstract class dtQueryFilter
 	///  @param[in]		tile	The tile containing the polygon.
 	///  @param[in]		poly  The polygon to test.
 //#ifdef DT_VIRTUAL_QUERYFILTER
-//	virtual bool passFilter(dtPoly ref,
-//							dtMeshTile*tile,
-//							dtPoly*poly) ;
+	public abstract boolean passFilter(dtPoly ref,
+							dtMeshTile tile,
+							dtPoly poly) ;
 //#else
 	public abstract boolean passFilter(dtPoly ref,
-					dtMeshTile tile,
-					dtPoly poly) ;
+					dtMeshTile[] tile,
+					dtPoly[] poly) ;
 //#endif
 
 	/// Returns cost to move from the beginning to the end of a line segment
