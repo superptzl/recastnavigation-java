@@ -13,6 +13,7 @@ public abstract class dtObstacleAvoidanceQuery {
                    float[] vel, float[] dvel);
 //
     public abstract void addSegment(float[] p, float[] q);
+    public abstract void addSegment(float[] p, float[] q, int qIndex);
 //
     public abstract int sampleVelocityGrid(float[] pos, float rad, float vmax,
                            float[] vel, float[] dvel, float[] nvel,
@@ -32,12 +33,12 @@ public abstract class dtObstacleAvoidanceQuery {
 //
 ////    private:
 //
-//    public abstract void prepare(const float* pos, const float* dvel);
+    public abstract void prepare(float[] pos, float[] dvel);
 //
-//    public abstract float processSample(const float* vcand, const float cs,
-//                        const float* pos, const float rad,
-//                        const float* vel, const float* dvel,
-//                        dtObstacleAvoidanceDebugData* debug);
+    public abstract float processSample(float[] vcand, float cs,
+                        float[] pos, float rad,
+                        float[] vel, float[] dvel,
+                        dtObstacleAvoidanceDebugData debug);
 //
 //    public abstract dtObstacleCircle* insertCircle(const float dist);
 //    public abstract dtObstacleSegment* insertSegment(const float dist);

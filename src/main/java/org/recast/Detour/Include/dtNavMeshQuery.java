@@ -88,10 +88,10 @@ public abstract class dtNavMeshQuery
 		///  @param[in]		maxStraightPath		The maximum number of points the straight path arrays can hold.  [Limit: > 0]
 		///  @param[in]		options				Query options. (see: #dtStraightPathOptions)
 		/// @returns The status flags for the query.
-//		public abstract dtStatus findStraightPath(float[] startPos, float[] endPos,
-//								  dtPoly[] path, int pathSize,
-//								  float[] straightPath, char[] straightPathFlags, dtPoly straightPathRefs,
-//								  int[] straightPathCount, int maxStraightPath, int options/* = 0*/);
+		public abstract dtStatus findStraightPath(float[] startPos, float[] endPos,
+								  dtPoly[] path, int pathSize,
+								  float[] straightPath, char[] straightPathFlags, dtPoly straightPathRefs,
+								  int[] straightPathCount, int maxStraightPath, int options/* = 0*/);
 
 		///@}
 		/// @name Sliced Pathfinding Functions
@@ -229,10 +229,9 @@ public abstract class dtNavMeshQuery
 		///  @param[out]	visitedCount	The number of polygons visited during the move.
 		///  @param[in]		maxVisitedSize	The maximum number of polygons the @p visited array can hold.
 		/// @returns The status flags for the query.
-		/*public abstract dtStatus moveAlongSurface(dtPoly startRef, const float* startPos, const float* endPos,
-								  const dtQueryFilter* filter,
-								  float* resultPos, dtPoly* visited, int* visitedCount, const int maxVisitedSize) const;
-*/
+		public abstract dtStatus moveAlongSurface(dtPoly startRef, float[] startPos, float[] endPos,
+								  dtQueryFilter filter,
+								  float resultPos, dtPoly[] visited, int[] visitedCount, int maxVisitedSize);
 		/// Casts a 'walkability' ray along the surface of the navigation mesh from
 		/// the start position toward the end position.
 		///  @param[in]		startRef	The reference id of the start polygon.
@@ -246,9 +245,9 @@ public abstract class dtNavMeshQuery
 		///  @param[out]	pathCount	The number of visited polygons. [opt]
 		///  @param[in]		maxPath		The maximum number of polygons the @p path array can hold.
 		/// @returns The status flags for the query.
-//		public abstract dtStatus raycast(dtPoly startRef, const float* startPos, const float* endPos,
-//						 const dtQueryFilter* filter,
-//						 float* t, float* hitNormal, dtPoly* path, int* pathCount, const int maxPath) const;
+		public abstract dtStatus raycast(dtPoly startRef, float[] startPos, float[] endPos,
+						 dtQueryFilter filter,
+						 float[] t, float[] hitNormal, dtPoly[] path, int[] pathCount, int maxPath);
 
 		/// Finds the distance from the specified position to the nearest polygon wall.
 		///  @param[in]		startRef		The reference id of the polygon containing @p centerPos.
@@ -343,7 +342,7 @@ public abstract class dtNavMeshQuery
 
 		/// Gets the navigation mesh the query object is using.
 		/// @return The navigation mesh the query object is using.
-//	public dtNavMesh* getAttachedNavMesh() const { return m_nav; }
+	public dtNavMesh getAttachedNavMesh() { return m_nav; }
 
 		/// @}
 

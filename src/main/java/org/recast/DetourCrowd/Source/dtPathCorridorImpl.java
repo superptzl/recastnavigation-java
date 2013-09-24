@@ -60,20 +60,20 @@ public class dtPathCorridorImpl extends dtPathCorridor {
                                     dtPoly[] cornerPolys, int maxCorners,
                                     dtNavMeshQuery navquery, dtQueryFilter filter)
     {
-        dtAssert(m_path);
-        dtAssert(m_npath);
+//        dtAssert(m_path);
+//        dtAssert(m_npath);
 
-        static const float MIN_TARGET_DIST = 0.01f;
+        float MIN_TARGET_DIST = 0.01f;
 
         int ncorners = 0;
-        navquery->findStraightPath(m_pos, m_target, m_path, m_npath,
-                cornerVerts, cornerFlags, cornerPolys, &ncorners, maxCorners);
+        navquery.findStraightPath(m_pos, m_target, m_path, m_npath,
+                cornerVerts, cornerFlags, cornerPolys, ncorners, maxCorners);
 
         // Prune points in the beginning of the path which are too close.
-        while (ncorners)
+        while (ncorners != 0)
         {
-            if ((cornerFlags[0] & DT_STRAIGHTPATH_OFFMESH_CONNECTION) ||
-                    dtVdist2DSqr(&cornerVerts[0], m_pos) > dtSqr(MIN_TARGET_DIST))
+            if ((cornerFlags[0] & dtStraightPathFlags.DT_STRAIGHTPATH_OFFMESH_CONNECTION) ||
+                    DetourCommon.dtVdist2DSqr(cornerVerts[0], m_pos) > DetourCommon.dtSqr(MIN_TARGET_DIST))
             break;
             ncorners--;
             if (ncorners)
@@ -87,7 +87,7 @@ public class dtPathCorridorImpl extends dtPathCorridor {
         // Prune points after an off-mesh connection.
         for (int i = 0; i < ncorners; ++i)
         {
-            if (cornerFlags[i] & DT_STRAIGHTPATH_OFFMESH_CONNECTION)
+            if ((cornerFlags[i] & dtStraightPathFlags.DT_STRAIGHTPATH_OFFMESH_CONNECTION) != 0)
             {
                 ncorners = i+1;
                 break;
@@ -115,33 +115,33 @@ public class dtPathCorridorImpl extends dtPathCorridor {
 //
 //     This function is not suitable for long distance searches.
 //     */
-    public void optimizePathVisibility(float[] next, float pathOptimizationRange,
+    public void optimizePathVisibility(float[] next, int nextIndex, float pathOptimizationRange,
                                                 dtNavMeshQuery navquery, dtQueryFilter filter)
     {
-        dtAssert(m_path);
+//        dtAssert(m_path);
 
         // Clamp the ray to max distance.
-        float goal[3];
-        dtVcopy(goal, next);
-        float dist = dtVdist2D(m_pos, goal);
+        float goal[] = new float[3];
+        DetourCommon.dtVcopy(goal, 0, next, nextIndex);
+        float dist = DetourCommon.dtVdist2D(m_pos, goal);
 
         // If too close to the goal, do not try to optimize.
         if (dist < 0.01f)
             return;
 
         // Overshoot a little. This helps to optimize open fields in tiled meshes.
-        dist = dtMin(dist+0.01f, pathOptimizationRange);
+        dist = DetourCommon.dtMin(dist+0.01f, pathOptimizationRange);
 
         // Adjust ray length.
-        float delta[3];
-        dtVsub(delta, goal, m_pos);
-        dtVmad(goal, m_pos, delta, pathOptimizationRange/dist);
+        float delta[] = new float[3];
+        DetourCommon.dtVsub(delta, goal, m_pos);
+        DetourCommon.dtVmad(goal, m_pos, delta, pathOptimizationRange/dist);
 
-        static const int MAX_RES = 32;
-        dtPolyRef res[MAX_RES];
-        float t, norm[3];
+        int MAX_RES = 32;
+        dtPoly res[] = new dtPoly[MAX_RES];
+        float t, norm[] = new float[3];
         int nres = 0;
-        navquery->raycast(m_path[0], m_pos, goal, filter, &t, norm, res, &nres, MAX_RES);
+        navquery.raycast(m_path[0], m_pos, goal, filter, &t, norm, res, &nres, MAX_RES);
         if (nres > 1 && t > 0.99f)
         {
             m_npath = dtMergeCorridorStartShortcut(m_path, m_npath, m_maxPath, res, nres);
@@ -171,14 +171,14 @@ public class dtPathCorridorImpl extends dtPathCorridor {
         int MAX_RES = 32;
 
         dtPoly res[] = new dtPoly[MAX_RES];
-        int nres = 0;
+        int[] nres = new int[1];
         navquery.initSlicedFindPath(m_path[0], m_path[m_npath-1], m_pos, m_target, filter);
-        navquery.updateSlicedFindPath(MAX_ITER, 0);
-        dtStatus status = navquery.finalizeSlicedFindPathPartial(m_path, m_npath, res, &nres, MAX_RES);
+        navquery.updateSlicedFindPath(MAX_ITER, null);
+        dtStatus status = navquery.finalizeSlicedFindPathPartial(m_path, m_npath, res, nres, MAX_RES);
 
-        if (dtStatus.dtStatusSucceed(status) && nres > 0)
+        if (dtStatus.dtStatusSucceed(status) && nres[0] > 0)
         {
-            m_npath = dtMergeCorridorStartShortcut(m_path, m_npath, m_maxPath, res, nres);
+            m_npath = dtMergeCorridorStartShortcut(m_path, m_npath, m_maxPath, res, nres[0]);
             return true;
         }
 
@@ -189,12 +189,12 @@ public class dtPathCorridorImpl extends dtPathCorridor {
                                                    float[] startPos, float[] endPos,
                                                    dtNavMeshQuery navquery)
     {
-        dtAssert(navquery);
-        dtAssert(m_path);
-        dtAssert(m_npath);
+//        dtAssert(navquery);
+//        dtAssert(m_path);
+//        dtAssert(m_npath);
 
         // Advance the path up to and over the off-mesh connection.
-        dtPolyRef prevRef = 0, polyRef = m_path[0];
+        dtPoly prevRef = null, polyRef = m_path[0];
         int npos = 0;
         while (npos < m_npath && polyRef != offMeshConRef)
         {
@@ -216,13 +216,13 @@ public class dtPathCorridorImpl extends dtPathCorridor {
         refs[0] = prevRef;
         refs[1] = polyRef;
 
-        const dtNavMesh* nav = navquery->getAttachedNavMesh();
-        dtAssert(nav);
+         dtNavMesh nav = navquery.getAttachedNavMesh();
+//        dtAssert(nav);
 
-        dtStatus status = nav->getOffMeshConnectionPolyEndPoints(refs[0], refs[1], startPos, endPos);
-        if (dtStatusSucceed(status))
+        dtStatus status = nav.getOffMeshConnectionPolyEndPoints(refs[0], refs[1], startPos, endPos);
+        if (dtStatus.dtStatusSucceed(status))
         {
-            dtVcopy(m_pos, endPos);
+            DetourCommon.dtVcopy(m_pos, endPos);
             return true;
         }
 
@@ -234,7 +234,7 @@ public class dtPathCorridorImpl extends dtPathCorridor {
 //
 //     Behavior:
 //
-//     - The movement is constrained to the surface of the navigation mesh.
+//     - The movement is rained to the surface of the navigation mesh.
 //     - The corridor is automatically adjusted (shorted or lengthened) in order to remain valid.
 //     - The new position will be located in the adjusted corridor's first polygon.
 //
@@ -250,19 +250,19 @@ public class dtPathCorridorImpl extends dtPathCorridor {
 //        dtAssert(m_npath);
 
         // Move along navmesh and update new position.
-        float result[3];
-        static const int MAX_VISITED = 16;
-        dtPolyRef visited[MAX_VISITED];
+        float result[] = new float[3];
+        int MAX_VISITED = 16;
+        dtPoly visited[] = new dtPoly[MAX_VISITED];
         int nvisited = 0;
-        navquery->moveAlongSurface(m_path[0], m_pos, npos, filter,
+        navquery.moveAlongSurface(m_path[0], m_pos, npos, filter,
                 result, visited, &nvisited, MAX_VISITED);
         m_npath = dtMergeCorridorStartMoved(m_path, m_npath, m_maxPath, visited, nvisited);
 
         // Adjust the position to stay on top of the navmesh.
         float h = m_pos[1];
-        navquery->getPolyHeight(m_path[0], result, &h);
+        navquery.getPolyHeight(m_path[0], result, &h);
         result[1] = h;
-        dtVcopy(m_pos, result);
+        DetourCommon.dtVcopy(m_pos, result);
     }
 //
 //    /**
@@ -270,7 +270,7 @@ public class dtPathCorridorImpl extends dtPathCorridor {
 //
 //     Behavior:
 //
-//     - The movement is constrained to the surface of the navigation mesh.
+//     - The movement is rained to the surface of the navigation mesh.
 //     - The corridor is automatically adjusted (shorted or lengthened) in order to remain valid.
 //     - The new target will be located in the adjusted corridor's last polygon.
 //
@@ -278,24 +278,24 @@ public class dtPathCorridorImpl extends dtPathCorridor {
 //
 //     The resulting target will differ from the desired target if the desired target is not on the navigation mesh, or it can't be reached using a local search.
 //     */
-//    void moveTargetPosition(const float* npos, dtNavMeshQuery* navquery, const dtQueryFilter* filter)
+//    void moveTargetPosition( float* npos, dtNavMeshQuery* navquery,  dtQueryFilter* filter)
 //    {
 //        dtAssert(m_path);
 //        dtAssert(m_npath);
 //
 //        // Move along navmesh and update new position.
 //        float result[3];
-//        static const int MAX_VISITED = 16;
+//        static  int MAX_VISITED = 16;
 //        dtPolyRef visited[MAX_VISITED];
 //        int nvisited = 0;
-//        navquery->moveAlongSurface(m_path[m_npath-1], m_target, npos, filter,
+//        navquery.moveAlongSurface(m_path[m_npath-1], m_target, npos, filter,
 //                result, visited, &nvisited, MAX_VISITED);
 //        m_npath = dtMergeCorridorEndMoved(m_path, m_npath, m_maxPath, visited, nvisited);
 //
 //        // TODO: should we do that?
 //        // Adjust the position to stay on top of the navmesh.
 //	/*	float h = m_target[1];
-//	 navquery->getPolyHeight(m_path[m_npath-1], result, &h);
+//	 navquery.getPolyHeight(m_path[m_npath-1], result, &h);
 //	 result[1] = h;*/
 //
 //        dtVcopy(m_target, result);
@@ -339,8 +339,8 @@ public class dtPathCorridorImpl extends dtPathCorridor {
         return true;
     }
 
-//    bool trimInvalidPath(dtPolyRef safeRef, const float* safePos,
-//                                         dtNavMeshQuery* navquery, const dtQueryFilter* filter)
+//    bool trimInvalidPath(dtPolyRef safeRef,  float* safePos,
+//                                         dtNavMeshQuery* navquery,  dtQueryFilter* filter)
 //    {
 //        dtAssert(navquery);
 //        dtAssert(filter);
@@ -348,7 +348,7 @@ public class dtPathCorridorImpl extends dtPathCorridor {
 //
 //        // Keep valid path as far as possible.
 //        int n = 0;
-//        while (n < m_npath && navquery->isValidPolyRef(m_path[n], filter)) {
+//        while (n < m_npath && navquery.isValidPolyRef(m_path[n], filter)) {
 //            n++;
 //        }
 //
@@ -373,7 +373,7 @@ public class dtPathCorridorImpl extends dtPathCorridor {
 //        // Clamp target pos to last poly
 //        float tgt[3];
 //        dtVcopy(tgt, m_target);
-//        navquery->closestPointOnPolyBoundary(m_path[m_npath-1], tgt, m_target);
+//        navquery.closestPointOnPolyBoundary(m_path[m_npath-1], tgt, m_target);
 //
 //        return true;
 //    }
@@ -395,4 +395,53 @@ public class dtPathCorridorImpl extends dtPathCorridor {
         return true;
     }
 
+    public static int dtMergeCorridorStartShortcut(dtPoly[] path, int npath, int maxPath,
+                                     dtPoly[] visited, int nvisited)
+    {
+        int furthestPath = -1;
+        int furthestVisited = -1;
+
+        // Find furthest common polygon.
+        for (int i = npath-1; i >= 0; --i)
+        {
+            boolean found = false;
+            for (int j = nvisited-1; j >= 0; --j)
+            {
+                if (path[i] == visited[j])
+                {
+                    furthestPath = i;
+                    furthestVisited = j;
+                    found = true;
+                }
+            }
+            if (found)
+                break;
+        }
+
+        // If no intersection found just return current path.
+        if (furthestPath == -1 || furthestVisited == -1)
+            return npath;
+
+        // Concatenate paths.
+
+        // Adjust beginning of the buffer to include the visited.
+        int req = furthestVisited;
+        if (req <= 0)
+            return npath;
+
+        int orig = furthestPath;
+        int size = DetourCommon.dtMax(0, npath-orig);
+        if (req+size > maxPath)
+            size = maxPath-req;
+        if (size != 0) {
+//            memmove(path+req, path+orig, size*sizeof(dtPolyRef));
+            System.arraycopy(path, orig, path, req, size);
+        }
+
+        // Store visited
+        for (int i = 0; i < req; ++i)
+            path[i] = visited[i];
+
+        return req+size;
+    }
 }

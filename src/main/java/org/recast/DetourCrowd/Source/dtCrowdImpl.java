@@ -365,7 +365,7 @@ public     int getAgentCount()
                 int MAX_RES = 32;
                 float reqPos[] = new float[3];
                 dtPoly reqPath[] = new dtPoly[MAX_RES];	// The path to the request location
-                int reqPathCount = 0;
+                int[] reqPathCount = new int[1];
 
                 // Quick seach towards the goal.
                 int MAX_ITER = 20;
@@ -383,15 +383,15 @@ public     int getAgentCount()
                     status = m_navquery.finalizeSlicedFindPath(reqPath, reqPathCount, MAX_RES);
                 }
 
-                if (!dtStatus.dtStatusFailed(status) && reqPathCount > 0)
+                if (!dtStatus.dtStatusFailed(status) && reqPathCount[0] > 0)
                 {
                     // In progress or succeed.
-                    if (reqPath[reqPathCount-1] != ag.targetRef)
+                    if (reqPath[reqPathCount[0]-1] != ag.targetRef)
                     {
                         // Partial path, constrain target position inside the last polygon.
-                        status = m_navquery.closestPointOnPoly(reqPath[reqPathCount-1], ag.targetPos, reqPos);
+                        status = m_navquery.closestPointOnPoly(reqPath[reqPathCount[0]-1], ag.targetPos, reqPos);
                         if (dtStatus.dtStatusFailed(status))
-                            reqPathCount = 0;
+                            reqPathCount[0] = 0;
                     }
                     else
                     {
@@ -400,21 +400,21 @@ public     int getAgentCount()
                 }
                 else
                 {
-                    reqPathCount = 0;
+                    reqPathCount[0] = 0;
                 }
 
-                if (reqPathCount == 0)
+                if (reqPathCount[0] == 0)
                 {
                     // Could not find path, start the request from current location.
                     DetourCommon.dtVcopy(reqPos, ag.npos);
                     reqPath[0] = path[0];
-                    reqPathCount = 1;
+                    reqPathCount[0] = 1;
                 }
 
-                ag.corridor.setCorridor(reqPos, reqPath, reqPathCount);
+                ag.corridor.setCorridor(reqPos, reqPath, reqPathCount[0]);
                 ag.boundary.reset();
 
-                if (reqPath[reqPathCount-1] == ag.targetRef)
+                if (reqPath[reqPathCount[0]-1] == ag.targetRef)
                 {
                     ag.targetState = MoveRequestState.DT_CROWDAGENT_TARGET_VALID;
                     ag.targetReplanTime = 0.0f;
@@ -472,7 +472,7 @@ public     int getAgentCount()
                 }
                 else if (dtStatus.dtStatusSucceed(status))
                 {
-                    dtPoly path = ag.corridor.getPath();
+                    dtPoly[] path = ag.corridor.getPath();
                     int npath = ag.corridor.getPathCount();
 //                    dtAssert(npath);
 
@@ -480,11 +480,11 @@ public     int getAgentCount()
                     float targetPos[] = new float[3];
                     DetourCommon.dtVcopy(targetPos, ag.targetPos);
 
-                    dtPoly res = m_pathResult;
+                    dtPoly[] res = m_pathResult;
                     boolean valid = true;
-                    int nres = 0;
+                    int[] nres = new int[1];
                     status = m_pathq.getPathResult(ag.targetPathqRef, res, nres, m_maxPathResult);
-                    if (dtStatus.dtStatusFailed(status) || !nres)
+                    if (dtStatus.dtStatusFailed(status) || nres[0] == 0)
                         valid = false;
 
                     // Merge result and existing path.
@@ -504,23 +504,26 @@ public     int getAgentCount()
                         if (npath > 1)
                         {
                             // Make space for the old path.
-                            if ((npath-1)+nres > m_maxPathResult)
-                                nres = m_maxPathResult - (npath-1);
+                            if ((npath-1)+nres[0] > m_maxPathResult)
+                                nres[0] = m_maxPathResult - (npath-1);
 
-                            memmove(res+npath-1, res, sizeof(dtPolyRef)*nres);
+//                            memmove(res+npath-1, res, sizeof(dtPolyRef)*nres);
+                            System.arraycopy(res, 0, res, npath+1, nres[0]);
                             // Copy old path in the beginning.
-                            memcpy(res, path, sizeof(dtPolyRef)*(npath-1));
-                            nres += npath-1;
+//                            memcpy(res, path, sizeof(dtPolyRef)*(npath-1));
+                            System.arraycopy(path, 0, res, 0, (npath-1));
+                            nres[0] += npath-1;
 
                             // Remove trackbacks
-                            for (int j = 0; j < nres; ++j)
+                            for (int j = 0; j < nres[0]; ++j)
                             {
-                                if (j-1 >= 0 && j+1 < nres)
+                                if (j-1 >= 0 && j+1 < nres[0])
                                 {
                                     if (res[j-1] == res[j+1])
                                     {
-                                        memmove(res+(j-1), res+(j+1), sizeof(dtPolyRef)*(nres-(j+1)));
-                                        nres -= 2;
+//                                        memmove(res+(j-1), res+(j+1), sizeof(dtPolyRef)*(nres-(j+1)));
+                                        System.arraycopy(res, j+1, res, j-1, (nres[0]-(j+1)));
+                                        nres[0] -= 2;
                                         j -= 2;
                                     }
                                 }
@@ -529,11 +532,11 @@ public     int getAgentCount()
                         }
 
                         // Check for partial path.
-                        if (res[nres-1] != ag.targetRef)
+                        if (res[nres[0]-1] != ag.targetRef)
                         {
                             // Partial path, constrain target position inside the last polygon.
                             float nearest[] = new float[3];
-                            status = m_navquery.closestPointOnPoly(res[nres-1], targetPos, nearest);
+                            status = m_navquery.closestPointOnPoly(res[nres[0]-1], targetPos, nearest);
                             if (dtStatus.dtStatusSucceed(status))
                                 DetourCommon.dtVcopy(targetPos, nearest);
                             else
@@ -544,7 +547,7 @@ public     int getAgentCount()
                     if (valid)
                     {
                         // Set current corridor.
-                        ag.corridor.setCorridor(targetPos, res, nres);
+                        ag.corridor.setCorridor(targetPos, res, nres[0]);
                         // Force to update boundary.
                         ag.boundary.reset();
                         ag.targetState = MoveRequestState.DT_CROWDAGENT_TARGET_VALID;
@@ -626,13 +629,15 @@ public     int getAgentCount()
                 // TODO: this can snap agents, how to handle that?
                 float nearest[] = new float[3];
                 agentRef = null;
-                m_navquery.findNearestPoly(ag.npos, m_ext, m_filter, agentRef, nearest);
+                dtPoly[] tmp = new dtPoly[]{agentRef};
+                m_navquery.findNearestPoly(ag.npos, m_ext, m_filter, tmp, nearest);
+                agentRef = tmp[0];
                 DetourCommon.dtVcopy(agentPos, nearest);
 
                 if (agentRef == null)
                 {
                     // Could not find location in navmesh, set state to invalid.
-                    ag.corridor.reset(0, agentPos);
+                    ag.corridor.reset(null, agentPos);
                     ag.boundary.reset();
                     ag.state = CrowdAgentState.DT_CROWDAGENT_STATE_INVALID;
                     continue;
@@ -655,11 +660,13 @@ public     int getAgentCount()
                 {
                     // Current target is not valid, try to reposition.
                     float nearest[] = new float[3];
-                    m_navquery.findNearestPoly(ag.targetPos, m_ext, m_filter, ag.targetRef, nearest);
+                    dtPoly[] tmp = new dtPoly[]{ag.targetRef};
+                    m_navquery.findNearestPoly(ag.targetPos, m_ext, m_filter, tmp, nearest);
+                    ag.targetRef = tmp[0];
                     DetourCommon.dtVcopy(ag.targetPos, nearest);
                     replan = true;
                 }
-                if (!ag.targetRef)
+                if (ag.targetRef == null)
                 {
                     // Failed to reposition target, fail moverequest.
                     ag.corridor.reset(agentRef, agentPos);
@@ -719,7 +726,7 @@ public     int getAgentCount()
         for (int i = 0; i < nagents; ++i)
         {
             dtCrowdAgent ag = agents[i];
-            float* p = ag.npos;
+            float[] p = ag.npos;
             float r = ag.params.radius;
             m_grid.addItem(i, p[0]-r, p[2]-r, p[0]+r, p[2]+r);
         }
@@ -735,7 +742,7 @@ public     int getAgentCount()
             // if it has become invalid.
             float updateThr = ag.params.collisionQueryRange*0.25f;
             if (DetourCommon.dtVdist2DSqr(ag.npos, ag.boundary.getCenter()) > DetourCommon.dtSqr(updateThr) ||
-                    !ag.boundary.isValid(m_navquery, &m_filter))
+                    !ag.boundary.isValid(m_navquery, m_filter))
             {
                 ag.boundary.update(ag.corridor.getFirstPoly(), ag.npos, ag.params.collisionQueryRange,
                         m_navquery, m_filter);
@@ -766,8 +773,9 @@ public     int getAgentCount()
             // and short cut to there.
             if ((ag.params.updateFlags & UpdateFlags.DT_CROWD_OPTIMIZE_VIS) != 0 && ag.ncorners > 0)
             {
-                float[] target = ag.cornerVerts[DetourCommon.dtMin(1,ag.ncorners-1)*3];
-                ag.corridor.optimizePathVisibility(target, ag.params.pathOptimizationRange, m_navquery, m_filter);
+                float[] target = ag.cornerVerts;
+                int targetIndex = DetourCommon.dtMin(1,ag.ncorners-1)*3;
+                ag.corridor.optimizePathVisibility(target, targetIndex, ag.params.pathOptimizationRange, m_navquery, m_filter);
 
                 // Copy data for debug purposes.
                 if (debugIdx == i)
@@ -802,12 +810,17 @@ public     int getAgentCount()
             if (overOffmeshConnection(ag, triggerRadius))
             {
                 // Prepare to off-mesh connection.
-                int idx = ag - m_agents;
+                int idx = -1;//ag - m_agents;
+                for (int ii = 0; ii < m_agents.length; ii++) {
+                    if (m_agents[ii] == ag) {
+                        idx = ii;
+                    }
+                }
                 dtCrowdAgentAnimation anim = m_agentAnims[idx];
 
                 // Adjust the path over the off-mesh connection.
                 dtPoly refs[] = new dtPoly[2];
-                if (ag.corridor.moveOverOffmeshConnection(ag.cornerPolys[ag.ncorners-1], refs,
+                if (ag.corridor.moveOverOffmeshConnection(ag.cornerPolys[ag.ncorners-1], refs[0],
                         anim.startPos, anim.endPos, m_navquery))
                 {
                     DetourCommon.dtVcopy(anim.initPos, ag.npos);
@@ -930,9 +943,9 @@ public     int getAgentCount()
                 for (int j = 0; j < ag.boundary.getSegmentCount(); ++j)
                 {
                     float[] s = ag.boundary.getSegment(j);
-                    if (DetourCommon.dtTriArea2D(ag.npos, s, s + 3) < 0.0f)
+                    if (DetourCommon.dtTriArea2D(ag.npos, s, s, 3) < 0.0f)
                         continue;
-                    m_obstacleQuery.addSegment(s, s+3);
+                    m_obstacleQuery.addSegment(s, s, 3);
                 }
 
                 dtObstacleAvoidanceDebugData vod = null;
@@ -1083,12 +1096,12 @@ public     int getAgentCount()
             if (anim.t < ta)
             {
                 float u = tween(anim.t, 0.0f, ta);
-                DetourCommon.dtVlerp(ag.npos, anim.initPos, anim.startPos, u);
+                DetourCommon.dtVlerp(ag.npos, anim.initPos, 0, anim.startPos, 0, u);
             }
             else
             {
                 float u = tween(anim.t, ta, tb);
-                DetourCommon.dtVlerp(ag.npos, anim.startPos, anim.endPos, u);
+                DetourCommon.dtVlerp(ag.npos, anim.startPos, 0, anim.endPos, 0, u);
             }
 
             // Update velocity.

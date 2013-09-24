@@ -44,7 +44,7 @@ public abstract class dtPathCorridor {
 //    ///  @param[in]		pathOptimizationRange	The maximum range to search. [Limit: > 0]
 //    ///  @param[in]		navquery				The query object used to build the corridor.
 //    ///  @param[in]		filter					The filter to apply to the operation.
-    public abstract void optimizePathVisibility( float[] next,  float pathOptimizationRange,
+    public abstract void optimizePathVisibility( float[] next,  int nextIndex, float pathOptimizationRange,
                                 dtNavMeshQuery navquery,  dtQueryFilter filter);
 //
 //    /// Attempts to optimize the path using a local area search. (Partial replanning.)

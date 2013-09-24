@@ -1277,46 +1277,46 @@ public class dtNavMeshImpl extends dtNavMesh {
     /// inside a normal polygon. So an off-mesh connection is "entered" from a
     /// normal polygon at one of its endpoints. This is the polygon identified by
     /// the prevRef parameter.
-//    public dtStatus getOffMeshConnectionPolyEndPoints(dtPoly prevRef, dtPoly polyRef, float[] startPos, float[] endPos) {
-//        unsigned int salt, it, ip;
-//
-//        if (!polyRef)
-//            return DT_FAILURE;
-//
-//        // Get current polygon
-//        decodePolyId(polyRef, salt, it, ip);
-//        if (it >= (unsigned int)m_maxTiles)return DT_FAILURE | DT_INVALID_PARAM;
-//        if (m_tiles[it].salt != salt || m_tiles[it].header == 0) return DT_FAILURE | DT_INVALID_PARAM;
-//        dtMeshTile * tile =&m_tiles[it];
-//        if (ip >= (unsigned int)tile.header.polyCount)return DT_FAILURE | DT_INVALID_PARAM;
-//        dtPoly * poly =&tile.polys[ip];
-//
-//        // Make sure that the current poly is indeed off-mesh link.
-//        if (poly.getType() != DT_POLYTYPE_OFFMESH_CONNECTION)
-//            return DT_FAILURE;
-//
-//        // Figure out which way to hand out the vertices.
-//        int idx0 = 0, idx1 = 1;
-//
-//        // Find link that points to first vertex.
-//        for (unsigned int i = poly.firstLink;
-//        i != DT_NULL_LINK;
-//        i = tile.links[i].next)
-//        {
-//            if (tile.links[i].edge == 0) {
-//                if (tile.links[i].ref != prevRef) {
-//                    idx0 = 1;
-//                    idx1 = 0;
-//                }
-//                break;
-//            }
-//        }
-//
-//        dtVcopy(startPos, & tile.verts[poly.verts[idx0] * 3]);
-//        dtVcopy(endPos, & tile.verts[poly.verts[idx1] * 3]);
-//
-//        return DT_SUCCESS;
-//    }
+    public dtStatus getOffMeshConnectionPolyEndPoints(dtPoly prevRef, dtPoly polyRef, float[] startPos, float[] endPos) {
+        int salt, it, ip;
+
+        if (polyRef == null)
+            return new dtStatus(dtStatus.DT_FAILURE);
+
+        // Get current polygon
+        decodePolyId(polyRef, salt, it, ip);
+        if (it >= (int)m_maxTiles)return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
+        if (m_tiles[it].salt != salt || m_tiles[it].header == null) return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
+        dtMeshTile tile = m_tiles[it];
+        if (ip >= (int)tile.header.polyCount)return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
+        dtPoly  poly = tile.polys[ip];
+
+        // Make sure that the current poly is indeed off-mesh link.
+        if (poly.getType() != dtPolyTypes.DT_POLYTYPE_OFFMESH_CONNECTION)
+            return new dtStatus(dtStatus.DT_FAILURE);
+
+        // Figure out which way to hand out the vertices.
+        int idx0 = 0, idx1 = 1;
+
+        // Find link that points to first vertex.
+        for (int i = poly.firstLink;
+        i != DetourNavMesh.DT_NULL_LINK;
+        i = tile.links[i].next)
+        {
+            if (tile.links[i].edge == 0) {
+                if (tile.links[i].ref != prevRef) {
+                    idx0 = 1;
+                    idx1 = 0;
+                }
+                break;
+            }
+        }
+
+        DetourCommon.dtVcopy(startPos, 0, tile.verts, poly.verts[idx0] * 3);
+        DetourCommon.dtVcopy(endPos, 0, tile.verts, poly.verts[idx1] * 3);
+
+        return new dtStatus(dtStatus.DT_SUCCESS);
+    }
 
 
 //    public dtOffMeshConnection getOffMeshConnectionByRef(dtPoly ref) {

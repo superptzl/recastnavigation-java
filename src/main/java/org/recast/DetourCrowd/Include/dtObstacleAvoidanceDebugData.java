@@ -11,9 +11,9 @@ public abstract class dtObstacleAvoidanceDebugData {
 //    ~dtObstacleAvoidanceDebugData();
 
     public abstract boolean init(int maxSamples);
-//	public abstract void reset();
-//	public abstract void addSample(float[] vel, float ssize, float pen,
-//                   float vpen, float vcpen, float spen, float tpen);
+	public abstract void reset();
+	public abstract void addSample(float[] vel, float ssize, float pen,
+                   float vpen, float vcpen, float spen, float tpen);
 //
 	public abstract void normalizeSamples();
 

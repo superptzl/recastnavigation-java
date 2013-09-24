@@ -74,16 +74,16 @@ public class dtObstacleAvoidanceDebugDataImpl extends dtObstacleAvoidanceDebugDa
         return true;
     }
 
-//    void reset()
-//    {
-//        m_nsamples = 0;
-//    }
-//
-//    void addSample(const float* vel, const float ssize, const float pen,
-//                                                 const float vpen, const float vcpen, const float spen, const float tpen)
-//    {
-//        if (m_nsamples >= m_maxSamples)
-//            return;
+    public void reset()
+    {
+        m_nsamples = 0;
+    }
+
+    public void addSample(float[] vel, float ssize, float pen,
+                                                 float vpen, float vcpen, float spen, float tpen)
+    {
+        if (m_nsamples >= m_maxSamples)
+            return;
 //        dtAssert(m_vel);
 //        dtAssert(m_ssize);
 //        dtAssert(m_pen);
@@ -91,16 +91,16 @@ public class dtObstacleAvoidanceDebugDataImpl extends dtObstacleAvoidanceDebugDa
 //        dtAssert(m_vcpen);
 //        dtAssert(m_spen);
 //        dtAssert(m_tpen);
-//        dtVcopy(&m_vel[m_nsamples*3], vel);
-//        m_ssize[m_nsamples] = ssize;
-//        m_pen[m_nsamples] = pen;
-//        m_vpen[m_nsamples] = vpen;
-//        m_vcpen[m_nsamples] = vcpen;
-//        m_spen[m_nsamples] = spen;
-//        m_tpen[m_nsamples] = tpen;
-//        m_nsamples++;
-//    }
-//
+        DetourCommon.dtVcopy(m_vel, m_nsamples*3, vel, 0);
+        m_ssize[m_nsamples] = ssize;
+        m_pen[m_nsamples] = pen;
+        m_vpen[m_nsamples] = vpen;
+        m_vcpen[m_nsamples] = vcpen;
+        m_spen[m_nsamples] = spen;
+        m_tpen[m_nsamples] = tpen;
+        m_nsamples++;
+    }
+
     public static void normalizeArray(float[] arr, int n)
     {
         // Normalize penaly range.

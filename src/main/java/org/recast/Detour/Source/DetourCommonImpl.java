@@ -71,4 +71,20 @@ public class DetourCommonImpl extends DetourCommon {
 
 		return false;
 	}
+
+    public float dtDistancePtSegSqr2D(float[] pt, float[] p, float[] q, float[] t)
+    {
+        float pqx = q[0] - p[0];
+        float pqz = q[2] - p[2];
+        float dx = pt[0] - p[0];
+        float dz = pt[2] - p[2];
+        float d = pqx*pqx + pqz*pqz;
+        t[0] = pqx*dx + pqz*dz;
+        if (d > 0) t[0] /= d;
+        if (t[0] < 0) t[0] = 0;
+        else if (t[0] > 1) t[0] = 1;
+        dx = p[0] + t[0]*pqx - pt[0];
+        dz = p[2] + t[0]*pqz - pt[2];
+        return dx*dx + dz*dz;
+    }
 }

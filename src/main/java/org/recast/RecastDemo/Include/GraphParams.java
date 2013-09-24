@@ -1,16 +1,16 @@
 package org.recast.RecastDemo.Include;
 
-public class GraphParams {
-    void setRect(int ix, int iy, int iw, int ih, int ipad);
-    void setValueRange(float ivmin, float ivmax, int indiv, const char* iunits);
+public abstract class GraphParams {
+    public abstract void setRect(int ix, int iy, int iw, int ih, int ipad);
+    public abstract void setValueRange(float ivmin, float ivmax, int indiv,  String iunits);
 
-    int x, y, w, h, pad;
-    float vmin, vmax;
-    int ndiv;
-    char units[16];
+    public int x, y, w, h, pad;
+    public float vmin, vmax;
+    public int ndiv;
+    public String units;//[] = new char[16];
 
-    void drawGraphBackground(const GraphParams* p);
+    public abstract void drawGraphBackground( GraphParams p);
 
-    void drawGraph(const GraphParams* p, const ValueHistory* graph,
-                   int idx, const char* label, const unsigned int col);
+    public abstract void drawGraph( GraphParams p,  ValueHistory graph,
+                   int idx,  char[] label,  int col);
 }

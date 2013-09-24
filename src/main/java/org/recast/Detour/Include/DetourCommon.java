@@ -13,6 +13,9 @@ public abstract class DetourCommon {
         return a < b ? a : b;
     }
 
+    public static int dtMax(int a, int b) {
+        return a > b ? a : b;
+    }
     public static float dtMax(float a, float b) {
         return a > b ? a : b;
     }
@@ -161,6 +164,7 @@ public abstract class DetourCommon {
 ///  @param[in]		mx	The maximum permitted return value.
 ///  @return The value, clamped to the specified range.
     public static float dtClamp(float v, float mn, float mx) { return v < mn ? mn : (v > mx ? mx : v); }
+    public static int dtClamp(int v, int mn, int mx) { return v < mn ? mn : (v > mx ? mx : v); }
 
     /// Determines if two axis-aligned bounding boxes overlap.
 ///  @param[in]		amin	Minimum bounds of box A. [(x, y, z)]
@@ -356,10 +360,28 @@ public abstract class DetourCommon {
 /// @return The signed xz-plane area of the triangle.
     public static float dtTriArea2D(float[] a, float[] b, float[] c)
     {
+        return dtTriArea2D(a, b, c, 0);
+    }
+
+    public static float dtTriArea2D(float[] a, float[] b, float[] c, int cIndex)
+    {
         float abx = b[0] - a[0];
         float abz = b[2] - a[2];
-        float acx = c[0] - a[0];
-        float acz = c[2] - a[2];
+        float acx = c[cIndex+0] - a[0];
+        float acz = c[cIndex+2] - a[2];
         return acx*abz - abx*acz;
+    }
+
+    public abstract float dtDistancePtSegSqr2D(float[] pt, float[] p, float[] q, float[] t);
+
+    /// Derives the xz-plane 2D perp product of the two vectors. (uz*vx - ux*vz)
+///  @param[in]		u		The LHV vector [(x, y, z)]
+///  @param[in]		v		The RHV vector [(x, y, z)]
+/// @return The dot product on the xz-plane.
+///
+/// The vectors are projected onto the xz-plane, so the y-values are ignored.
+    public static float dtVperp2D(float[] u, float[] v)
+    {
+        return u[2]*v[0] - u[0]*v[2];
     }
 }

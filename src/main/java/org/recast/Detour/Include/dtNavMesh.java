@@ -131,7 +131,7 @@ public abstract class dtNavMesh {
 //    ///  @param[out]	startPos	The start position of the off-mesh connection. [(x, y, z)]
 //    ///  @param[out]	endPos		The end position of the off-mesh connection. [(x, y, z)]
 //    /// @return The status flags for the operation.
-//    public abstract dtStatus getOffMeshConnectionPolyEndPoints(dtPoly prevRef, dtPoly polyRef, float[] startPos, float[] endPos);
+    public abstract dtStatus getOffMeshConnectionPolyEndPoints(dtPoly prevRef, dtPoly polyRef, float[] startPos, float[] endPos);
 //
 //    /// Gets the specified off-mesh connection.
 //    ///  @param[in]	ref		The polygon reference of the off-mesh connection.
