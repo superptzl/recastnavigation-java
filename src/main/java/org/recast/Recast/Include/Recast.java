@@ -294,9 +294,14 @@ public abstract class Recast
 
 	public static void rcVsub(float[] dest, float[] v1, float[] v2)
 	{
-		dest[0] = v1[0] - v2[0];
-		dest[1] = v1[1] - v2[1];
-		dest[2] = v1[2] - v2[2];
+		rcVsub(dest, v1, 0, v2, 0);
+	}
+
+	public static void rcVsub(float[] dest, float[] v1, int v1Index, float[] v2, int v2Index)
+	{
+		dest[0] = v1[v1Index+0] - v2[v2Index+0];
+		dest[1] = v1[v1Index+1] - v2[v2Index+1];
+		dest[2] = v1[v1Index+2] - v2[v2Index+2];
 	}
 
 	public static void rcVcross(float[] dest, float[] v1, float[] v2)
@@ -327,25 +332,25 @@ public abstract class Recast
 //        return r;
 //    }
 
-	public static int[] create3(int[] arr, int fromIndex)
-	{
-		return createN(arr, fromIndex, 3);
-	}
+//	public static int[] create3(int[] arr, int fromIndex)
+//	{
+//		return createN(arr, fromIndex, 3);
+//	}
 
-	public static int[] createN(int[] arr, int fromIndex, int n)
-	{
-		int[] r = new int[n];
-		try
-		{
-			System.arraycopy(arr, fromIndex, r, 0, n);
-		}
-		catch (ArrayIndexOutOfBoundsException e)
-		{
-			e.printStackTrace();
-			throw e;
-		}
-		return r;
-	}
+//	public static int[] createN(int[] arr, int fromIndex, int n)
+//	{
+//		int[] r = new int[n];
+//		try
+//		{
+//			System.arraycopy(arr, fromIndex, r, 0, n);
+//		}
+//		catch (ArrayIndexOutOfBoundsException e)
+//		{
+//			e.printStackTrace();
+//			throw e;
+//		}
+//		return r;
+//	}
 
 //    public static int[] createN(int[] arr, int fromIndex, int n) {
 //        int[] r = new int[n];
@@ -353,45 +358,60 @@ public abstract class Recast
 //        return r;
 //    }
 
-	public static float[] createN(float[] arr, int fromIndex, int n)
+	/*public static float[] createN(float[] arr, int fromIndex, int n)
 	{
 		float[] r = new float[n];
 		System.arraycopy(arr, fromIndex, r, 0, n);
-		/*for (int i = 0; i < n; i++) {
+		*//*for (int i = 0; i < n; i++) {
             r[i] = arr[fromIndex + i];
-        }*/
+        }*//*
 		return r;
-	}
+	}*/
 
-	public static float[] create3(float[] arr, int fromIndex)
+	/*private static float[] create3(float[] arr, int fromIndex)
 	{
 		return createN(arr, fromIndex, 3);
-        /*float[] r = new float[3];
+        *//*float[] r = new float[3];
         r[0] = arr[fromIndex+0];
         r[0] = arr[fromIndex+1];
         r[0] = arr[fromIndex+2];
-        return r;*/
-	}
+        return r;*//*
+	}*/
 
 	public static void rcVcopy(float[] dest, float[] v)
 	{
-		dest[0] = v[0];
-		dest[1] = v[1];
-		dest[2] = v[2];
+		rcVcopy(dest, v, 0);
+	}
+
+	public static void rcVcopy(float[] dest, float[] v, int vIndex)
+	{
+		dest[0] = v[vIndex+0];
+		dest[1] = v[vIndex+1];
+		dest[2] = v[vIndex+2];
 	}
 
 	public static void rcVmin(float[] mn, float[] v)
 	{
-		mn[0] = rcMin(mn[0], v[0]);
-		mn[1] = rcMin(mn[1], v[1]);
-		mn[2] = rcMin(mn[2], v[2]);
+		rcVmin(mn, v, 0);
+	}
+
+	public static void rcVmin(float[] mn, float[] v, int vIndex)
+	{
+		mn[0] = rcMin(mn[0], v[vIndex+0]);
+		mn[1] = rcMin(mn[1], v[vIndex+1]);
+		mn[2] = rcMin(mn[2], v[vIndex+2]);
 	}
 
 	public static void rcVmax(float[] mx, float[] v)
 	{
-		mx[0] = rcMax(mx[0], v[0]);
-		mx[1] = rcMax(mx[1], v[1]);
-		mx[2] = rcMax(mx[2], v[2]);
+		rcVmax(mx, v, 0);
+	}
+
+	public static void rcVmax(float[] mx, float[] v, int vIndex)
+	{
+		mx[0] = rcMax(mx[0], v[vIndex+0]);
+		mx[1] = rcMax(mx[1], v[vIndex+1]);
+		mx[2] = rcMax(mx[2], v[vIndex+2]);
 	}
 
 	public static float rcMin(float a, float b)

@@ -53,15 +53,18 @@ public class RecastRasterization extends RecastImpl
 		// Rasterize triangles.
 		for (int i = 0; i < nt; ++i)
 		{
-			float[] v0 = create3(verts, tris[i * 3 + 0] * 3);
-			float[] v1 = create3(verts, tris[i * 3 + 1] * 3);
-			float[] v2 = create3(verts, tris[i * 3 + 2] * 3);
+//			float[] v0 = create3(verts, );
+			int v0Index = tris[i * 3 + 0] * 3;
+//			float[] v1 = create3(verts, );
+			int v1Index = tris[i * 3 + 1] * 3;
+//			float[] v2 = create3(verts, );
+			int v2Index = tris[i * 3 + 2] * 3;
 			// Rasterize.
-			rasterizeTri(v0, v1, v2, areas[i], solid, solid.bmin, solid.bmax, solid.cs, ics, ich, flagMergeThr);
+			rasterizeTri(verts, v0Index, verts, v1Index, verts, v2Index, areas[i], solid, solid.bmin, solid.bmax, solid.cs, ics, ich, flagMergeThr);
 
-			System.arraycopy(v0, 0, verts, tris[i * 3 + 0] * 3, 3);
-			System.arraycopy(v1, 0, verts, tris[i * 3 + 1] * 3, 3);
-			System.arraycopy(v2, 0, verts, tris[i * 3 + 2] * 3, 3);
+//			System.arraycopy(v0, v0Index, verts, tris[i * 3 + 0] * 3, 3);
+//			System.arraycopy(v1, 0, verts, tris[i * 3 + 1] * 3, 3);
+//			System.arraycopy(v2, 0, verts, tris[i * 3 + 2] * 3, 3);
 		}
 
 		ctx.stopTimer(rcTimerLabel.RC_TIMER_RASTERIZE_TRIANGLES);
@@ -84,15 +87,15 @@ public class RecastRasterization extends RecastImpl
 		// Rasterize triangles.
 		for (int i = 0; i < nt; ++i)
 		{
-			float[] v0 = create3(verts, (i * 3 + 0) * 3);
-			float[] v1 = create3(verts, (i * 3 + 1) * 3);
-			float[] v2 = create3(verts, (i * 3 + 2) * 3);
+//			float[] v0 = create3(verts, );
+//			float[] v1 = create3(verts, );
+//			float[] v2 = create3(verts, );
 			// Rasterize.
-			rasterizeTri(v0, v1, v2, areas[i], solid, solid.bmin, solid.bmax, solid.cs, ics, ich, flagMergeThr);
+			rasterizeTri(verts, (i * 3 + 0) * 3, verts, (i * 3 + 1) * 3, verts, (i * 3 + 2) * 3, areas[i], solid, solid.bmin, solid.bmax, solid.cs, ics, ich, flagMergeThr);
 
-			System.arraycopy(v0, 0, verts, (i * 3 + 0) * 3, 3);
-			System.arraycopy(v1, 0, verts, (i * 3 + 1) * 3, 3);
-			System.arraycopy(v2, 0, verts, (i * 3 + 2) * 3, 3);
+//			System.arraycopy(v0, 0, verts, (i * 3 + 0) * 3, 3);
+//			System.arraycopy(v1, 0, verts, (i * 3 + 1) * 3, 3);
+//			System.arraycopy(v2, 0, verts, (i * 3 + 2) * 3, 3);
 		}
 
 		ctx.stopTimer(rcTimerLabel.RC_TIMER_RASTERIZE_TRIANGLES);
@@ -104,18 +107,29 @@ public class RecastRasterization extends RecastImpl
 									float cs, float ics, float ich,
 									int flagMergeThr)
 	{
+		rasterizeTri(v0, 0, v1, 0, v2, 0, area, hf, bmin, bmax, cs, ics, ich, flagMergeThr);
+	}
+
+	public static void rasterizeTri(float[] v0, int v0Index,
+									float[] v1, int v1Index,
+									float[] v2, int v2Index,
+									char area, rcHeightfield hf,
+									float[] bmin, float[] bmax,
+									float cs, float ics, float ich,
+									int flagMergeThr)
+	{
 		int w = hf.width;
 		int h = hf.height;
 		float tmin[] = new float[3], tmax[] = new float[3];
 		float by = bmax[1] - bmin[1];
 
 		// Calculate the bounding box of the triangle.
-		rcVcopy(tmin, v0);
-		rcVcopy(tmax, v0);
-		rcVmin(tmin, v1);
-		rcVmin(tmin, v2);
-		rcVmax(tmax, v1);
-		rcVmax(tmax, v2);
+		rcVcopy(tmin, v0, v0Index);
+		rcVcopy(tmax, v0, v0Index);
+		rcVmin(tmin, v1, v1Index);
+		rcVmin(tmin, v2, v2Index);
+		rcVmax(tmax, v1, v1Index);
+		rcVmax(tmax, v2, v2Index);
 
 		// If the triangle does not touch the bbox of the heightfield, skip the triagle.
 		if (!overlapBounds(bmin, bmax, tmin, tmax))
@@ -138,19 +152,19 @@ public class RecastRasterization extends RecastImpl
 		{
 			// Clip polygon to row.
 //            rcVcopy(&in[0], v0);
-			in[0] = v0[0];
-			in[1] = v0[1];
-			in[2] = v0[2];
+			in[0] = v0[v0Index+0];
+			in[1] = v0[v0Index+1];
+			in[2] = v0[v0Index+2];
 
 //            rcVcopy(&in[1*3], v1);
-			in[1 * 3 + 0] = v1[0];
-			in[1 * 3 + 1] = v1[1];
-			in[1 * 3 + 2] = v1[2];
+			in[1 * 3 + 0] = v1[v1Index+0];
+			in[1 * 3 + 1] = v1[v1Index+1];
+			in[1 * 3 + 2] = v1[v1Index+2];
 
 //            rcVcopy(&in[2*3], v2);
-			in[2 * 3 + 0] = v2[0];
-			in[2 * 3 + 1] = v2[1];
-			in[2 * 3 + 2] = v2[2];
+			in[2 * 3 + 0] = v2[v2Index+0];
+			in[2 * 3 + 1] = v2[v2Index+1];
+			in[2 * 3 + 2] = v2[v2Index+2];
 
 			int nvrow = 3;
 			float cz = bmin[2] + y * cs;

@@ -1050,13 +1050,13 @@ public class RecastMeh
 		va = pa[paIndex[0] + (ea[0] + na - 1) % na];
 		vb = pa[paIndex[0] + ea[0]];
 		vc = pb[pbIndex[0] + (eb[0] + 2) % nb];
-		if (!uleft(Recast.create3(verts, va * 3), Recast.create3(verts, vb * 3), Recast.create3(verts, vc * 3)))
+		if (!uleft(verts, va * 3, verts, vb * 3, verts, vc * 3))
 			return -1;
 
 		va = pb[pbIndex[0] + (eb[0] + nb - 1) % nb];
 		vb = pb[pbIndex[0] + eb[0]];
 		vc = pa[paIndex[0] + (ea[0] + 2) % na];
-		if (!uleft(Recast.create3(verts, va * 3), Recast.create3(verts, vb * 3), Recast.create3(verts, vc * 3)))
+		if (!uleft(verts, va * 3, verts, vb * 3, verts, vc * 3))
 			return -1;
 
 		va = pa[paIndex[0] + ea[0]];
@@ -1070,8 +1070,13 @@ public class RecastMeh
 
 	public static boolean uleft(int[] a, int[] b, int[] c)
 	{
-		return ((int)b[0] - (int)a[0]) * ((int)c[2] - (int)a[2]) -
-			((int)c[0] - (int)a[0]) * ((int)b[2] - (int)a[2]) < 0;
+		return uleft(a, 0, b, 0, c, 0);
+	}
+
+	public static boolean uleft(int[] a, int aIndex, int[] b, int bIndex, int[] c, int cIndex)
+	{
+		return ((int)b[bIndex+0] - (int)a[aIndex+0]) * ((int)c[cIndex+2] - (int)a[aIndex+2]) -
+			((int)c[cIndex+0] - (int)a[aIndex+0]) * ((int)b[bIndex+2] - (int)a[aIndex+2]) < 0;
 	}
 
 	public static int triangulate(int n, int[] verts, int[] indices, int[] tris)
@@ -1098,11 +1103,13 @@ public class RecastMeh
 				int i1 = next(i, n);
 				if ((indices[i1] & 0x80000000) != 0)
 				{
-					int[] p0 = Recast.create3(verts, (indices[i] & 0x0fffffff) * 4);
-					int[] p2 = Recast.create3(verts, (indices[next(i1, n)] & 0x0fffffff) * 4);
+					int[] p0 = verts;
+					int p0Index = (indices[i] & 0x0fffffff) * 4;
+					int[] p2 = verts;
+					int p2Index = (indices[next(i1, n)] & 0x0fffffff) * 4;
 
-					int dx = p2[0] - p0[0];
-					int dy = p2[2] - p0[2];
+					int dx = p2[p2Index+0] - p0[p0Index+0];
+					int dy = p2[p2Index+2] - p0[p0Index+2];
 					int len = dx * dx + dy * dy;
 
 					if (minLen < 0 || len < minLen)
@@ -1227,25 +1234,31 @@ public class RecastMeh
 // polygon P in the neighborhood of the i endpoint.
 	public static boolean inCone(int i, int j, int n, int[] verts, int[] indices)
 	{
-		int[] pi = Recast.create3(verts, (indices[i] & 0x0fffffff) * 4);
-		int[] pj = Recast.create3(verts, (indices[j] & 0x0fffffff) * 4);
-		int[] pi1 = Recast.create3(verts, (indices[next(i, n)] & 0x0fffffff) * 4);
-		int[] pin1 = Recast.create3(verts, (indices[prev(i, n)] & 0x0fffffff) * 4);
+		int[] pi = verts;
+		int piIndex = (indices[i] & 0x0fffffff) * 4;
+		int[] pj = verts;
+		int pjIndex = (indices[j] & 0x0fffffff) * 4;
+		int[] pi1 = verts;
+		int pilIndex = (indices[next(i, n)] & 0x0fffffff) * 4;
+		int[] pin1 = verts;
+		int pin1Index = (indices[prev(i, n)] & 0x0fffffff) * 4;
 
 		// If P[i] is a convex vertex [ i+1 left or on (i-1,i) ].
-		if (leftOn(pin1, pi, pi1))
-			return left(pi, pj, pin1) && left(pj, pi, pi1);
+		if (leftOn(pin1, pin1Index, pi, piIndex, pi1, pilIndex))
+			return left(pi, piIndex, pj, pjIndex, pin1, pin1Index) && left(pj, pjIndex, pi, piIndex, pi1, pilIndex);
 		// Assume (i-1,i,i+1) not collinear.
 		// else P[i] is reflex.
-		return !(leftOn(pi, pj, pi1) && leftOn(pj, pi, pin1));
+		return !(leftOn(pi, piIndex, pj, pjIndex, pi1, pilIndex) && leftOn(pj, pjIndex, pi, piIndex, pin1, pin1Index));
 	}
 
 	// Returns T iff (v_i, v_j) is a proper internal *or* external
 // diagonal of P, *ignoring edges incident to v_i and v_j*.
 	public static boolean diagonalie(int i, int j, int n, int[] verts, int[] indices)
 	{
-		int[] d0 = Recast.create3(verts, (indices[i] & 0x0fffffff) * 4);
-		int[] d1 = Recast.create3(verts, (indices[j] & 0x0fffffff) * 4);
+		int[] d0 = verts;
+		int d0Index = (indices[i] & 0x0fffffff) * 4;
+		int[] d1 = verts;
+		int d1Index = (indices[j] & 0x0fffffff) * 4;
 
 		// For each edge (k,k+1) of P
 		for (int k = 0; k < n; k++)
@@ -1254,13 +1267,15 @@ public class RecastMeh
 			// Skip edges incident to i or j
 			if (!((k == i) || (k1 == i) || (k == j) || (k1 == j)))
 			{
-				int[] p0 = Recast.create3(verts, (indices[k] & 0x0fffffff) * 4);
-				int[] p1 = Recast.create3(verts, (indices[k1] & 0x0fffffff) * 4);
+				int[] p0 = verts;
+				int p0Index = (indices[k] & 0x0fffffff) * 4;
+				int[] p1 = verts;
+				int p1Index = (indices[k1] & 0x0fffffff) * 4;
 
-				if (vequal(d0, p0) || vequal(d1, p0) || vequal(d0, p1) || vequal(d1, p1))
+				if (vequal(d0, d0Index, p0, p0Index) || vequal(d1, d1Index, p0, p0Index) || vequal(d0, d0Index, p1, p1Index) || vequal(d1, d1Index, p1, p1Index))
 					continue;
 
-				if (intersect(d0, d1, p0, p1))
+				if (intersect(d0, d0Index, d1, d1Index, p0, p0Index, p1, p1Index))
 					return false;
 			}
 		}
@@ -1269,16 +1284,26 @@ public class RecastMeh
 
 	public static boolean vequal(int[] a, int[] b)
 	{
+		return vequal(a, 0, b, 0);
+	}
+
+	public static boolean vequal(int[] a, int aIndex, int[] b, int bIndex)
+	{
 		return a[0] == b[0] && a[2] == b[2];
 	}
 
 	// Returns true iff segments ab and cd intersect, properly or improperly.
 	public static boolean intersect(int[] a, int[] b, int[] c, int[] d)
 	{
-		if (intersectProp(a, b, c, d))
+		return intersect(a, 0, b, 0, c, 0, d, 0);
+	}
+
+	public static boolean intersect(int[] a, int aIndex, int[] b, int bIndex, int[] c, int cIndex, int[] d, int dIndex)
+	{
+		if (intersectProp(a, aIndex, b, bIndex, c, cIndex, d, dIndex))
 			return true;
-		else if (between(a, b, c) || between(a, b, d) ||
-			between(c, d, a) || between(c, d, b))
+		else if (between(a, aIndex, b, bIndex, c, cIndex) || between(a, aIndex, b, bIndex, d, dIndex) ||
+			between(c, cIndex, d, dIndex, a, aIndex) || between(c, cIndex, d, dIndex, b, bIndex))
 			return true;
 		else
 			return false;
@@ -1289,12 +1314,18 @@ public class RecastMeh
 //	intersection is ensured by using strict leftness.
 	public static boolean intersectProp(int[] a, int[] b, int[] c, int[] d)
 	{
+		return intersectProp(a, 0, b, 0, c, 0, d, 0);
+	}
+
+	public static boolean intersectProp(int[] a, int aIndex, int[] b, int bIndex, int[] c, int cIndex, int[] d, int dIndex)
+	{
 		// Eliminate improper cases.
-		if (collinear(a, b, c) || collinear(a, b, d) ||
-			collinear(c, d, a) || collinear(c, d, b))
+		if (collinear(a, aIndex, b, bIndex, c, cIndex) || collinear(a, aIndex, b, bIndex, d, dIndex) ||
+			collinear(c, cIndex, d, dIndex, a, aIndex) || collinear(c, cIndex, d, dIndex, b, bIndex))
 			return false;
 
-		return xorb(left(a, b, c), left(a, b, d)) && xorb(left(c, d, a), left(c, d, b));
+		return xorb(left(a, aIndex, b, bIndex, c, cIndex), left(a, aIndex, b, bIndex, d, dIndex)) &&
+			xorb(left(c, cIndex, d, dIndex, a, aIndex), left(c, cIndex, d, dIndex, b, bIndex));
 	}
 
 	//	Exclusive or: true iff exactly one argument is true.
@@ -1310,34 +1341,54 @@ public class RecastMeh
 // on the closed segement ab.
 	public static boolean between(int[] a, int[] b, int[] c)
 	{
-		if (!collinear(a, b, c))
+		return between(a, 0, b, 0, c, 0);
+	}
+
+	public static boolean between(int[] a, int aIndex, int[] b, int bIndex, int[] c, int cIndex)
+	{
+		if (!collinear(a, aIndex, b, bIndex, c, cIndex))
 			return false;
 		// If ab not vertical, check betweenness on x; else on y.
-		if (a[0] != b[0])
-			return ((a[0] <= c[0]) && (c[0] <= b[0])) || ((a[0] >= c[0]) && (c[0] >= b[0]));
+		if (a[aIndex+0] != b[bIndex+0])
+			return ((a[aIndex+0] <= c[cIndex+0]) && (c[cIndex+0] <= b[bIndex+0])) || ((a[aIndex+0] >= c[cIndex+0]) && (c[cIndex+0] >= b[bIndex+0]));
 		else
-			return ((a[2] <= c[2]) && (c[2] <= b[2])) || ((a[2] >= c[2]) && (c[2] >= b[2]));
+			return ((a[aIndex+2] <= c[cIndex+2]) && (c[cIndex+2] <= b[bIndex+2])) || ((a[aIndex+2] >= c[cIndex+2]) && (c[cIndex+2] >= b[bIndex+2]));
 	}
 
 	// Returns true iff c is strictly to the left of the directed
 // line through a to b.
 	public static boolean left(int[] a, int[] b, int[] c)
 	{
-		return area2(a, b, c) < 0;
+		return left(a, 0, b, 0, c, 0);
 	}
 
-	public static boolean leftOn(int[] a, int[] b, int[] c)
+	public static boolean left(int[] a, int aIndex, int[] b, int bIndex, int[] c, int cIndex)
 	{
-		return area2(a, b, c) <= 0;
+		return area2(a, aIndex, b, bIndex, c, cIndex) < 0;
+	}
+
+	public static boolean leftOn(int[] a, int aIndex, int[] b, int bIndex, int[] c, int cIndex)
+	{
+		return area2(a, aIndex, b, bIndex, c, cIndex) <= 0;
 	}
 
 	public static boolean collinear(int[] a, int[] b, int[] c)
 	{
-		return area2(a, b, c) == 0;
+		return collinear(a, 0, b, 0, c, 0);
+	}
+
+	public static boolean collinear(int[] a, int aIndex, int[] b, int bIndex, int[] c, int cIndex)
+	{
+		return area2(a, aIndex, b, bIndex, c, cIndex) == 0;
 	}
 
 	public static int area2(int[] a, int[] b, int[] c)
 	{
-		return (b[0] - a[0]) * (c[2] - a[2]) - (c[0] - a[0]) * (b[2] - a[2]);
+		return area2(a, 0, b, 0, c, 0);
+	}
+
+	public static int area2(int[] a, int aIndex, int[] b, int bIndex, int[] c, int cIndex)
+	{
+		return (b[bIndex+0] - a[aIndex+0]) * (c[cIndex+2] - a[aIndex+2]) - (c[cIndex+0] - a[aIndex+0]) * (b[bIndex+2] - a[aIndex+2]);
 	}
 }

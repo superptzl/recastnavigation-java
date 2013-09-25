@@ -207,8 +207,8 @@ public class RecastArea extends RecastImpl
 		rcVcopy(bmax, verts);
 		for (int i = 1; i < nverts; ++i)
 		{
-			rcVmin(bmin, create3(verts, i * 3));
-			rcVmax(bmax, create3(verts, i * 3));
+			rcVmin(bmin, verts, i * 3);
+			rcVmax(bmax, verts, i * 3);
 		}
 		bmin[1] = hmin;
 		bmax[1] = hmax;

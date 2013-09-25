@@ -46,7 +46,7 @@ public class RecastImpl extends Recast
 		for (int i = 0; i < nt; ++i)
 		{
 //            int[] tri = tris[i*3];
-			calcTriNormal(create3(verts, tris[i * 3 + 0] * 3), create3(verts, tris[i * 3 + 1] * 3), create3(verts, tris[i * 3 + 2] * 3), norm);
+			calcTriNormal(verts, tris[i * 3 + 0] * 3, verts, tris[i * 3 + 1] * 3, verts, tris[i * 3 + 2] * 3, norm);
 			// Check if the face is walkable.
 			if (norm[1] > walkableThr)
 				areas[i] = RC_WALKABLE_AREA;
@@ -62,9 +62,17 @@ public class RecastImpl extends Recast
 
 	public static void calcTriNormal(float[] v0, float[] v1, float[] v2, float[] norm)
 	{
+		calcTriNormal(v0, 0, v1, 0, v2, 0, norm);
+	}
+
+	public static void calcTriNormal(float[] v0, int v0Index,
+									 float[] v1, int v1Index,
+									 float[] v2, int v2Index,
+									 float[] norm)
+	{
 		float e0[] = new float[3], e1[] = new float[3];
-		rcVsub(e0, v1, v0);
-		rcVsub(e1, v2, v0);
+		rcVsub(e0, v1, v1Index, v0, v0Index);
+		rcVsub(e1, v2, v2Index, v0, v0Index);
 		rcVcross(norm, e0, e1);
 		rcVnormalize(norm);
 	}

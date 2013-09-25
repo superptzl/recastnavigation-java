@@ -247,10 +247,15 @@ public abstract class dtNavMesh
 //    ///  @note This function is generally meant for internal use only.
 //    ///  @param[in]	ref		The polygon reference.
 //    ///  @see #encodePolyId
-//    public int decodePolyIdPoly(dtPoly ref) {
+    public int decodePolyIdPoly(dtPoly ref) {
+		for (int i = 0; i < ref.parent.polys.length; i++) {
+			if (ref.parent.polys[i] == ref) {
+				return i;
+			}
+		}
 //        dtPoly polyMask = ((dtPoly) 1 << m_polyBits) - 1;
-//        return (int) (ref & polyMask);
-//    }
+        return -1;//(int) (ref & polyMask);
+    }
 
 	/// @}
 
@@ -298,7 +303,7 @@ public abstract class dtNavMesh
 //                                            dtPoly[] polys, int maxPolys);
 //
 //    /// Find nearest polygon within a tile.
-    public abstract dtPoly findNearestPolyInTile(dtMeshTile tile, float[] center,
+    public abstract dtPoly findNearestPolyInTile(dtMeshTile tile, float[] center, int centerIndex,
                                                  float[] extents, float[] nearestPt);
 //
 //    /// Returns closest point on polygon.
@@ -316,7 +321,7 @@ public abstract class dtNavMesh
 	public dtMeshTile m_nextFree;                ///< Freelist of tiles.
 	public dtMeshTile[] m_tiles;                ///< List of tiles.
 
-	public int m_saltBits;            ///< Number of salt bits in the tile ID.
-	public int m_tileBits;            ///< Number of tile bits in the tile ID.
-	public int m_polyBits;            ///< Number of poly bits in the tile ID.
+//	public int m_saltBits;            ///< Number of salt bits in the tile ID.
+//	public int m_tileBits;            ///< Number of tile bits in the tile ID.
+//	public int m_polyBits;            ///< Number of poly bits in the tile ID.
 }

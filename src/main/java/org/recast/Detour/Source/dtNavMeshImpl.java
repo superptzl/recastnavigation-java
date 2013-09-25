@@ -270,12 +270,12 @@ public class dtNavMeshImpl extends dtNavMesh
 		}
 
 		// Init ID generator values.
-		m_tileBits = DetourCommon.dtIlog2(DetourCommon.dtNextPow2((int)params.maxTiles));
-		m_polyBits = DetourCommon.dtIlog2(DetourCommon.dtNextPow2((int)params.maxPolys));
-		// Only allow 31 salt bits, since the salt mask is calculated using 32bit uint and it will overflow.
-		m_saltBits = DetourCommon.dtMin((int)31, 32 - m_tileBits - m_polyBits);
-		if (m_saltBits < 10)
-			return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
+//		m_tileBits = DetourCommon.dtIlog2(DetourCommon.dtNextPow2((int)params.maxTiles));
+//		m_polyBits = DetourCommon.dtIlog2(DetourCommon.dtNextPow2((int)params.maxPolys));
+//		// Only allow 31 salt bits, since the salt mask is calculated using 32bit uint and it will overflow.
+//		m_saltBits = DetourCommon.dtMin((int)31, 32 - m_tileBits - m_polyBits);
+//		if (m_saltBits < 10)
+//			return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
 
 		return new dtStatus(dtStatus.DT_SUCCESS);
 	}
@@ -360,8 +360,9 @@ public class dtNavMeshImpl extends dtNavMesh
 				{
 					conarea[n * 2 + 0] = DetourCommon.dtMax(amin[0], bmin[0]);
 					conarea[n * 2 + 1] = DetourCommon.dtMin(amax[0], bmax[0]);
-                    con[n] = base | (dtPoly) i;
 					n++;
+					throw new RuntimeException("todo");
+//                    con[n] = base | (dtPoly) i;
 				}
 				break;
 			}
@@ -526,13 +527,14 @@ public class dtNavMeshImpl extends dtNavMesh
                     int landPolyIdx = (int)decodePolyIdPoly(ref);
                     dtPoly landPoly = tile.polys[landPolyIdx];
                     dtLink link = tile.links[tidx];
-                    link.ref = getPolyRefBase(target) | (dtPoly) (targetCon.poly);
+//                    link.ref = getPolyRefBase(target) | (dtPoly) (targetCon.poly);
                     link.edge = 0xff;
                     link.side = (char)(side == -1 ? 0xff : side);
                     link.bmin = link.bmax = 0;
                     // Add to linked list.
                     link.next = landPoly.firstLink;
                     landPoly.firstLink = tidx;
+					throw new RuntimeException("todo");
                 }
             }
         }
@@ -561,13 +563,14 @@ public class dtNavMeshImpl extends dtNavMesh
                 int idx = allocLink(tile);
                 if (idx != DetourNavMesh.DT_NULL_LINK) {
                     dtLink link = tile.links[idx];
-                    link.ref = base | (dtPoly) (poly.neis[j] - 1);
+//                    link.ref = base | (dtPoly) (poly.neis[j] - 1);
                     link.edge = (char)j;
                     link.side = 0xff;
                     link.bmin = link.bmax = 0;
                     // Add to linked list.
                     link.next = poly.firstLink;
                     poly.firstLink = idx;
+					throw new RuntimeException("todo");
                 }
             }
         }
@@ -591,7 +594,7 @@ public class dtNavMeshImpl extends dtNavMesh
             // Find polygon to connect to.
             float[] p = con.pos;//[0]; // First vertex
             float nearestPt[] = new float[3];
-            dtPoly ref = findNearestPolyInTile(tile, p, ext, nearestPt);
+            dtPoly ref = findNearestPolyInTile(tile, p, 0, ext, nearestPt);
             if (ref == null) continue;
             // findNearestPoly may return too optimistic results, further check to make sure.
             if (DetourCommon.dtSqr(nearestPt[0] - p[0]) + DetourCommon.dtSqr(nearestPt[2] - p[2]) > DetourCommon.dtSqr(con.rad))
@@ -619,13 +622,14 @@ public class dtNavMeshImpl extends dtNavMesh
                 int landPolyIdx = (int)decodePolyIdPoly(ref);
                 dtPoly landPoly = tile.polys[landPolyIdx];
                 dtLink link = tile.links[tidx];
-                link.ref = base | (dtPoly) (con.poly);
+//                link.ref = base | (dtPoly) (con.poly);
                 link.edge = 0xff;
                 link.side = 0xff;
                 link.bmin = link.bmax = 0;
                 // Add to linked list.
                 link.next = landPoly.firstLink;
                 landPoly.firstLink = tidx;
+				throw new RuntimeException("todo");
             }
         }
 	}
@@ -726,6 +730,7 @@ public class dtNavMeshImpl extends dtNavMesh
             dtBVNode node = tile.bvTree[0];
 			int nodeIndex = 0;
             dtBVNode end = tile.bvTree[tile.header.bvNodeCount];
+            int endIndex = tile.header.bvNodeCount;
             float[] tbmin = tile.header.bmin;
             float[] tbmax = tile.header.bmax;
             float qfac = tile.header.bvQuantFactor;
@@ -750,13 +755,15 @@ public class dtNavMeshImpl extends dtNavMesh
             // Traverse tree
             dtPoly base = getPolyRefBase(tile);
             int n = 0;
-            while (nodeIndex < end) {
+            while (nodeIndex < endIndex) {
                 boolean overlap = DetourCommon.dtOverlapQuantBounds(bmin, bmax, node.bmin, node.bmax);
                 boolean isLeafNode = node.i >= 0;
 
                 if (isLeafNode && overlap) {
-                    if (n < maxPolys)
-                        polys[n++] = base | (dtPoly) node.i;
+                    if (n < maxPolys) {
+//                        polys[n++] = base | (dtPoly) node.i;
+						throw new RuntimeException("todo");
+					}
                 }
 
                 if (overlap || isLeafNode) {
@@ -794,8 +801,10 @@ public class dtNavMeshImpl extends dtNavMesh
 					DetourCommon.dtVmax(bmax, 0, v, vIndex);
                 }
                 if (DetourCommon.dtOverlapBounds(qmin, qmax, bmin, bmax)) {
-                    if (n < maxPolys)
-                        polys[n++] = base | (dtPoly) i;
+                    if (n < maxPolys) {
+//                        polys[n++] = base | (dtPoly) i;
+						throw new RuntimeException("todo");
+					}
                 }
             }
             return n;
@@ -840,29 +849,30 @@ public class dtNavMeshImpl extends dtNavMesh
 		}
 		else
 		{
+			throw new RuntimeException("todo1");
 			// Try to relocate the tile to specific index with same salt.
-            int tileIndex = (int) decodePolyIdTile((dtPoly) lastRef);
-            if (tileIndex >= m_maxTiles)
-                return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_OUT_OF_MEMORY);
-            // Try to find the specific tile id from the free list.
-            dtMeshTile target = m_tiles[tileIndex];
-            dtMeshTile prev = null;
-            tile = m_nextFree;
-            while (tile != null && tile != target) {
-                prev = tile;
-                tile = tile.next;
-            }
-            // Could not find the correct location.
-            if (tile != target)
-                return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_OUT_OF_MEMORY);
-            // Remove from freelist
-            if (prev == null)
-                m_nextFree = tile.next;
-            else
-                prev.next = tile.next;
-
-//			Restore salt.
-            tile.salt = decodePolyIdSalt((dtPoly) lastRef);
+//            int tileIndex = (int) decodePolyIdTile((dtPoly) lastRef);
+//            if (tileIndex >= m_maxTiles)
+//                return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_OUT_OF_MEMORY);
+//            // Try to find the specific tile id from the free list.
+//            dtMeshTile target = m_tiles[tileIndex];
+//            dtMeshTile prev = null;
+//            tile = m_nextFree;
+//            while (tile != null && tile != target) {
+//                prev = tile;
+//                tile = tile.next;
+//            }
+//            // Could not find the correct location.
+//            if (tile != target)
+//                return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_OUT_OF_MEMORY);
+//            // Remove from freelist
+//            if (prev == null)
+//                m_nextFree = tile.next;
+//            else
+//                prev.next = tile.next;
+//
+////			Restore salt.
+//            tile.salt = decodePolyIdSalt((dtPoly) lastRef);
 		}
 
 		// Make sure we could allocate a tile.
@@ -879,6 +889,9 @@ public class dtNavMeshImpl extends dtNavMesh
 //		unsigned char* d = data + headerSize;
 		tile.verts = new float[3 * header.vertCount];
 		tile.polys = new dtPoly[header.polyCount];
+		for (int i = 0; i < tile.polys.length; i++) {
+			tile.polys[i] = new dtPoly(tile);
+		}
 		tile.links = new dtLink[header.maxLinkCount];
 		for (int i = 0; i < tile.links.length; i++)
 		{

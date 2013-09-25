@@ -465,7 +465,8 @@ public class DetourNavMeshBuilderImpl extends DetourNavMeshBuilder
 		meshTile.polys = new dtPoly[totPolyCount];
 		for (int i = 0; i < totPolyCount; i++)
 		{
-			meshTile.polys[i] = new dtPoly();
+			meshTile.polys[i] = new dtPoly(meshTile);
+//			meshTile.polys[i].parent = meshTile;
 		}
 		meshTile.detailVerts = new float[3 * uniqueDetailVertCount];//navDVerts
 		meshTile.detailMeshes = new dtPolyDetail[params.polyCount];
@@ -547,7 +548,7 @@ public class DetourNavMeshBuilderImpl extends DetourNavMeshBuilder
 			{
 				if (src[srcIndex + j] == MESH_NULL_IDX) break;
 				p.verts[j] = src[srcIndex + j];
-				if ((src[srcIndex + nvp + j] & 0x8000) != 0)
+				if ((src[srcIndex + nvp + j] & 0x8000) != 0)//todo [IZ] check &
 				{
 					// Border or portal edge.
 					int dir = src[srcIndex + nvp + j] & 0xf;

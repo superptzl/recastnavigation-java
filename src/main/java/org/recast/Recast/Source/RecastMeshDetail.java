@@ -121,7 +121,8 @@ public class RecastMeshDetail extends RecastImpl
 
 			for (int i = 0; i < mesh.npolys; ++i)
 			{
-				int[] p = createN(mesh.polys, i * nvp * 2, nvp);
+				int[] p = mesh.polys;
+				int pIndex = i * nvp * 2;
 
 				// Store polygon vertices for processing.
 				int npoly = 0;
@@ -140,7 +141,7 @@ public class RecastMeshDetail extends RecastImpl
 				hp.ymin = bounds[i * 4 + 2];
 				hp.width = bounds[i * 4 + 1] - bounds[i * 4 + 0];
 				hp.height = bounds[i * 4 + 3] - bounds[i * 4 + 2];
-				getHeightData(chf, p, npoly, mesh.verts, borderSize, hp, stack);
+				getHeightData(chf, p, pIndex, npoly, mesh.verts, borderSize, hp, stack);
 
 				// Build detail mesh.
 				int nverts[] = new int[]{0};
@@ -231,7 +232,10 @@ public class RecastMeshDetail extends RecastImpl
 					dmesh.tris[dmesh.ntris * 4 + 0] = (char)tris.m_data[j * 4 + 0];
 					dmesh.tris[dmesh.ntris * 4 + 1] = (char)tris.m_data[j * 4 + 1];
 					dmesh.tris[dmesh.ntris * 4 + 2] = (char)tris.m_data[j * 4 + 2];
-					dmesh.tris[dmesh.ntris * 4 + 3] = getTriFlags(create3(verts, tris.m_data[j * 4 + 0] * 3), create3(verts, tris.m_data[j * 4 + 1] * 3), create3(verts, tris.m_data[j * 4 + 2] * 3), poly, npoly);
+					dmesh.tris[dmesh.ntris * 4 + 3] = getTriFlags(verts, tris.m_data[j * 4 + 0] * 3,
+																  verts, tris.m_data[j * 4 + 1] * 3,
+																  verts, tris.m_data[j * 4 + 2] * 3,
+																  poly, npoly);
 					dmesh.ntris++;
 				}
 			}
@@ -246,6 +250,14 @@ public class RecastMeshDetail extends RecastImpl
 
 	static void getHeightData(rcCompactHeightfield chf,
 							  int[] poly, int npoly,
+							  int[] verts, int bs,
+							  rcHeightPatch hp, rcIntArray stack)
+	{
+		getHeightData(chf, poly, 0, npoly, verts, bs, hp, stack);
+	}
+
+	static void getHeightData(rcCompactHeightfield chf,
+							  int[] poly, int polyIndex, int npoly,
 							  int[] verts, int bs,
 							  rcHeightPatch hp, rcIntArray stack)
 	{
@@ -272,9 +284,9 @@ public class RecastMeshDetail extends RecastImpl
 			int dmin = RC_UNSET_HEIGHT;
 			for (int k = 0; k < 9; ++k)
 			{
-				int ax = (int)verts[poly[j] * 3 + 0] + offset[k * 2 + 0];
-				int ay = (int)verts[poly[j] * 3 + 1];
-				int az = (int)verts[poly[j] * 3 + 2] + offset[k * 2 + 1];
+				int ax = (int)verts[poly[polyIndex+j] * 3 + 0] + offset[k * 2 + 0];
+				int ay = (int)verts[poly[polyIndex+j] * 3 + 1];
+				int az = (int)verts[poly[polyIndex+j] * 3 + 2] + offset[k * 2 + 1];
 				if (ax < hp.xmin || ax >= hp.xmin + hp.width ||
 					az < hp.ymin || az >= hp.ymin + hp.height)
 					continue;
@@ -305,8 +317,8 @@ public class RecastMeshDetail extends RecastImpl
 		int pcx = 0, pcz = 0;
 		for (int j = 0; j < npoly; ++j)
 		{
-			pcx += (int)verts[poly[j] * 3 + 0];
-			pcz += (int)verts[poly[j] * 3 + 2];
+			pcx += (int)verts[poly[polyIndex+j] * 3 + 0];
+			pcz += (int)verts[poly[polyIndex+j] * 3 + 2];
 		}
 		pcx /= npoly;
 		pcz /= npoly;
@@ -476,37 +488,39 @@ public class RecastMeshDetail extends RecastImpl
 		{
 			for (int i = 0, j = nin - 1; i < nin; j = i++)
 			{
-				float[] vj = create3(in, j * 3);
-				float[] vi = create3(in, i * 3);
+				float[] vj = in;
+				int vjIndex = j * 3;
+				float[] vi = in;
+				int viIndex = i * 3;
 				boolean swapped = false;
 				// Make sure the segments are always handled in same order
 				// using lexological sort or else there will be seams.
-				if (Math.abs(vj[0] - vi[0]) < 1e-6f)
+				if (Math.abs(vj[vjIndex+0] - vi[viIndex+0]) < 1e-6f)
 				{
-					if (vj[2] > vi[2])
+					if (vj[vjIndex+2] > vi[viIndex+2])
 					{
 //                        rcSwap(vj,vi);
-						float[] tmp = vj;
-						vi = vj;
-						vj = tmp;
+						int tmp = vjIndex;
+						vjIndex = viIndex;
+						viIndex = tmp;
 						swapped = true;
 					}
 				}
 				else
 				{
-					if (vj[0] > vi[0])
+					if (vj[vjIndex+0] > vi[viIndex+0])
 					{
 //                        rcSwap(vj,vi);
-						float[] tmp = vj;
-						vi = vj;
-						vj = tmp;
+						int tmp = vjIndex;
+						vjIndex = viIndex;
+						viIndex = tmp;
 						swapped = true;
 					}
 				}
 				// Create samples along the edge.
-				float dx = vi[0] - vj[0];
-				float dy = vi[1] - vj[1];
-				float dz = vi[2] - vj[2];
+				float dx = vi[viIndex+0] - vj[vjIndex+0];
+				float dy = vi[viIndex+1] - vj[vjIndex+1];
+				float dz = vi[viIndex+2] - vj[vjIndex+2];
 				float d = (float)Math.sqrt(dx * dx + dz * dz);
 				int nn = 1 + (int)Math.floor(d / sampleDist);
 				if (nn >= MAX_VERTS_PER_EDGE) nn = MAX_VERTS_PER_EDGE - 1;
@@ -516,11 +530,12 @@ public class RecastMeshDetail extends RecastImpl
 				for (int k = 0; k <= nn; ++k)
 				{
 					float u = (float)k / (float)nn;
-					float[] pos = create3(edge, k * 3);
-					pos[0] = vj[0] + dx * u;
-					pos[1] = vj[1] + dy * u;
-					pos[2] = vj[2] + dz * u;
-					pos[1] = getHeight(pos[0], pos[1], pos[2], cs, ics, chf.ch, hp) * chf.ch;
+					float[] pos = edge;//, k * 3);
+					int posIndex = k * 3;
+					pos[posIndex+0] = vj[vjIndex+0] + dx * u;
+					pos[posIndex+1] = vj[vjIndex+1] + dy * u;
+					pos[posIndex+2] = vj[vjIndex+2] + dz * u;
+					pos[posIndex+1] = getHeight(pos[posIndex+0], pos[posIndex+1], pos[posIndex+2], cs, ics, chf.ch, hp) * chf.ch;
 				}
 				// Simplify samples.
 				int idx[] = new int[MAX_VERTS_PER_EDGE];
@@ -531,14 +546,16 @@ public class RecastMeshDetail extends RecastImpl
 				{
 					int a = idx[k];
 					int b = idx[k + 1];
-					float[] va = create3(edge, a * 3);
-					float[] vb = create3(edge, b * 3);
+					float[] va = edge;
+					int vaIndex = a * 3;
+					float[] vb = edge;
+					int vbIndex = b * 3;
 					// Find maximum deviation along the segment.
-					float maxd = 0;
+					double maxd = 0;
 					int maxi = -1;
 					for (int m = a + 1; m < b; ++m)
 					{
-						float dev = distancePtSeg(create3(edge, m * 3), va, vb);
+						double dev = distancePtSeg(edge, m * 3, va, vaIndex, vb, vbIndex);
 						if (dev > maxd)
 						{
 							maxd = dev;
@@ -617,8 +634,8 @@ public class RecastMeshDetail extends RecastImpl
 			rcVcopy(bmax, in);
 			for (int i = 1; i < nin; ++i)
 			{
-				rcVmin(bmin, create3(in, i * 3));
-				rcVmax(bmax, create3(in, i * 3));
+				rcVmin(bmin, in, i * 3);
+				rcVmax(bmax, in, i * 3);
 			}
 			int x0 = (int)Math.floor(bmin[0] / sampleDist);
 			int x1 = (int)Math.ceil(bmax[0] / sampleDist);
@@ -704,36 +721,60 @@ public class RecastMeshDetail extends RecastImpl
 		return true;
 	}
 
-	public static char getTriFlags(float[] va, float[] vb, float[] vc,
+	public static char getTriFlags(float[] va, float[] vb, float[] vc, float[] vpoly, int npoly)
+	{
+		return getTriFlags(va, 0, vb, 0, vc, 0, vpoly, npoly);
+	}
+
+	public static char getTriFlags(float[] va, int vaIndex,
+								   float[] vb, int vbIndex,
+								   float[] vc, int vcIndex,
 								   float[] vpoly, int npoly)
 	{
 		char flags = 0;
-		flags |= getEdgeFlags(va, vb, vpoly, npoly) << 0;
-		flags |= getEdgeFlags(vb, vc, vpoly, npoly) << 2;
-		flags |= getEdgeFlags(vc, va, vpoly, npoly) << 4;
+		flags |= getEdgeFlags(va, vaIndex, vb, vbIndex, vpoly, npoly) << 0;
+		flags |= getEdgeFlags(vb, vbIndex, vc, vcIndex, vpoly, npoly) << 2;
+		flags |= getEdgeFlags(vc, vcIndex, va, vaIndex, vpoly, npoly) << 4;
 		return flags;
 	}
 
-	public static char getEdgeFlags(float[] va, float[] vb,
-									float[] vpoly, int npoly)
+	public static char getEdgeFlags(float[] va, float[] vb, float[] vpoly, int npoly)
+	{
+		return getEdgeFlags(va, 0, vb, 0, vpoly, npoly);
+	}
+
+	public static char getEdgeFlags(float[] va, int vaIndex,
+									float[] vb, int vbIndex,
+									float[] vpoly,
+									int npoly)
 	{
 		// Return true if edge (va,vb) is part of the polygon.
 		float thrSqr = rcSqr(0.001f);
 		for (int i = 0, j = npoly - 1; i < npoly; j = i++)
 		{
-			if (distancePtSeg2d(va, create3(vpoly, j * 3), create3(vpoly, i * 3)) < thrSqr &&
-				distancePtSeg2d(vb, create3(vpoly, j * 3), create3(vpoly, i * 3)) < thrSqr)
+			if (distancePtSeg2d(va, vaIndex, vpoly, j * 3, vpoly, i * 3) < thrSqr &&
+				distancePtSeg2d(vb, vbIndex, vpoly, j * 3, vpoly, i * 3) < thrSqr)
 				return 1;
 		}
 		return 0;
 	}
 
-	public static float distancePtSeg2d(float[] pt, float[] p, float[] q)
+	public static double distancePtSeg2d(float[] pt, int ptIndex, float[] p, float[] q)
 	{
-		float pqx = q[0] - p[0];
-		float pqz = q[2] - p[2];
-		float dx = pt[0] - p[0];
-		float dz = pt[2] - p[2];
+		return distancePtSeg(pt, ptIndex, p, 0, q, 0);
+	}
+
+	public static double distancePtSeg2d(float[] pt, float[] p, float[] q)
+	{
+		return distancePtSeg(pt, p, 0, q, 0);
+	}
+
+	public static float distancePtSeg2d(float[] pt, int ptIndex, float[] p, int pIndex, float[] q, int qIndex)
+	{
+		float pqx = q[qIndex+0] - p[pIndex+0];
+		float pqz = q[qIndex+2] - p[pIndex+2];
+		float dx = pt[ptIndex+0] - p[pIndex+0];
+		float dz = pt[ptIndex+2] - p[pIndex+2];
 		float d = pqx * pqx + pqz * pqz;
 		float t = pqx * dx + pqz * dz;
 		if (d > 0)
@@ -743,22 +784,32 @@ public class RecastMeshDetail extends RecastImpl
 		else if (t > 1)
 			t = 1;
 
-		dx = p[0] + t * pqx - pt[0];
-		dz = p[2] + t * pqz - pt[2];
+		dx = p[pIndex+0] + t * pqx - pt[ptIndex+0];
+		dz = p[pIndex+2] + t * pqz - pt[ptIndex+2];
 
 		return dx * dx + dz * dz;
 	}
 
-	static float distancePtSeg(float[] pt, float[] p, float[] q)
+	static double distancePtSeg(float[] pt, float[] p, float[] q)
 	{
-		float pqx = q[0] - p[0];
-		float pqy = q[1] - p[1];
-		float pqz = q[2] - p[2];
-		float dx = pt[0] - p[0];
-		float dy = pt[1] - p[1];
-		float dz = pt[2] - p[2];
-		float d = pqx * pqx + pqy * pqy + pqz * pqz;
-		float t = pqx * dx + pqy * dy + pqz * dz;
+		return distancePtSeg(pt, p, 0, q, 0);
+	}
+
+	static double distancePtSeg(float[] pt, float[] p, int pIndex, float[] q, int qIndex)
+	{
+		return distancePtSeg(pt, 0, p, pIndex, q, qIndex);
+	}
+
+	static double distancePtSeg(float[] pt, int ptIndex, float[] p, int pIndex, float[] q, int qIndex)
+	{
+		double pqx = q[qIndex+0] - p[pIndex+0];
+		double pqy = q[qIndex+1] - p[pIndex+1];
+		double pqz = q[qIndex+2] - p[pIndex+2];
+		double dx = pt[ptIndex+0] - p[pIndex+0];
+		double dy = pt[ptIndex+1] - p[pIndex+1];
+		double dz = pt[ptIndex+2] - p[pIndex+2];
+		double d = pqx * pqx + pqy * pqy + pqz * pqz;
+		double t = pqx * dx + pqy * dy + pqz * dz;
 		if (d > 0)
 			t /= d;
 		if (t < 0)
@@ -766,9 +817,9 @@ public class RecastMeshDetail extends RecastImpl
 		else if (t > 1)
 			t = 1;
 
-		dx = p[0] + t * pqx - pt[0];
-		dy = p[1] + t * pqy - pt[1];
-		dz = p[2] + t * pqz - pt[2];
+		dx = p[pIndex+0] + t * pqx - pt[ptIndex+0];
+		dy = p[pIndex+1] + t * pqy - pt[ptIndex+1];
+		dz = p[pIndex+2] + t * pqz - pt[ptIndex+2];
 
 		return dx * dx + dy * dy + dz * dz;
 	}
@@ -918,19 +969,20 @@ public class RecastMeshDetail extends RecastImpl
 	{
 		float EPS = 1e-5f;
 
-		int[] edge = createN(edges, e * 4, 4);
+		int[] edge = edges;
+		int edgeIndex = e * 4;
 
 		// Cache s and t.
 		int s, t;
-		if (edge[2] == EdgeValues.UNDEF.v)
+		if (edge[edgeIndex+2] == EdgeValues.UNDEF.v)
 		{
-			s = edge[0];
-			t = edge[1];
+			s = edge[edgeIndex+0];
+			t = edge[edgeIndex+1];
 		}
-		else if (edge[3] == EdgeValues.UNDEF.v)
+		else if (edge[edgeIndex+3] == EdgeValues.UNDEF.v)
 		{
-			s = edge[1];
-			t = edge[0];
+			s = edge[edgeIndex+1];
+			t = edge[edgeIndex+0];
 		}
 		else
 		{
@@ -945,16 +997,16 @@ public class RecastMeshDetail extends RecastImpl
 		for (int u = 0; u < npts; ++u)
 		{
 			if (u == s || u == t) continue;
-			if (vcross2(create3(pts, s * 3), create3(pts, t * 3), create3(pts, u * 3)) > EPS)
+			if (vcross2(pts, s * 3, pts, t * 3, pts, u * 3) > EPS)
 			{
 				if (r[0] < 0)
 				{
 					// The circle is not updated yet, do it now.
 					pt = u;
-					circumCircle(create3(pts, s * 3), create3(pts, t * 3), create3(pts, u * 3), c, r);
+					circumCircle(pts, s * 3, pts, t * 3, pts, u * 3, c, r);
 					continue;
 				}
-				float d = vdist2(c, create3(pts, u * 3));
+				float d = vdist2(c, pts, u * 3);
 				float tol = 0.001f;
 				if (d > r[0] * (1 + tol))
 				{
@@ -965,7 +1017,7 @@ public class RecastMeshDetail extends RecastImpl
 				{
 					// Inside safe circumcircle, update circle.
 					pt = u;
-					circumCircle(create3(pts, s * 3), create3(pts, t * 3), create3(pts, u * 3), c, r);
+					circumCircle(pts, s * 3, pts, t * 3, pts, u * 3, c, r);
 				}
 				else
 				{
@@ -977,7 +1029,7 @@ public class RecastMeshDetail extends RecastImpl
 						continue;
 					// Edge is valid.
 					pt = u;
-					circumCircle(create3(pts, s * 3), create3(pts, t * 3), create3(pts, u * 3), c, r);
+					circumCircle(pts, s * 3, pts, t * 3, pts, u * 3, c, r);
 				}
 			}
 		}
@@ -1012,25 +1064,27 @@ public class RecastMeshDetail extends RecastImpl
 		}
 	}
 
-	static boolean circumCircle(float[] p1, float[] p2, float[] p3,
+	static boolean circumCircle(float[] p1, int p1Index,
+								float[] p2, int p2Index,
+								float[] p3, int p3Index,
 								float[] c, float[] r)
 	{
 		float EPS = 1e-6f;
 
-		float cp = vcross2(p1, p2, p3);
+		float cp = vcross2(p1, p1Index, p2, p2Index, p3, p3Index);
 		if (Math.abs(cp) > EPS)
 		{
-			float p1Sq = vdot2(p1, p1);
-			float p2Sq = vdot2(p2, p2);
-			float p3Sq = vdot2(p3, p3);
-			c[0] = (p1Sq * (p2[2] - p3[2]) + p2Sq * (p3[2] - p1[2]) + p3Sq * (p1[2] - p2[2])) / (2 * cp);
-			c[2] = (p1Sq * (p3[0] - p2[0]) + p2Sq * (p1[0] - p3[0]) + p3Sq * (p2[0] - p1[0])) / (2 * cp);
-			r[0] = vdist2(c, p1);
+			float p1Sq = vdot2(p1, p1Index, p1, p1Index);
+			float p2Sq = vdot2(p2, p2Index, p2, p2Index);
+			float p3Sq = vdot2(p3, p3Index, p3, p3Index);
+			c[0] = (p1Sq * (p2[p2Index+2] - p3[p3Index+2]) + p2Sq * (p3[p3Index+2] - p1[p1Index+2]) + p3Sq * (p1[p1Index+2] - p2[p2Index+2])) / (2 * cp);
+			c[2] = (p1Sq * (p3[p3Index+0] - p2[p2Index+0]) + p2Sq * (p1[p1Index+0] - p3[p3Index+0]) + p3Sq * (p2[p2Index+0] - p1[p1Index+0])) / (2 * cp);
+			r[0] = vdist2(c, p1, p1Index);
 			return true;
 		}
 
-		c[0] = p1[0];
-		c[2] = p1[2];
+		c[0] = p1[p1Index+0];
+		c[2] = p1[p1Index+2];
 		r[0] = 0;
 		return false;
 	}
@@ -1045,27 +1099,47 @@ public class RecastMeshDetail extends RecastImpl
 
 	public static float vdot2(float[] a, float[] b)
 	{
-		return a[0] * b[0] + a[2] * b[2];
+		return vdot2(a, 0, b, 0);
+	}
+
+	public static float vdot2(float[] a, int aIndex, float[] b, int bIndex)
+	{
+		return a[aIndex+0] * b[bIndex+0] + a[aIndex+2] * b[bIndex+2];
 	}
 
 	public static float vdistSq2(float[] p, float[] q)
 	{
-		float dx = q[0] - p[0];
-		float dy = q[2] - p[2];
+		return vdistSq2(p, q, 0);
+	}
+
+	public static float vdistSq2(float[] p, float[] q, int qIndex)
+	{
+		float dx = q[qIndex+0] - p[0];
+		float dy = q[qIndex+2] - p[2];
 		return dx * dx + dy * dy;
 	}
 
 	public static float vdist2(float[] p, float[] q)
 	{
-		return (float)Math.sqrt(vdistSq2(p, q));
+		return vdist2(p, q, 0);
+	}
+
+	public static float vdist2(float[] p, float[] q, int qIndex)
+	{
+		return (float)Math.sqrt(vdistSq2(p, q, qIndex));
 	}
 
 	public static float vcross2(float[] p1, float[] p2, float[] p3)
 	{
-		float u1 = p2[0] - p1[0];
-		float v1 = p2[2] - p1[2];
-		float u2 = p3[0] - p1[0];
-		float v2 = p3[2] - p1[2];
+		return vcross2(p1, 0, p2, 0, p3, 0);
+	}
+
+	public static float vcross2(float[] p1, int p1Index, float[] p2, int p2Index, float[] p3, int p3Index)
+	{
+		float u1 = p2[p2Index+0] - p1[p1Index+0];
+		float v1 = p2[p2Index+2] - p1[p1Index+2];
+		float u2 = p3[p3Index+0] - p1[p1Index+0];
+		float v2 = p3[p3Index+2] - p1[p1Index+2];
 		return u1 * v2 - v1 * u2;
 	}
 
@@ -1078,7 +1152,7 @@ public class RecastMeshDetail extends RecastImpl
 			// Same or connected edges do not overlap.
 			if (s0 == s1 || s0 == t1 || t0 == s1 || t0 == t1)
 				continue;
-			if (overlapSegSeg2d(create3(pts, s0 * 3), create3(pts, t0 * 3), create3(pts, s1 * 3), create3(pts, t1 * 3)) != 0)
+			if (overlapSegSeg2d(pts, s0 * 3, pts, t0 * 3, pts, s1 * 3, pts, t1 * 3) != 0)
 				return true;
 		}
 		return false;
@@ -1086,11 +1160,16 @@ public class RecastMeshDetail extends RecastImpl
 
 	static int overlapSegSeg2d(float[] a, float[] b, float[] c, float[] d)
 	{
-		float a1 = vcross2(a, b, d);
-		float a2 = vcross2(a, b, c);
+		return overlapSegSeg2d(a, 0, b, 0, c, 0, d, 0);
+	}
+
+	static int overlapSegSeg2d(float[] a, int aIndex, float[] b, int bIndex, float[] c, int cIndex, float[] d, int dIndex)
+	{
+		float a1 = vcross2(a, aIndex, b, bIndex, d, dIndex);
+		float a2 = vcross2(a, 0, b, bIndex, c, cIndex);
 		if (a1 * a2 < 0.0f)
 		{
-			float a3 = vcross2(c, d, a);
+			float a3 = vcross2(c, cIndex, d, dIndex, a, aIndex);
 			float a4 = a3 + a2 - a1;
 			if (a3 * a4 < 0.0f)
 				return 1;
@@ -1103,10 +1182,13 @@ public class RecastMeshDetail extends RecastImpl
 		float dmin = Float.MAX_VALUE;
 		for (int i = 0; i < ntris; ++i)
 		{
-			float[] va = create3(verts, tris.m_data[i * 4 + 0] * 3);
-			float[] vb = create3(verts, tris.m_data[i * 4 + 1] * 3);
-			float[] vc = create3(verts, tris.m_data[i * 4 + 2] * 3);
-			float d = distPtTri(p, va, vb, vc);
+			float[] va = verts;
+			int vaIndex = tris.m_data[i * 4 + 0] * 3;
+			float[] vb = verts;
+			int vbIndex = tris.m_data[i * 4 + 1] * 3;
+			float[] vc = verts;
+			int vcIndex = tris.m_data[i * 4 + 2] * 3;
+			float d = distPtTri(p, va, vaIndex, vb, vbIndex, vc, vcIndex);
 			if (d < dmin)
 				dmin = d;
 		}
@@ -1116,10 +1198,15 @@ public class RecastMeshDetail extends RecastImpl
 
 	static float distPtTri(float[] p, float[] a, float[] b, float[] c)
 	{
+		return distPtTri(p, a, 0, b, 0, c, 0);
+	}
+
+	static float distPtTri(float[] p, float[] a, int aIndex, float[] b, int bIndex, float[] c, int cIndex)
+	{
 		float v0[] = new float[3], v1[] = new float[3], v2[] = new float[3];
-		rcVsub(v0, c, a);
-		rcVsub(v1, b, a);
-		rcVsub(v2, p, a);
+		rcVsub(v0, c, cIndex, a, aIndex);
+		rcVsub(v1, b, bIndex, a, aIndex);
+		rcVsub(v2, p, 0, a, aIndex);
 
 		float dot00 = vdot2(v0, v0);
 		float dot01 = vdot2(v0, v1);
@@ -1136,7 +1223,7 @@ public class RecastMeshDetail extends RecastImpl
 		float EPS = 1e-4f;
 		if (u >= -EPS && v >= -EPS && (u + v) <= 1 + EPS)
 		{
-			float y = a[1] + v0[1] * u + v1[1] * v;
+			float y = a[aIndex+1] + v0[1] * u + v1[1] * v;
 			return Math.abs(y - p[1]);
 		}
 		return Float.MAX_VALUE;
@@ -1194,12 +1281,14 @@ public class RecastMeshDetail extends RecastImpl
 		boolean c = false;
 		for (i = 0, j = nvert - 1; i < nvert; j = i++)
 		{
-			float[] vi = create3(verts, i * 3);
-			float[] vj = create3(verts, j * 3);
-			if (((vi[2] > p[2]) != (vj[2] > p[2])) &&
-				(p[0] < (vj[0] - vi[0]) * (p[2] - vi[2]) / (vj[2] - vi[2]) + vi[0]))
+			float[] vi = verts;
+			int viIndex = i * 3;
+			float[] vj = verts;
+			int vjIndex = j * 3;
+			if (((vi[viIndex+2] > p[2]) != (vj[vjIndex+2] > p[2])) &&
+				(p[0] < (vj[vjIndex+0] - vi[viIndex+0]) * (p[2] - vi[viIndex+2]) / (vj[vjIndex+2] - vi[viIndex+2]) + vi[viIndex+0]))
 				c = !c;
-			dmin = rcMin(dmin, distancePtSeg2d(p, vj, vi));
+			dmin = rcMin(dmin, distancePtSeg2d(p, 0, vj, vjIndex, vi, viIndex));
 		}
 		return c ? -dmin : dmin;
 	}

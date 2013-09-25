@@ -10,6 +10,12 @@ public class dtPoly
 {
 	/// Index to first link in linked list. (Or #DT_NULL_LINK if there is no link.)
 	public int firstLink;
+	public final dtMeshTile parent;
+
+	public dtPoly(dtMeshTile parent)
+	{
+		this.parent = parent;
+	}
 
 	/// The indices of the polygon's vertices.
 	/// The actual vertices are located in dtMeshTile::verts.
