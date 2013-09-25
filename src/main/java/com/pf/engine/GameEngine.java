@@ -18,7 +18,6 @@ public interface GameEngine
 
 	void tick();
 
-
 	void addUnit(Unit unit);
 
 	Collection<Unit> getUnits();

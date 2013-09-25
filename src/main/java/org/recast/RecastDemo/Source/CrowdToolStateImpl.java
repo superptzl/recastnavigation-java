@@ -5,121 +5,123 @@ import org.recast.DetourCrowd.Include.*;
 import org.recast.DetourCrowd.Source.dtObstacleAvoidanceDebugDataImpl;
 import org.recast.RecastDemo.Include.*;
 
-public class CrowdToolStateImpl extends CrowdToolState {
-    public CrowdToolStateImpl() 
-    {
+public class CrowdToolStateImpl extends CrowdToolState
+{
+	public CrowdToolStateImpl()
+	{
 //        m_sample(0),
 //        m_nav(0),
 //        m_crowd(0),
 //        m_targetRef(0),
-        m_run = true;
-        m_toolParams = new CrowdToolParams();
-        m_toolParams.m_expandSelectedDebugDraw = true;
-        m_toolParams.m_showCorners = false;
-        m_toolParams.m_showCollisionSegments = false;
-        m_toolParams.m_showPath = false;
-        m_toolParams.m_showVO = false;
-        m_toolParams.m_showOpt = false;
-        m_toolParams.m_showNeis = false;
-        m_toolParams.m_expandDebugDraw = false;
-        m_toolParams.m_showLabels = false;
-        m_toolParams.m_showGrid = false;
-        m_toolParams.m_showNodes = false;
-        m_toolParams.m_showPerfGraph = false;
-        m_toolParams.m_showDetailAll = false;
-        m_toolParams.m_expandOptions = true;
-        m_toolParams.m_anticipateTurns = true;
-        m_toolParams.m_optimizeVis = true;
-        m_toolParams.m_optimizeTopo = true;
-        m_toolParams.m_obstacleAvoidance = true;
-        m_toolParams.m_obstacleAvoidanceType = 3.0f;
-        m_toolParams.m_separation = false;
-        m_toolParams.m_separationWeight = 2.0f;
+		m_run = true;
+		m_toolParams = new CrowdToolParams();
+		m_toolParams.m_expandSelectedDebugDraw = true;
+		m_toolParams.m_showCorners = false;
+		m_toolParams.m_showCollisionSegments = false;
+		m_toolParams.m_showPath = false;
+		m_toolParams.m_showVO = false;
+		m_toolParams.m_showOpt = false;
+		m_toolParams.m_showNeis = false;
+		m_toolParams.m_expandDebugDraw = false;
+		m_toolParams.m_showLabels = false;
+		m_toolParams.m_showGrid = false;
+		m_toolParams.m_showNodes = false;
+		m_toolParams.m_showPerfGraph = false;
+		m_toolParams.m_showDetailAll = false;
+		m_toolParams.m_expandOptions = true;
+		m_toolParams.m_anticipateTurns = true;
+		m_toolParams.m_optimizeVis = true;
+		m_toolParams.m_optimizeTopo = true;
+		m_toolParams.m_obstacleAvoidance = true;
+		m_toolParams.m_obstacleAvoidanceType = 3.0f;
+		m_toolParams.m_separation = false;
+		m_toolParams.m_separationWeight = 2.0f;
 
-        for (int i = 0; i < m_trails.length; i++) {
-            m_trails[i] = new AgentTrail();
-        }
+		for (int i = 0; i < m_trails.length; i++)
+		{
+			m_trails[i] = new AgentTrail();
+		}
 //        memset(m_trails, 0, sizeof(m_trails));
 
-        m_vod = new dtObstacleAvoidanceDebugDataImpl();
-        m_vod.init(2048);
+		m_vod = new dtObstacleAvoidanceDebugDataImpl();
+		m_vod.init(2048);
 
-        m_agentDebug = new dtCrowdAgentDebugInfo();
+		m_agentDebug = new dtCrowdAgentDebugInfo();
 //        memset(&m_agentDebug, 0, sizeof(m_agentDebug));
-        m_agentDebug.idx = -1;
-        m_agentDebug.vod = m_vod;
+		m_agentDebug.idx = -1;
+		m_agentDebug.vod = m_vod;
 		m_crowdSampleCount = new ValueHistoryImpl();
 		m_crowdTotalTime = new ValueHistoryImpl();
-    }
+	}
 //
 //    ~CrowdToolState()
 //    {
 //        dtFreeObstacleAvoidanceDebugData(m_vod);
 //    }
 
-    public void init(Sample sample)
-    {
-        if (m_sample != sample)
-        {
-            m_sample = sample;
+	public void init(Sample sample)
+	{
+		if (m_sample != sample)
+		{
+			m_sample = sample;
 //		m_oldFlags = m_sample.getNavMeshDrawFlags();
 //		m_sample.setNavMeshDrawFlags(m_oldFlags & ~DU_DRAWNAVMESH_CLOSEDLIST);
-        }
+		}
 
-        dtNavMesh nav = m_sample.getNavMesh();
-        dtCrowd crowd = m_sample.getCrowd();
+		dtNavMesh nav = m_sample.getNavMesh();
+		dtCrowd crowd = m_sample.getCrowd();
 
-        if (nav != null && crowd != null && (m_nav != nav || m_crowd != crowd))
-        {
-            m_nav = nav;
-            m_crowd = crowd;
+		if (nav != null && crowd != null && (m_nav != nav || m_crowd != crowd))
+		{
+			m_nav = nav;
+			m_crowd = crowd;
 
-            crowd.init(MAX_AGENTS, m_sample.getAgentRadius(), nav);
+			crowd.init(MAX_AGENTS, m_sample.getAgentRadius(), nav);
 
-            // Make polygons with 'disabled' flag invalid.
-            crowd.getEditableFilter().setExcludeFlags(SamplePolyFlags.SAMPLE_POLYFLAGS_DISABLED.v);
+			// Make polygons with 'disabled' flag invalid.
+			crowd.getEditableFilter().setExcludeFlags(SamplePolyFlags.SAMPLE_POLYFLAGS_DISABLED.v);
 
-            // Setup local avoidance params to different qualities.
-            dtObstacleAvoidanceParams params = crowd.getObstacleAvoidanceParams(0).clone();
-            // Use mostly default settings, copy from dtCrowd.
+			// Setup local avoidance params to different qualities.
+			dtObstacleAvoidanceParams params = crowd.getObstacleAvoidanceParams(0).clone();
+			// Use mostly default settings, copy from dtCrowd.
 //            memcpy(&params, , sizeof(dtObstacleAvoidanceParams));
 
-            // Low (11)
-            params.velBias = 0.5f;
-            params.adaptiveDivs = 5;
-            params.adaptiveRings = 2;
-            params.adaptiveDepth = 1;
-            crowd.setObstacleAvoidanceParams(0, params);
+			// Low (11)
+			params.velBias = 0.5f;
+			params.adaptiveDivs = 5;
+			params.adaptiveRings = 2;
+			params.adaptiveDepth = 1;
+			crowd.setObstacleAvoidanceParams(0, params);
 
-            // Medium (22)
-            params.velBias = 0.5f;
-            params.adaptiveDivs = 5;
-            params.adaptiveRings = 2;
-            params.adaptiveDepth = 2;
-            crowd.setObstacleAvoidanceParams(1, params);
+			// Medium (22)
+			params.velBias = 0.5f;
+			params.adaptiveDivs = 5;
+			params.adaptiveRings = 2;
+			params.adaptiveDepth = 2;
+			crowd.setObstacleAvoidanceParams(1, params);
 
-            // Good (45)
-            params.velBias = 0.5f;
-            params.adaptiveDivs = 7;
-            params.adaptiveRings = 2;
-            params.adaptiveDepth = 3;
-            crowd.setObstacleAvoidanceParams(2, params);
+			// Good (45)
+			params.velBias = 0.5f;
+			params.adaptiveDivs = 7;
+			params.adaptiveRings = 2;
+			params.adaptiveDepth = 3;
+			crowd.setObstacleAvoidanceParams(2, params);
 
-            // High (66)
-            params.velBias = 0.5f;
-            params.adaptiveDivs = 7;
-            params.adaptiveRings = 3;
-            params.adaptiveDepth = 3;
+			// High (66)
+			params.velBias = 0.5f;
+			params.adaptiveDivs = 7;
+			params.adaptiveRings = 3;
+			params.adaptiveDepth = 3;
 
-            crowd.setObstacleAvoidanceParams(3, params);
-        }
-    }
+			crowd.setObstacleAvoidanceParams(3, params);
+		}
+	}
 
-    public void reset()
-    {
-    }
+	public void reset()
+	{
+	}
 	/*
-    void handleRender()
+	void handleRender()
     {
         DebugDrawGL dd;
         const float rad = m_sample.getAgentRadius();
@@ -551,52 +553,52 @@ public class CrowdToolStateImpl extends CrowdToolState {
 
     }*/
 
-    public void handleUpdate(float dt)
-    {
-        if (m_run)
-            updateTick(dt);
-    }
+	public void handleUpdate(float dt)
+	{
+		if (m_run)
+			updateTick(dt);
+	}
 
-    public void addAgent(float[] p)
-    {
-        if (m_sample == null) return;
-        dtCrowd crowd = m_sample.getCrowd();
+	public void addAgent(float[] p)
+	{
+		if (m_sample == null) return;
+		dtCrowd crowd = m_sample.getCrowd();
 
-        dtCrowdAgentParams ap = new dtCrowdAgentParams();
+		dtCrowdAgentParams ap = new dtCrowdAgentParams();
 //        memset(&ap, 0, sizeof(ap));
-        ap.radius = m_sample.getAgentRadius();
-        ap.height = m_sample.getAgentHeight();
-        ap.maxAcceleration = 8.0f;
-        ap.maxSpeed = 3.5f;
-        ap.collisionQueryRange = ap.radius * 12.0f;
-        ap.pathOptimizationRange = ap.radius * 30.0f;
-        ap.updateFlags = 0;
-        if (m_toolParams.m_anticipateTurns)
-            ap.updateFlags |= UpdateFlags.DT_CROWD_ANTICIPATE_TURNS;
-        if (m_toolParams.m_optimizeVis)
-            ap.updateFlags |= UpdateFlags.DT_CROWD_OPTIMIZE_VIS;
-        if (m_toolParams.m_optimizeTopo)
-            ap.updateFlags |= UpdateFlags.DT_CROWD_OPTIMIZE_TOPO;
-        if (m_toolParams.m_obstacleAvoidance)
-            ap.updateFlags |= UpdateFlags.DT_CROWD_OBSTACLE_AVOIDANCE;
-        if (m_toolParams.m_separation)
-            ap.updateFlags |= UpdateFlags.DT_CROWD_SEPARATION;
-        ap.obstacleAvoidanceType = (char)m_toolParams.m_obstacleAvoidanceType;
-        ap.separationWeight = m_toolParams.m_separationWeight;
+		ap.radius = m_sample.getAgentRadius();
+		ap.height = m_sample.getAgentHeight();
+		ap.maxAcceleration = 8.0f;
+		ap.maxSpeed = 3.5f;
+		ap.collisionQueryRange = ap.radius * 12.0f;
+		ap.pathOptimizationRange = ap.radius * 30.0f;
+		ap.updateFlags = 0;
+		if (m_toolParams.m_anticipateTurns)
+			ap.updateFlags |= UpdateFlags.DT_CROWD_ANTICIPATE_TURNS;
+		if (m_toolParams.m_optimizeVis)
+			ap.updateFlags |= UpdateFlags.DT_CROWD_OPTIMIZE_VIS;
+		if (m_toolParams.m_optimizeTopo)
+			ap.updateFlags |= UpdateFlags.DT_CROWD_OPTIMIZE_TOPO;
+		if (m_toolParams.m_obstacleAvoidance)
+			ap.updateFlags |= UpdateFlags.DT_CROWD_OBSTACLE_AVOIDANCE;
+		if (m_toolParams.m_separation)
+			ap.updateFlags |= UpdateFlags.DT_CROWD_SEPARATION;
+		ap.obstacleAvoidanceType = (char)m_toolParams.m_obstacleAvoidanceType;
+		ap.separationWeight = m_toolParams.m_separationWeight;
 
-        int idx = crowd.addAgent(p, ap);
-        if (idx != -1)
-        {
+		int idx = crowd.addAgent(p, ap);
+		if (idx != -1)
+		{
 //            if (m_targetRef != null)
 //                crowd.requestMoveTarget(idx, m_targetRef, m_targetPos);
 
-            // Init trail
-            AgentTrail trail = m_trails[idx];
-            for (int i = 0; i < AGENT_MAX_TRAIL; ++i)
-                DetourCommon.dtVcopy(trail.trail, i*3, p, 0);
-            trail.htrail = 0;
-        }
-    }
+			// Init trail
+			AgentTrail trail = m_trails[idx];
+			for (int i = 0; i < AGENT_MAX_TRAIL; ++i)
+				DetourCommon.dtVcopy(trail.trail, i * 3, p, 0);
+			trail.htrail = 0;
+		}
+	}
 /*
     void removeAgent(const int idx)
     {
@@ -622,63 +624,63 @@ public class CrowdToolStateImpl extends CrowdToolState {
         dtVscale(vel, vel, speed);
     }*/
 
-    public void setMoveTarget(float[] p, boolean adjust)
-    {
-        if (m_sample == null) return;
+	public void setMoveTarget(float[] p, boolean adjust)
+	{
+		if (m_sample == null) return;
 
-        // Find nearest point on navmesh and set move request to that location.
-        dtNavMeshQuery navquery = m_sample.getNavMeshQuery();
-        dtCrowd crowd = m_sample.getCrowd();
-        dtQueryFilter filter = crowd.getFilter();
-        float[] ext = crowd.getQueryExtents();
+		// Find nearest point on navmesh and set move request to that location.
+		dtNavMeshQuery navquery = m_sample.getNavMeshQuery();
+		dtCrowd crowd = m_sample.getCrowd();
+		dtQueryFilter filter = crowd.getFilter();
+		float[] ext = crowd.getQueryExtents();
 
-        if (adjust)
-        {
-            float vel[] = new float[3];
-            // Request velocity
-            if (m_agentDebug.idx != -1)
-            {
-                dtCrowdAgent ag = crowd.getAgent(m_agentDebug.idx);
-                if (ag != null && ag.active == 1)
-                {
-                    CrowdTool.calcVel(vel, ag.npos, p, ag.params.maxSpeed);
-                    crowd.requestMoveVelocity(m_agentDebug.idx, vel);
-                }
-            }
-            else
-            {
-                for (int i = 0; i < crowd.getAgentCount(); ++i)
-                {
-                    dtCrowdAgent ag = crowd.getAgent(i);
-                    if (ag.active == 0) continue;
-                    CrowdTool.calcVel(vel, ag.npos, p, ag.params.maxSpeed);
-                    crowd.requestMoveVelocity(i, vel);
-                }
-            }
-        }
-        else
-        {
-            dtPoly[] aa = new dtPoly[]{m_targetRef};
-            navquery.findNearestPoly(p, ext, filter, aa, m_targetPos);
-            m_targetRef = aa[0];
+		if (adjust)
+		{
+			float vel[] = new float[3];
+			// Request velocity
+			if (m_agentDebug.idx != -1)
+			{
+				dtCrowdAgent ag = crowd.getAgent(m_agentDebug.idx);
+				if (ag != null && ag.active == 1)
+				{
+					CrowdTool.calcVel(vel, ag.npos, p, ag.params.maxSpeed);
+					crowd.requestMoveVelocity(m_agentDebug.idx, vel);
+				}
+			}
+			else
+			{
+				for (int i = 0; i < crowd.getAgentCount(); ++i)
+				{
+					dtCrowdAgent ag = crowd.getAgent(i);
+					if (ag.active == 0) continue;
+					CrowdTool.calcVel(vel, ag.npos, p, ag.params.maxSpeed);
+					crowd.requestMoveVelocity(i, vel);
+				}
+			}
+		}
+		else
+		{
+			dtPoly[] aa = new dtPoly[]{m_targetRef};
+			navquery.findNearestPoly(p, ext, filter, aa, m_targetPos);
+			m_targetRef = aa[0];
 
-            if (m_agentDebug.idx != -1)
-            {
-                dtCrowdAgent ag = crowd.getAgent(m_agentDebug.idx);
-                if (ag != null && ag.active == 1)
-                    crowd.requestMoveTarget(m_agentDebug.idx, m_targetRef, m_targetPos);
-            }
-            else
-            {
-                for (int i = 0; i < crowd.getAgentCount(); ++i)
-                {
-                    dtCrowdAgent ag = crowd.getAgent(i);
-                    if (ag.active == 0) continue;
-                    crowd.requestMoveTarget(i, m_targetRef, m_targetPos);
-                }
-            }
-        }
-    }
+			if (m_agentDebug.idx != -1)
+			{
+				dtCrowdAgent ag = crowd.getAgent(m_agentDebug.idx);
+				if (ag != null && ag.active == 1)
+					crowd.requestMoveTarget(m_agentDebug.idx, m_targetRef, m_targetPos);
+			}
+			else
+			{
+				for (int i = 0; i < crowd.getAgentCount(); ++i)
+				{
+					dtCrowdAgent ag = crowd.getAgent(i);
+					if (ag.active == 0) continue;
+					crowd.requestMoveTarget(i, m_targetRef, m_targetPos);
+				}
+			}
+		}
+	}
 
     /*int hitTestAgents(const float* s, const float* p)
     {
@@ -746,37 +748,36 @@ public class CrowdToolStateImpl extends CrowdToolState {
         }
     } */
 
-    public void updateTick(float dt)
-    {
-        if (m_sample == null) return;
-        dtNavMesh nav = m_sample.getNavMesh();
-        dtCrowd crowd = m_sample.getCrowd();
-        if (nav == null || crowd == null) return;
+	public void updateTick(float dt)
+	{
+		if (m_sample == null) return;
+		dtNavMesh nav = m_sample.getNavMesh();
+		dtCrowd crowd = m_sample.getCrowd();
+		if (nav == null || crowd == null) return;
 
-        long startTime = m_sample.m_ctx.getPerfTime();
+		long startTime = m_sample.m_ctx.getPerfTime();
 
-        crowd.update(dt, m_agentDebug);
+		crowd.update(dt, m_agentDebug);
 
-        long endTime = m_sample.m_ctx.getPerfTime();
+		long endTime = m_sample.m_ctx.getPerfTime();
 
-        // Update agent trails
-        for (int i = 0; i < crowd.getAgentCount(); ++i)
-        {
-            dtCrowdAgent ag = crowd.getAgent(i);
-            AgentTrail trail = m_trails[i];
-            if (ag.active == 0)
-                continue;
-            // Update agent movement trail.
-            trail.htrail = (trail.htrail + 1) % AGENT_MAX_TRAIL;
-            DetourCommon.dtVcopy(trail.trail, trail.htrail*3, ag.npos, 0);
-        }
+		// Update agent trails
+		for (int i = 0; i < crowd.getAgentCount(); ++i)
+		{
+			dtCrowdAgent ag = crowd.getAgent(i);
+			AgentTrail trail = m_trails[i];
+			if (ag.active == 0)
+				continue;
+			// Update agent movement trail.
+			trail.htrail = (trail.htrail + 1) % AGENT_MAX_TRAIL;
+			DetourCommon.dtVcopy(trail.trail, trail.htrail * 3, ag.npos, 0);
+		}
 
-        m_agentDebug.vod.normalizeSamples();
+		m_agentDebug.vod.normalizeSamples();
 
-        m_crowdSampleCount.addSample((float)crowd.getVelocitySampleCount());
-        m_crowdTotalTime.addSample(m_sample.m_ctx.getPerfDeltaTimeUsec(startTime, endTime) / 1000.0f);
-    }
-
+		m_crowdSampleCount.addSample((float)crowd.getVelocitySampleCount());
+		m_crowdTotalTime.addSample(m_sample.m_ctx.getPerfDeltaTimeUsec(startTime, endTime) / 1000.0f);
+	}
 
 
 }

@@ -4,8 +4,9 @@ import org.draw.DrawingApplet;
 import org.recast.Recast.Include.*;
 import org.recast.RecastDemo.Source.SampleImpl;
 
-public abstract class Sample_SoloMesh extends SampleImpl {
-    //
+public abstract class Sample_SoloMesh extends SampleImpl
+{
+	//
 // Copyright (c) 2009-2010 Mikko Mononen memon@inside.org
 //
 // This software is provided 'as-is', without any express or implied
@@ -30,22 +31,22 @@ public abstract class Sample_SoloMesh extends SampleImpl {
 //            #include "DetourNavMesh.h"
 //            #include "Recast.h"
 
-    //    class Sample_SoloMesh : public Sample
+	//    class Sample_SoloMesh : public Sample
 //    {
 //        protected:
-    public boolean m_keepInterResults;
-    public float m_totalBuildTimeMs;
+	public boolean m_keepInterResults;
+	public float m_totalBuildTimeMs;
 
-    public char[] m_triareas;
-    public rcHeightfield m_solid;
-    public rcCompactHeightfield m_chf;
-    public rcContourSet m_cset;
-    public rcPolyMesh m_pmesh;
-    public rcConfig m_cfg;
-    public rcPolyMeshDetail m_dmesh;
+	public char[] m_triareas;
+	public rcHeightfield m_solid;
+	public rcCompactHeightfield m_chf;
+	public rcContourSet m_cset;
+	public rcPolyMesh m_pmesh;
+	public rcConfig m_cfg;
+	public rcPolyMeshDetail m_dmesh;
 
     /*public static enum DrawMode {
-        DRAWMODE_NAVMESH,
+		DRAWMODE_NAVMESH,
         DRAWMODE_NAVMESH_TRANS,
         DRAWMODE_NAVMESH_BVTREE,
         DRAWMODE_NAVMESH_NODES,
@@ -65,9 +66,9 @@ public abstract class Sample_SoloMesh extends SampleImpl {
         MAX_DRAWMODE
     }*/
 
-    public DrawMode m_drawMode;
+	public DrawMode m_drawMode;
 
-    public abstract void cleanup();
+	public abstract void cleanup();
 
 //    public:
 //    Sample_SoloMesh();
@@ -87,9 +88,8 @@ public abstract class Sample_SoloMesh extends SampleImpl {
 
 	public abstract void handleRender(DrawingApplet drawing);
 
-    public abstract boolean handleBuild();
+	public abstract boolean handleBuild();
 //};
-
 
 //#endif // RECASTSAMPLESOLOMESHSIMPLE_H
 

@@ -73,7 +73,7 @@ public abstract class rcMeshLoaderObj
 
 	public abstract void addTriangle(int a, int b, int c, int[] cap);
 
-//	public String m_filename;
+	//	public String m_filename;
 	public float m_scale;
 	public float[] m_verts;
 	public int[] m_tris;

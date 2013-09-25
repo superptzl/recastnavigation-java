@@ -67,52 +67,50 @@ public class LineTypes2 extends Applet
 	Shape3D createLineTypes()
 	{
 		int size = 24;
-				LineArray landGeom = new LineArray(size, GeometryArray.COORDINATES | GeometryArray.COLOR_3);
+		LineArray landGeom = new LineArray(size, GeometryArray.COORDINATES | GeometryArray.COLOR_3);
 
-				landGeom.setCoordinate(0, new Point3f(-1, -1, 4));
-				landGeom.setCoordinate(1, new Point3f(-1, 1, 4));
+		landGeom.setCoordinate(0, new Point3f(-1, -1, 4));
+		landGeom.setCoordinate(1, new Point3f(-1, 1, 4));
 
-				landGeom.setCoordinate(2, new Point3f(-1, -1, 2));
-				landGeom.setCoordinate(3, new Point3f(-1, 1, 2));
+		landGeom.setCoordinate(2, new Point3f(-1, -1, 2));
+		landGeom.setCoordinate(3, new Point3f(-1, 1, 2));
 
-				landGeom.setCoordinate(4, new Point3f(1, -1, 2));
-				landGeom.setCoordinate(5, new Point3f(1, 1, 2));
+		landGeom.setCoordinate(4, new Point3f(1, -1, 2));
+		landGeom.setCoordinate(5, new Point3f(1, 1, 2));
 
-				landGeom.setCoordinate(20, new Point3f(1, -1, 4));
-				landGeom.setCoordinate(21, new Point3f(1, 1, 4));
+		landGeom.setCoordinate(20, new Point3f(1, -1, 4));
+		landGeom.setCoordinate(21, new Point3f(1, 1, 4));
 
+		landGeom.setCoordinate(6, new Point3f(-1, 1, 4));
+		landGeom.setCoordinate(7, new Point3f(1, 1, 4));
 
-				landGeom.setCoordinate(6, new Point3f(-1, 1, 4));
-				landGeom.setCoordinate(7, new Point3f(1, 1, 4));
+		landGeom.setCoordinate(8, new Point3f(-1, 1, 2));
+		landGeom.setCoordinate(9, new Point3f(1, 1, 2));
 
-				landGeom.setCoordinate(8, new Point3f(-1, 1, 2));
-				landGeom.setCoordinate(9, new Point3f(1, 1, 2));
+		landGeom.setCoordinate(10, new Point3f(-1, 1, 4));
+		landGeom.setCoordinate(11, new Point3f(-1, 1, 2));
 
-				landGeom.setCoordinate(10, new Point3f(-1, 1, 4));
-				landGeom.setCoordinate(11, new Point3f(-1, 1, 2));
+		landGeom.setCoordinate(22, new Point3f(1, 1, 4));
+		landGeom.setCoordinate(23, new Point3f(1, 1, 2));
 
-				landGeom.setCoordinate(22, new Point3f(1, 1, 4));
-				landGeom.setCoordinate(23, new Point3f(1, 1, 2));
+		landGeom.setCoordinate(12, new Point3f(-1, -1, 4));
+		landGeom.setCoordinate(13, new Point3f(1, -1, 4));
 
+		landGeom.setCoordinate(14, new Point3f(-1, -1, 2));
+		landGeom.setCoordinate(15, new Point3f(1, -1, 2));
 
-				landGeom.setCoordinate(12, new Point3f(-1, -1, 4));
-				landGeom.setCoordinate(13, new Point3f(1, -1, 4));
+		landGeom.setCoordinate(16, new Point3f(-1, -1, 4));
+		landGeom.setCoordinate(17, new Point3f(-1, -1, 2));
 
-				landGeom.setCoordinate(14, new Point3f(-1, -1, 2));
-				landGeom.setCoordinate(15, new Point3f(1, -1, 2));
+		landGeom.setCoordinate(18, new Point3f(1, -1, 4));
+		landGeom.setCoordinate(19, new Point3f(1, -1, 2));
 
-				landGeom.setCoordinate(16, new Point3f(-1, -1, 4));
-				landGeom.setCoordinate(17, new Point3f(-1, -1, 2));
+		Color3f c = new Color3f(0.1f, 0.8f, 0.1f);
+		Color3f c2 = new Color3f(1, 0, 0);
 
-				landGeom.setCoordinate(18, new Point3f(1, -1, 4));
-				landGeom.setCoordinate(19, new Point3f(1, -1, 2));
+		for (int i = 0; i < size; i++) landGeom.setColor(i, c);
 
-				Color3f c = new Color3f(0.1f, 0.8f, 0.1f);
-				Color3f c2 = new Color3f(1, 0, 0);
-
-				for (int i = 0; i < size; i++) landGeom.setColor(i, c);
-
-				return new Shape3D(landGeom);
+		return new Shape3D(landGeom);
 //		return lineGroup;
 
 	}
@@ -204,10 +202,10 @@ public class LineTypes2 extends Applet
 //		this.u = simpleU;
 		ViewingPlatform ourView = u.getViewingPlatform();
 		Transform3D locator = new Transform3D();
-				locator.setTranslation(new Vector3f(0, 3f, -3f));
-				locator.lookAt(new Point3d(0d, 0.1d, 0d), new Point3d(0.1d, 0d, 0d), new Vector3d(0d, 0d, 0.1d));
+		locator.setTranslation(new Vector3f(0, 3f, -3f));
+		locator.lookAt(new Point3d(0d, 0.1d, 0d), new Point3d(0.1d, 0d, 0d), new Vector3d(0d, 0d, 0.1d));
 //				locator.invert();
-				ourView.getViewPlatformTransform().setTransform(locator);
+		ourView.getViewPlatformTransform().setTransform(locator);
 
 		if (isApplication)
 		{
@@ -261,8 +259,6 @@ public class LineTypes2 extends Applet
 
 		return panel;
 	}
-
-
 
 	public void destroy()
 	{

@@ -5,8 +5,9 @@ import org.recast.Detour.Include.dtPoly;
 import org.recast.Detour.Include.dtQueryFilter;
 import org.recast.DetourCrowd.Include.dtLocalBoundary;
 
-public class dtLocalBoundaryImpl extends dtLocalBoundary {
-    //
+public class dtLocalBoundaryImpl extends dtLocalBoundary
+{
+	//
 // Copyright (c) 2009-2010 Mikko Mononen memon@inside.org
 //
 // This software is provided 'as-is', without any express or implied
@@ -31,28 +32,27 @@ public class dtLocalBoundaryImpl extends dtLocalBoundary {
 //            #include "DetourCommon.h"
 //            #include "DetourAssert.h"
 
-
-    public dtLocalBoundaryImpl()
-    {
+	public dtLocalBoundaryImpl()
+	{
 //        :
 //        m_nsegs(0),
 //                m_npolys(0)
 //        dtVset(m_center, FLT_MAX,FLT_MAX,FLT_MAX);
-    }
+	}
 
 //    ~dtLocalBoundary()
 //    {
 //    }
 
-    public void reset()
-    {
+	public void reset()
+	{
 //        dtVset(m_center, FLT_MAX,FLT_MAX,FLT_MAX);
 //        m_npolys = 0;
 //        m_nsegs = 0;
-    }
+	}
 
-    public void addSegment(float dist, float[] s)
-    {
+	public void addSegment(float dist, float[] s)
+	{
 //        // Insert neighbour based on the distance.
 //        Segment* seg = 0;
 //        if (!m_nsegs)
@@ -88,11 +88,11 @@ public class dtLocalBoundaryImpl extends dtLocalBoundary {
 //
 //        if (m_nsegs < MAX_LOCAL_SEGS)
 //            m_nsegs++;
-    }
+	}
 
-    public  void update(dtPoly ref, float[] pos, float collisionQueryRange,
-                                 dtNavMeshQuery navquery, dtQueryFilter filter)
-    {
+	public void update(dtPoly ref, float[] pos, float collisionQueryRange,
+					   dtNavMeshQuery navquery, dtQueryFilter filter)
+	{
 //        static const int MAX_SEGS_PER_POLY = DT_VERTS_PER_POLYGON*3;
 //
 //        if (!ref)
@@ -127,10 +127,10 @@ public class dtLocalBoundaryImpl extends dtLocalBoundary {
 //                addSegment(distSqr, s);
 //            }
 //        }
-    }
+	}
 
-    public boolean isValid(dtNavMeshQuery navquery, dtQueryFilter filter)
-    {
+	public boolean isValid(dtNavMeshQuery navquery, dtQueryFilter filter)
+	{
 //        if (!m_npolys)
 //            return false;
 //
@@ -141,8 +141,8 @@ public class dtLocalBoundaryImpl extends dtLocalBoundary {
 //                return false;
 //        }
 
-        return true;
-    }
+		return true;
+	}
 
 
 }

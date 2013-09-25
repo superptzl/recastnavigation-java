@@ -33,38 +33,39 @@ public abstract class InputGeom
 //	#include "MeshLoaderObj.h"
 
 	static int MAX_CONVEXVOL_PTS = 12;
+
 	public static class ConvexVolume
 	{
-		public float verts[] = new float[MAX_CONVEXVOL_PTS*3];
+		public float verts[] = new float[MAX_CONVEXVOL_PTS * 3];
 		public float hmin, hmax;
 		public int nverts;
 		public int area;
 	}
 
-//	class InputGeom
+	//	class InputGeom
 //	{
 	public rcChunkyTriMesh m_chunkyMesh;
 	public rcMeshLoaderObj m_mesh;
 	public float m_meshBMin[] = new float[3], m_meshBMax[] = new float[3];
 
-		/// @name Off-Mesh connections.
-		///@{
+	/// @name Off-Mesh connections.
+	///@{
 	public static final int MAX_OFFMESH_CONNECTIONS = 256;
-	public float m_offMeshConVerts[] = new float[MAX_OFFMESH_CONNECTIONS*3*2];
+	public float m_offMeshConVerts[] = new float[MAX_OFFMESH_CONNECTIONS * 3 * 2];
 	public float m_offMeshConRads[] = new float[MAX_OFFMESH_CONNECTIONS];
 	public char m_offMeshConDirs[] = new char[MAX_OFFMESH_CONNECTIONS];
 	public char m_offMeshConAreas[] = new char[MAX_OFFMESH_CONNECTIONS];
 	public int m_offMeshConFlags[] = new int[MAX_OFFMESH_CONNECTIONS];
 	public int m_offMeshConId[] = new int[MAX_OFFMESH_CONNECTIONS];
 	public int m_offMeshConCount;
-		///@}
+	///@}
 
-		/// @name Convex Volumes.
-		///@{
+	/// @name Convex Volumes.
+	///@{
 	public static final int MAX_VOLUMES = 256;
 	public ConvexVolume m_volumes[] = new ConvexVolume[MAX_VOLUMES];
 	public int m_volumeCount;
-		///@}
+	///@}
 
 //	public:
 //		InputGeom();
@@ -73,39 +74,94 @@ public abstract class InputGeom
 	public abstract boolean loadMesh(/*class rcContext* ctx, */File filepath);
 
 	public abstract boolean load(/*rcContext* ctx, */String filepath);
+
 	public abstract boolean save(String filepath);
 
-		/// Method to return static mesh data.
-	public rcMeshLoaderObj getMesh() { return m_mesh; }
-	public float[] getMeshBoundsMin() { return m_meshBMin; }
-	public float[] getMeshBoundsMax() { return m_meshBMax; }
-	public rcChunkyTriMesh getChunkyMesh() { return m_chunkyMesh; }
+	/// Method to return static mesh data.
+	public rcMeshLoaderObj getMesh()
+	{
+		return m_mesh;
+	}
+
+	public float[] getMeshBoundsMin()
+	{
+		return m_meshBMin;
+	}
+
+	public float[] getMeshBoundsMax()
+	{
+		return m_meshBMax;
+	}
+
+	public rcChunkyTriMesh getChunkyMesh()
+	{
+		return m_chunkyMesh;
+	}
+
 	public abstract boolean raycastMesh(float[] src, float[] dst, float[] tmin);
 
-		/// @name Off-Mesh connections.
-		///@{
-		public int getOffMeshConnectionCount() { return m_offMeshConCount; }
-	public float[] getOffMeshConnectionVerts() { return m_offMeshConVerts; }
-	public float[] getOffMeshConnectionRads() { return m_offMeshConRads; }
-	public char[] getOffMeshConnectionDirs() { return m_offMeshConDirs; }
-	public char[] getOffMeshConnectionAreas() { return m_offMeshConAreas; }
-	public int[] getOffMeshConnectionFlags() { return m_offMeshConFlags; }
-	public int[] getOffMeshConnectionId() { return m_offMeshConId; }
+	/// @name Off-Mesh connections.
+	///@{
+	public int getOffMeshConnectionCount()
+	{
+		return m_offMeshConCount;
+	}
+
+	public float[] getOffMeshConnectionVerts()
+	{
+		return m_offMeshConVerts;
+	}
+
+	public float[] getOffMeshConnectionRads()
+	{
+		return m_offMeshConRads;
+	}
+
+	public char[] getOffMeshConnectionDirs()
+	{
+		return m_offMeshConDirs;
+	}
+
+	public char[] getOffMeshConnectionAreas()
+	{
+		return m_offMeshConAreas;
+	}
+
+	public int[] getOffMeshConnectionFlags()
+	{
+		return m_offMeshConFlags;
+	}
+
+	public int[] getOffMeshConnectionId()
+	{
+		return m_offMeshConId;
+	}
+
 	public abstract void addOffMeshConnection(float[] spos, float[] epos, float rad,
-								  char bidir, char area, int flags);
+											  char bidir, char area, int flags);
+
 	public abstract void deleteOffMeshConnection(int i);
 //	public abstract void drawOffMeshConnections(struct duDebugDraw* dd, bool hilight = false);
-		///@}
+	///@}
 
-		/// @name Box Volumes.
-		///@{
-	public int getConvexVolumeCount() { return m_volumeCount; }
-	public ConvexVolume[] getConvexVolumes() { return m_volumes; }
+	/// @name Box Volumes.
+	///@{
+	public int getConvexVolumeCount()
+	{
+		return m_volumeCount;
+	}
+
+	public ConvexVolume[] getConvexVolumes()
+	{
+		return m_volumes;
+	}
+
 	public abstract void addConvexVolume(float[] verts, int nverts,
-							 float minh, float maxh, char area);
+										 float minh, float maxh, char area);
+
 	public abstract void deleteConvexVolume(int i);
 //	public abstract void drawConvexVolumes(struct duDebugDraw* dd, boolean hilight = false);
-		///@}
+	///@}
 //	};
 
 	public abstract void rcCalcBounds(float[] verts, int nv, float[] bmin, float[] bmax);
@@ -124,16 +180,22 @@ public abstract class InputGeom
 		mn[2] = rcMin(mn[2], v[2]);
 	}
 
-	public static void rcVmax(float[] mx,  float[] v)
+	public static void rcVmax(float[] mx, float[] v)
 	{
 		mx[0] = rcMax(mx[0], v[0]);
 		mx[1] = rcMax(mx[1], v[1]);
 		mx[2] = rcMax(mx[2], v[2]);
 	}
 
-	public static  float rcMin(float a, float b) { return a < b ? a : b; }
+	public static float rcMin(float a, float b)
+	{
+		return a < b ? a : b;
+	}
 
-	public static  float rcMax(float a, float b) { return a > b ? a : b; }
+	public static float rcMax(float a, float b)
+	{
+		return a > b ? a : b;
+	}
 //	#endif // INPUTGEOM_H
 
 }

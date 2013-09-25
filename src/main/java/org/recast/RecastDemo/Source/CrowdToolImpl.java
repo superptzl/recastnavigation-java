@@ -3,50 +3,51 @@ package org.recast.RecastDemo.Source;
 import org.recast.DetourCrowd.Include.dtCrowd;
 import org.recast.RecastDemo.Include.*;
 
-public class CrowdToolImpl extends CrowdTool {
-    public CrowdToolImpl() 
-    {
+public class CrowdToolImpl extends CrowdTool
+{
+	public CrowdToolImpl()
+	{
 //		:
 //		    m_sample(0),
 //		    m_state(0),
-		    m_mode = ToolMode.TOOLMODE_CREATE;
-    }
+		m_mode = ToolMode.TOOLMODE_CREATE;
+	}
 
-    /*~CrowdTool()
-    {
-    }
+	/*~CrowdTool()
+	{
+	}
 */
 	public void init(Sample sample)
-    {
-        if (m_sample != sample)
-        {
-            m_sample = sample;
-        }
+	{
+		if (m_sample != sample)
+		{
+			m_sample = sample;
+		}
 
-        if (sample == null)
-            return;
+		if (sample == null)
+			return;
 
-        m_state = (CrowdToolState)sample.getToolState(type());
-        if (m_state == null)
-        {
-            m_state = new CrowdToolStateImpl();
-            sample.setToolState(type(), m_state);
-        }
-        m_state.init(sample);
-    }
+		m_state = (CrowdToolState)sample.getToolState(type());
+		if (m_state == null)
+		{
+			m_state = new CrowdToolStateImpl();
+			sample.setToolState(type(), m_state);
+		}
+		m_state.init(sample);
+	}
 
 	public void reset()
-    {
-    }
+	{
+	}
 
 	public void handleMenu()
-    {
-        if (m_state == null)
-            return;
+	{
+		if (m_state == null)
+			return;
 //        CrowdToolParams params = m_state.getToolParams();
 
         /*if (imguiCheck("Create Agents", m_mode == ToolMode.TOOLMODE_CREATE))
-            m_mode = ToolMode.TOOLMODE_CREATE;
+			m_mode = ToolMode.TOOLMODE_CREATE;
         if (imguiCheck("Move Target", m_mode == ToolMode.TOOLMODE_MOVE_TARGET))
             m_mode = ToolMode.TOOLMODE_MOVE_TARGET;
         if (imguiCheck("Select Agent", m_mode == ToolMode.TOOLMODE_SELECT))
@@ -138,19 +139,20 @@ public class CrowdToolImpl extends CrowdTool {
                 params.m_showDetailAll = !params.m_showDetailAll;
             imguiUnindent();
         }*/
-    } /*
+	} /*
 */
-	public void handleClick(float[] s, float[] p, boolean shift)
-    {
-        if (m_sample == null) return;
-        if (m_state == null) return;
-        InputGeom geom = m_sample.getInputGeom();
-        if (geom == null) return;
-        dtCrowd crowd = m_sample.getCrowd();
-        if (crowd == null) return;
 
-        if (m_mode == ToolMode.TOOLMODE_CREATE)
-        {
+	public void handleClick(float[] s, float[] p, boolean shift)
+	{
+		if (m_sample == null) return;
+		if (m_state == null) return;
+		InputGeom geom = m_sample.getInputGeom();
+		if (geom == null) return;
+		dtCrowd crowd = m_sample.getCrowd();
+		if (crowd == null) return;
+
+		if (m_mode == ToolMode.TOOLMODE_CREATE)
+		{
             /*if (shift)
             {
                 // Delete
@@ -159,15 +161,15 @@ public class CrowdToolImpl extends CrowdTool {
                     m_state.removeAgent(ahit);
             }
             else*/
-            {
-                // Add
-                m_state.addAgent(p);
-            }
-        }
-        else if (m_mode == ToolMode.TOOLMODE_MOVE_TARGET)
-        {
-            m_state.setMoveTarget(p, shift);
-        }
+			{
+				// Add
+				m_state.addAgent(p);
+			}
+		}
+		else if (m_mode == ToolMode.TOOLMODE_MOVE_TARGET)
+		{
+			m_state.setMoveTarget(p, shift);
+		}
         /*else if (m_mode == TOOLMODE_SELECT)
         {
             // Highlight
@@ -197,28 +199,27 @@ public class CrowdToolImpl extends CrowdTool {
             }
         }*/
 
-    }
+	}
 
-    public void handleStep()
-    {
-        if (m_state == null) return;
+	public void handleStep()
+	{
+		if (m_state == null) return;
 
-        float dt = 1.0f/20.0f;
-        m_state.updateTick(dt);
+		float dt = 1.0f / 20.0f;
+		m_state.updateTick(dt);
 
-        m_state.setRunning(false);
-    }
+		m_state.setRunning(false);
+	}
 
 	public void handleUpdate(float dt)
-	 {
-	 }
+	{
+	}
 
-
-    public void handleToggle()
-    {
-        if (m_state == null) return;
-        m_state.setRunning(!m_state.isRunning());
-    }
+	public void handleToggle()
+	{
+		if (m_state == null) return;
+		m_state.setRunning(!m_state.isRunning());
+	}
 
 
     /*void handleRender()

@@ -4,7 +4,8 @@ import org.recast.Recast.Include.BuildContext;
 import org.recast.Recast.Include.rcLogCategory;
 import org.recast.Recast.Include.rcTimerLabel;
 
-public class BuildContextImpl extends BuildContext {
+public class BuildContextImpl extends BuildContext
+{
 //    #define _USE_MATH_DEFINES
 //    #include <math.h>
 //    #include <stdio.h>
@@ -23,26 +24,26 @@ public class BuildContextImpl extends BuildContext {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public BuildContextImpl()
-    {
+	public BuildContextImpl()
+	{
 //        m_messageCount(0),
 //                m_textPoolSize(0)
-        resetTimers();
-    }
+		resetTimers();
+	}
 
   /*  ~BuildContext()
-    {
+	{
     }*/
 
-    // Virtual functions for custom implementations.
-    public void doResetLog()
-    {
-        m_messageCount = 0;
-        m_textPoolSize = 0;
-    }
+	// Virtual functions for custom implementations.
+	public void doResetLog()
+	{
+		m_messageCount = 0;
+		m_textPoolSize = 0;
+	}
 
-    public void doLog(rcLogCategory category, String msg)
-    {
+	public void doLog(rcLogCategory category, String msg)
+	{
 //        if (!len) return;
 //        if (m_messageCount >= MAX_MESSAGES)
 //            return;
@@ -61,53 +62,55 @@ public class BuildContextImpl extends BuildContext {
 //        text[count-1] = '\0';
 //        m_textPoolSize += 1 + count;
 //        m_messages[m_messageCount++] = dst;
-        System.out.println("["+category + "]: " + msg);
-    }
+		System.out.println("[" + category + "]: " + msg);
+	}
 
-    public void doResetTimers()
-    {
-        for (rcTimerLabel label : rcTimerLabel.values())
-            m_accTime.put(label, -1);// = -1;
-    }
+	public void doResetTimers()
+	{
+		for (rcTimerLabel label : rcTimerLabel.values())
+			m_accTime.put(label, -1);// = -1;
+	}
 
-    public void doStartTimer( rcTimerLabel label)
-    {
-        m_startTime.put(label, getPerfTime());
-    }
+	public void doStartTimer(rcTimerLabel label)
+	{
+		m_startTime.put(label, getPerfTime());
+	}
 
-    public Long getPerfTime() {
-        return System.currentTimeMillis();
-    }
+	public Long getPerfTime()
+	{
+		return System.currentTimeMillis();
+	}
 
-    public void doStopTimer( rcTimerLabel label)
-    {
-        long endTime = getPerfTime();
-        int deltaTime = (int)(endTime - m_startTime.get(label));
-        if (m_accTime.get(label) == -1)
-            m_accTime.put(label, deltaTime);
-        else
-            m_accTime.put(label,  m_accTime.get(label) + deltaTime);
-    }
+	public void doStopTimer(rcTimerLabel label)
+	{
+		long endTime = getPerfTime();
+		int deltaTime = (int)(endTime - m_startTime.get(label));
+		if (m_accTime.get(label) == -1)
+			m_accTime.put(label, deltaTime);
+		else
+			m_accTime.put(label, m_accTime.get(label) + deltaTime);
+	}
 
-    public int doGetAccumulatedTime( rcTimerLabel label)
-    {
-        return m_accTime.get(label);
-    }
+	public int doGetAccumulatedTime(rcTimerLabel label)
+	{
+		return m_accTime.get(label);
+	}
 
-    public void dumpLog(String format, Object ...args)
-    {
-        // Print header.
+	public void dumpLog(String format, Object... args)
+	{
+		// Print header.
 //        va_list ap;
 //        va_start(ap, format);
 //        vprintf(format, ap);
 //        va_end(ap);
 //        printf("\n");
 
-        // Print messages
-        int[] TAB_STOPS = { 28, 36, 44, 52 };
-        for (String message : m_messages) {
-            System.out.println("message = " + message);
-        }
+		// Print messages
+		int[] TAB_STOPS = {28, 36, 44, 52};
+		for (String message : m_messages)
+		{
+			System.out.println("message = " + message);
+		}
 //        for (int i = 0; i < m_messageCount; ++i)
 //        {
 //            String msg = m_messages[i]+1;
@@ -141,17 +144,17 @@ public class BuildContextImpl extends BuildContext {
 ////            putchar('\n');
 //            System.out.println();
 //        }
-    }
+	}
 
-    public int getLogCount()
-    {
-        return m_messageCount;
-    }
+	public int getLogCount()
+	{
+		return m_messageCount;
+	}
 
-    public String getLogText(int i)
-    {
-        return m_messages[i]+1;
-    }
+	public String getLogText(int i)
+	{
+		return m_messages[i] + 1;
+	}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -279,15 +282,12 @@ public class BuildContextImpl extends BuildContext {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-    public int getPerfDeltaTimeUsec(long start, long end)
-    {
-        long freq = 100;
+	public int getPerfDeltaTimeUsec(long start, long end)
+	{
+		long freq = 100;
 //        if (freq == 0)
 //            QueryPerformanceFrequency((LARGE_INTEGER*)&freq);
-        long elapsed = end - start;
-        return (int)(elapsed*1000000 / freq);
-    }
+		long elapsed = end - start;
+		return (int)(elapsed * 1000000 / freq);
+	}
 }

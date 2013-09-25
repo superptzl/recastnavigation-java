@@ -1,5 +1,5 @@
 package com.pf;
 
-public class App 
+public class App
 {
 }

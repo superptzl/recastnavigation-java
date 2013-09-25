@@ -26,12 +26,14 @@ package org.critterai.nmgen;
  */
 public final class SpanFlags
 {
-    /**
-     * The span's upper surface (top or maximum) is considered to be
-     * traversable.  Spans without this flag are considered to be obstructions
-     * that cannot be walked upon.
-     */
-    public static final byte WALKABLE = 1;
-    
-    private SpanFlags() { }
+	/**
+	 * The span's upper surface (top or maximum) is considered to be
+	 * traversable.  Spans without this flag are considered to be obstructions
+	 * that cannot be walked upon.
+	 */
+	public static final byte WALKABLE = 1;
+
+	private SpanFlags()
+	{
+	}
 }

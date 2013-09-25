@@ -9,10 +9,10 @@ package org.recast.Detour.Include;
 /// @see dtMeshTile
 public class dtLink
 {
-	public dtPoly ref;					///< Neighbour reference. (The neighbor that is linked to.)
-	public int next;				///< Index of the next link.
-	public char edge;				///< Index of the polygon edge that owns this link.
-	public char side;				///< If a boundary link, defines on which side the link is.
-	public char bmin;				///< If a boundary link, defines the minimum sub-edge area.
-	public char bmax;				///< If a boundary link, defines the maximum sub-edge area.
+	public dtPoly ref;                    ///< Neighbour reference. (The neighbor that is linked to.)
+	public int next;                ///< Index of the next link.
+	public char edge;                ///< Index of the polygon edge that owns this link.
+	public char side;                ///< If a boundary link, defines on which side the link is.
+	public char bmin;                ///< If a boundary link, defines the minimum sub-edge area.
+	public char bmax;                ///< If a boundary link, defines the maximum sub-edge area.
 }

@@ -3,9 +3,10 @@ package org.recast.DetourCrowd.Source;
 import org.recast.Detour.Include.DetourCommon;
 import org.recast.DetourCrowd.Include.dtProximityGrid;
 
-public class dtProximityGridImpl extends dtProximityGrid {
-    public dtProximityGridImpl()
-    {
+public class dtProximityGridImpl extends dtProximityGrid
+{
+	public dtProximityGridImpl()
+	{
 //        :
 //        m_maxItems(0),
 //                m_cellSize(0),
@@ -14,7 +15,7 @@ public class dtProximityGridImpl extends dtProximityGrid {
 //                m_poolSize(0),
 //                m_buckets(0),
 //                m_bucketsSize(0)
-    }
+	}
 
 //    ~dtProximityGrid()
 //    {
@@ -22,47 +23,47 @@ public class dtProximityGridImpl extends dtProximityGrid {
 //        dtFree(m_pool);
 //    }
 
-    public boolean init(int poolSize, float cellSize)
-    {
+	public boolean init(int poolSize, float cellSize)
+	{
 //        dtAssert(poolSize > 0);
 //        dtAssert(cellSize > 0.0f);
 
-        m_cellSize = cellSize;
-        m_invCellSize = 1.0f / m_cellSize;
+		m_cellSize = cellSize;
+		m_invCellSize = 1.0f / m_cellSize;
 
-        // Allocate hashs buckets
-        m_bucketsSize = DetourCommon.dtNextPow2(poolSize);
-        m_buckets = new int[m_bucketsSize];//(unsigned short*)dtAlloc(sizeof(unsigned short)*m_bucketsSize, DT_ALLOC_PERM);
+		// Allocate hashs buckets
+		m_bucketsSize = DetourCommon.dtNextPow2(poolSize);
+		m_buckets = new int[m_bucketsSize];//(unsigned short*)dtAlloc(sizeof(unsigned short)*m_bucketsSize, DT_ALLOC_PERM);
 //        if (!m_buckets)
 //            return false;
 
-        // Allocate pool of items.
-        m_poolSize = poolSize;
-        m_poolHead = 0;
-        m_pool = new Item[m_poolSize];//)dtAlloc(sizeof(Item)*m_poolSize, DT_ALLOC_PERM);
+		// Allocate pool of items.
+		m_poolSize = poolSize;
+		m_poolHead = 0;
+		m_pool = new Item[m_poolSize];//)dtAlloc(sizeof(Item)*m_poolSize, DT_ALLOC_PERM);
 //        if (!m_pool)
 //            return false;
 
-        clear();
+		clear();
 
-        return true;
-    }
+		return true;
+	}
 
-    public void clear()
-    {
+	public void clear()
+	{
 //        memset(m_buckets, 0xff, sizeof(unsigned short)*m_bucketsSize);
-        m_buckets = null;
-        m_poolHead = 0;
-        m_bounds[0] = 0xffff;
-        m_bounds[1] = 0xffff;
-        m_bounds[2] = -0xffff;
-        m_bounds[3] = -0xffff;
-    }
+		m_buckets = null;
+		m_poolHead = 0;
+		m_bounds[0] = 0xffff;
+		m_bounds[1] = 0xffff;
+		m_bounds[2] = -0xffff;
+		m_bounds[3] = -0xffff;
+	}
 
-    public void addItem( int id,
-                                   float minx,  float miny,
-                                   float maxx,  float maxy)
-    {
+	public void addItem(int id,
+						float minx, float miny,
+						float maxx, float maxy)
+	{
 //         int iminx = (int)floorf(minx * m_invCellSize);
 //         int iminy = (int)floorf(miny * m_invCellSize);
 //         int imaxx = (int)floorf(maxx * m_invCellSize);
@@ -91,12 +92,12 @@ public class dtProximityGridImpl extends dtProximityGrid {
 //                }
 //            }
 //        }
-    }
+	}
 
-    public int queryItems( float minx,  float miny,
-                                     float maxx,  float maxy,
-                                    int[] ids,  int maxIds)
-    {
+	public int queryItems(float minx, float miny,
+						  float maxx, float maxy,
+						  int[] ids, int maxIds)
+	{
 //         int iminx = (int)floorf(minx * m_invCellSize);
 //         int iminy = (int)floorf(miny * m_invCellSize);
 //         int imaxx = (int)floorf(maxx * m_invCellSize);
@@ -134,11 +135,11 @@ public class dtProximityGridImpl extends dtProximityGrid {
 //        }
 //
 //        return n;
-        return -1;
-    }
+		return -1;
+	}
 
-    public int getItemCountAt( int x,  int y) 
-    {
+	public int getItemCountAt(int x, int y)
+	{
 //        int n = 0;
 //
 //         int h = hashPos2(x, y, m_bucketsSize);
@@ -152,7 +153,7 @@ public class dtProximityGridImpl extends dtProximityGrid {
 //        }
 //
 //        return n;
-        return -1;
-    }
+		return -1;
+	}
 
 }

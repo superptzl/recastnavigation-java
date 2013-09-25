@@ -6,7 +6,8 @@ package org.recast.RecastDemo.Include;
  */
 public abstract class rcChunkyTriMesh
 {
-	public rcChunkyTriMesh() {
+	public rcChunkyTriMesh()
+	{
 
 	}
 //	inline ~rcChunkyTriMesh() { delete [] nodes; delete [] tris; }
@@ -24,7 +25,7 @@ public abstract class rcChunkyTriMesh
 	}
 
 	public abstract boolean rcCreateChunkyTriMesh(float[] verts, int[] tris, int ntris,
-							   int trisPerChunk, rcChunkyTriMesh cm);
+												  int trisPerChunk, rcChunkyTriMesh cm);
 
 }
 

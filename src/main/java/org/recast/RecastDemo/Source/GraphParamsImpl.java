@@ -3,27 +3,28 @@ package org.recast.RecastDemo.Source;
 import org.recast.RecastDemo.Include.GraphParams;
 import org.recast.RecastDemo.Include.ValueHistory;
 
-public class GraphParamsImpl extends GraphParams {
-    public  void setRect(int ix, int iy, int iw, int ih, int ipad)
-    {
-        x = ix;
-        y = iy;
-        w = iw;
-        h = ih;
-        pad = ipad;
-    }
+public class GraphParamsImpl extends GraphParams
+{
+	public void setRect(int ix, int iy, int iw, int ih, int ipad)
+	{
+		x = ix;
+		y = iy;
+		w = iw;
+		h = ih;
+		pad = ipad;
+	}
 
-    public void setValueRange(float ivmin, float ivmax, int indiv,  String iunits)
-    {
-        vmin = ivmin;
-        vmax = ivmax;
-        ndiv = indiv;
-        units = iunits;
-    }
+	public void setValueRange(float ivmin, float ivmax, int indiv, String iunits)
+	{
+		vmin = ivmin;
+		vmax = ivmax;
+		ndiv = indiv;
+		units = iunits;
+	}
 
-    public void drawGraphBackground( GraphParams p)
-    {
-        // BG
+	public void drawGraphBackground(GraphParams p)
+	{
+		// BG
 //        imguiDrawRoundedRect((float)p.x, (float)p.y, (float)p.w, (float)p.h, (float)p.pad, imguiRGBA(64,64,64,128));
 //
 //        float sy = (p.h-p.pad*2) / (p.vmax-p.vmin);
@@ -41,11 +42,11 @@ public class GraphParamsImpl extends GraphParams {
 //            imguiDrawText(p.x + p.w - p.pad, (int)fy-4, IMGUI_ALIGN_RIGHT, text, imguiRGBA(0,0,0,255));
 //            imguiDrawLine((float)p.x + (float)p.pad, fy, (float)p.x + (float)p.w - (float)p.pad - 50, fy, 1.0f, imguiRGBA(0,0,0,64));
 //        }
-    }
+	}
 
-    public void drawGraph( GraphParams p,  ValueHistory graph,
-                           int idx,  char[] label,  int col)
-    {
+	public void drawGraph(GraphParams p, ValueHistory graph,
+						  int idx, char[] label, int col)
+	{
 //        float sx = (p.w - p.pad*2) / (float)graph.getSampleCount();
 //        float sy = (p.h - p.pad*2) / (p.vmax - p.vmin);
 //        float ox = (float)p.x + (float)p.pad;
@@ -75,6 +76,6 @@ public class GraphParamsImpl extends GraphParams {
 //        snprintf(text, 64, "%.2f %s", graph.getAverage(), p.units);
 //        imguiDrawText(ix+size+5, iy+3, IMGUI_ALIGN_LEFT, label, imguiRGBA(255,255,255,192));
 //        imguiDrawText(ix+size+150, iy+3, IMGUI_ALIGN_RIGHT, text, imguiRGBA(255,255,255,128));
-    }
+	}
 
 }

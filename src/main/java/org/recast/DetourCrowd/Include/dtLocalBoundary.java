@@ -4,8 +4,9 @@ import org.recast.Detour.Include.dtNavMeshQuery;
 import org.recast.Detour.Include.dtPoly;
 import org.recast.Detour.Include.dtQueryFilter;
 
-public abstract class dtLocalBoundary {
-    //
+public abstract class dtLocalBoundary
+{
+	//
 // Copyright (c) 2009-2010 Mikko Mononen memon@inside.org
 //
 // This software is provided 'as-is', without any express or implied
@@ -31,45 +32,49 @@ public abstract class dtLocalBoundary {
 //
 //    class dtLocalBoundary
 //    {
-    public final static int MAX_LOCAL_SEGS = 8;
-    public final static int MAX_LOCAL_POLYS = 16;
+	public final static int MAX_LOCAL_SEGS = 8;
+	public final static int MAX_LOCAL_POLYS = 16;
 
-    public static class Segment {
-        float s[] = new float[6];    ///< Segment start/end
-        float d;    ///< Distance for pruning.
-    }
+	public static class Segment
+	{
+		float s[] = new float[6];    ///< Segment start/end
+		float d;    ///< Distance for pruning.
+	}
 
-    public float m_center[] = new float[3];
-    public Segment m_segs[] = new Segment[MAX_LOCAL_SEGS];
-    public int m_nsegs;
+	public float m_center[] = new float[3];
+	public Segment m_segs[] = new Segment[MAX_LOCAL_SEGS];
+	public int m_nsegs;
 
-    public dtPoly[] m_polys = new dtPoly[MAX_LOCAL_POLYS];
-    public int m_npolys;
+	public dtPoly[] m_polys = new dtPoly[MAX_LOCAL_POLYS];
+	public int m_npolys;
 
-    public abstract void addSegment(float dist, float[] seg);
+	public abstract void addSegment(float dist, float[] seg);
 
 //        public:
 //        dtLocalBoundary();
 //        ~dtLocalBoundary();
 
-    public abstract void reset();
+	public abstract void reset();
 
-    public abstract void update(dtPoly ref, float[] pos, float collisionQueryRange,
-                                dtNavMeshQuery navquery, dtQueryFilter filter);
+	public abstract void update(dtPoly ref, float[] pos, float collisionQueryRange,
+								dtNavMeshQuery navquery, dtQueryFilter filter);
 
-    public abstract boolean isValid(dtNavMeshQuery navquery, dtQueryFilter filter);
+	public abstract boolean isValid(dtNavMeshQuery navquery, dtQueryFilter filter);
 
-    public float[] getCenter() {
-        return m_center;
-    }
+	public float[] getCenter()
+	{
+		return m_center;
+	}
 
-    public int getSegmentCount() {
-        return m_nsegs;
-    }
+	public int getSegmentCount()
+	{
+		return m_nsegs;
+	}
 
-    public float[] getSegment(int i) {
-        return m_segs[i].s;
-    }
+	public float[] getSegment(int i)
+	{
+		return m_segs[i].s;
+	}
 //    };
 //
 //    #endif // DETOURLOCALBOUNDARY_H

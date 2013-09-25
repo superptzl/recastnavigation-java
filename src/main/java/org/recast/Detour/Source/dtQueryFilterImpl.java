@@ -6,7 +6,7 @@ import org.recast.Detour.Include.*;
  * @author igozha
  * @since 22.09.13 22:18
  */
-public class dtQueryFilterImpl extends dtQueryFilter	
+public class dtQueryFilterImpl extends dtQueryFilter
 {
 	//
 	// Copyright (c) 2009-2010 Mikko Mononen memon@inside.org
@@ -25,7 +25,7 @@ public class dtQueryFilterImpl extends dtQueryFilter
 	//    misrepresented as being the original software.
 	// 3. This notice may not be removed or altered from any source distribution.
 	//
-	
+
 //	#include <math.h>
 //	#include <float.h>
 //	#include <string.h>
@@ -36,7 +36,7 @@ public class dtQueryFilterImpl extends dtQueryFilter
 //	#include "DetourAlloc.h"
 //	#include "DetourAssert.h"
 //	#include <new>
-	
+
 	/// @class dtQueryFilter
 	///
 	/// <b>The Default Implementation</b>
@@ -69,24 +69,25 @@ public class dtQueryFilterImpl extends dtQueryFilter
 	/// to lead to problems during pathfinding.
 	///
 	/// @see dtNavMeshQuery
-	
+
 	public dtQueryFilterImpl()
 	{
 //		:
-				m_includeFlags = 0xffff;
+		m_includeFlags = 0xffff;
 //				m_excludeFlags(0)
 		for (int i = 0; i < DetourNavMesh.DT_MAX_AREAS; ++i)
 			m_areaCost[i] = 1.0f;
 	}
-	
-//	#ifdef DT_VIRTUAL_QUERYFILTER
+
+	//	#ifdef DT_VIRTUAL_QUERYFILTER
 	public boolean passFilter(dtPoly ref,
-								   dtMeshTile tile,
-								   dtPoly poly)
+							  dtMeshTile tile,
+							  dtPoly poly)
 	{
 		return (poly.flags & m_includeFlags) != 0 && (poly.flags & m_excludeFlags) == 0;
 	}
-//
+
+	//
 //	float getCost(const float* pa, const float* pb,
 //								 const dtPoly /*prevRef*/, const dtMeshTile* /*prevTile*/, const dtPoly* /*prevPoly*/,
 //								 const dtPoly /*curRef*/, const dtMeshTile* /*curTile*/, const dtPoly* curPoly,
@@ -96,16 +97,16 @@ public class dtQueryFilterImpl extends dtQueryFilter
 //	}
 //	#else
 	public boolean passFilter(dtPoly ref,
-										  dtMeshTile[] tile,
-										  dtPoly[] poly)
+							  dtMeshTile[] tile,
+							  dtPoly[] poly)
 	{
 		return (poly[0].flags & m_includeFlags) != 0 && (poly[0].flags & m_excludeFlags) == 0;
 	}
-	
+
 	public float getCost(float[] pa, float[] pb,
-										dtPoly prevRef, dtMeshTile prevTile, dtPoly prevPoly,
-										dtPoly curRef, dtMeshTile curTile, dtPoly curPoly,
-										dtPoly nextRef, dtMeshTile nextTile, dtPoly nextPoly)
+						 dtPoly prevRef, dtMeshTile prevTile, dtPoly prevPoly,
+						 dtPoly curRef, dtMeshTile curTile, dtPoly curPoly,
+						 dtPoly nextRef, dtMeshTile nextTile, dtPoly nextPoly)
 	{
 		return DetourCommon.dtVdist(pa, pb) * m_areaCost[curPoly.getArea()];
 	}

@@ -129,18 +129,17 @@ public class dtNodeQueueImpl extends dtNodeQueue
 //		return node;
 //	}
 
-
 	//////////////////////////////////////////////////////////////////////////////////////////
 	public dtNodeQueueImpl(int n)
-		
+
 	{
 //        m_heap(0),
-        super(n);
+		super(n);
 //        m_capacity = n;
 //                m_size(0)
 //		dtAssert(m_capacity > 0);
 
-		m_heap = new dtNode[m_capacity+1];//(dtNode**)dtAlloc(sizeof(dtNode*)*(m_capacity+1), DT_ALLOC_PERM);
+		m_heap = new dtNode[m_capacity + 1];//(dtNode**)dtAlloc(sizeof(dtNode*)*(m_capacity+1), DT_ALLOC_PERM);
 //		dtAssert(m_heap);
 	}
 
@@ -149,32 +148,32 @@ public class dtNodeQueueImpl extends dtNodeQueue
 //		dtFree(m_heap);
 //	}
 
-    public void bubbleUp(int i, dtNode node)
+	public void bubbleUp(int i, dtNode node)
 	{
-		int parent = (i-1)/2;
+		int parent = (i - 1) / 2;
 		// note: (index > 0) means there is a parent
 		while ((i > 0) && (m_heap[parent].total > node.total))
 		{
 			m_heap[i] = m_heap[parent];
 			i = parent;
-			parent = (i-1)/2;
+			parent = (i - 1) / 2;
 		}
 		m_heap[i] = node;
 	}
 
-    public void trickleDown(int i, dtNode node)
+	public void trickleDown(int i, dtNode node)
 	{
-		int child = (i*2)+1;
+		int child = (i * 2) + 1;
 		while (child < m_size)
 		{
-			if (((child+1) < m_size) &&
-				(m_heap[child].total > m_heap[child+1].total))
+			if (((child + 1) < m_size) &&
+				(m_heap[child].total > m_heap[child + 1].total))
 			{
 				child++;
 			}
 			m_heap[i] = m_heap[child];
 			i = child;
-			child = (i*2)+1;
+			child = (i * 2) + 1;
 		}
 		bubbleUp(i, node);
 	}

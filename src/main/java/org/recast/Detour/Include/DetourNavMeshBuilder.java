@@ -31,8 +31,6 @@ public abstract class DetourNavMeshBuilder extends DetourCommonImpl
 //
 //	#include "DetourAlloc.h"
 
-
-
 	/// Builds navigation mesh tile data from the provided tile creation data.
 	/// @ingroup detour
 	///  @param[in]		params		Tile creation data.

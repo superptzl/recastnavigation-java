@@ -51,7 +51,6 @@ public class SimplebehaviorApp extends Applet
 		landGeom.setCoordinate(20, new Point3f(1, -1, 4));
 		landGeom.setCoordinate(21, new Point3f(1, 1, 4));
 
-
 		landGeom.setCoordinate(6, new Point3f(-1, 1, 4));
 		landGeom.setCoordinate(7, new Point3f(1, 1, 4));
 
@@ -63,7 +62,6 @@ public class SimplebehaviorApp extends Applet
 
 		landGeom.setCoordinate(22, new Point3f(1, 1, 4));
 		landGeom.setCoordinate(23, new Point3f(1, 1, 2));
-
 
 		landGeom.setCoordinate(12, new Point3f(-1, -1, 4));
 		landGeom.setCoordinate(13, new Point3f(1, -1, 4));
@@ -90,7 +88,6 @@ public class SimplebehaviorApp extends Applet
 		BranchGroup objRoot = new BranchGroup();
 		objRoot.addChild(createLand());
 
-
 		objRoot.compile();
 		return objRoot;
 
@@ -101,7 +98,7 @@ public class SimplebehaviorApp extends Applet
 		setLayout(new BorderLayout());
 
 		GraphicsConfiguration config =
-		SimpleUniverse.getPreferredConfiguration();
+			SimpleUniverse.getPreferredConfiguration();
 		Canvas3D canvas3D = new Canvas3D(config);
 		add("Center", canvas3D);
 

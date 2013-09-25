@@ -270,8 +270,6 @@ public class LineTypes extends Applet
 		return panel;
 	}
 
-
-
 	public void destroy()
 	{
 		u.removeAllLocales();

@@ -15,7 +15,8 @@ public enum SamplePolyAreas
 
 	public char v;
 
-	SamplePolyAreas(int v) {
+	SamplePolyAreas(int v)
+	{
 		this.v = (char)v;
 	}
 }

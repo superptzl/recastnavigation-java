@@ -2,8 +2,9 @@ package org.recast.Detour.Source;
 
 import org.recast.Detour.Include.*;
 
-public class dtNodePoolImpl extends dtNodePool {
-    //
+public class dtNodePoolImpl extends dtNodePool
+{
+	//
 // Copyright (c) 2009-2010 Mikko Mononen memon@inside.org
 //
 // This software is provided 'as-is', without any express or implied
@@ -38,10 +39,10 @@ public class dtNodePoolImpl extends dtNodePool {
 //        return (unsigned int)a;
 //    }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-    public dtNodePoolImpl(int maxNodes, int hashSize)
-    {
-        super(maxNodes, hashSize);
+	//////////////////////////////////////////////////////////////////////////////////////////
+	public dtNodePoolImpl(int maxNodes, int hashSize)
+	{
+		super(maxNodes, hashSize);
 //        :
 //        m_nodes(0),
 //                m_first(0),
@@ -52,9 +53,9 @@ public class dtNodePoolImpl extends dtNodePool {
 //        dtAssert(dtNextPow2(m_hashSize) == (unsigned int)m_hashSize);
 //        dtAssert(m_maxNodes > 0);
 
-        m_nodes = new dtNode[m_maxNodes];//(dtNode*)dtAlloc(sizeof(dtNode)*m_maxNodes, DT_ALLOC_PERM);
-        m_next = new dtNodeIndex[m_maxNodes];//(dtNodeIndex*)dtAlloc(sizeof(dtNodeIndex)*m_maxNodes, DT_ALLOC_PERM);
-        m_first = new dtNodeIndex[hashSize];//(dtNodeIndex*)dtAlloc(sizeof(dtNodeIndex)*hashSize, DT_ALLOC_PERM);
+		m_nodes = new dtNode[m_maxNodes];//(dtNode*)dtAlloc(sizeof(dtNode)*m_maxNodes, DT_ALLOC_PERM);
+		m_next = new dtNodeIndex[m_maxNodes];//(dtNodeIndex*)dtAlloc(sizeof(dtNodeIndex)*m_maxNodes, DT_ALLOC_PERM);
+		m_first = new dtNodeIndex[hashSize];//(dtNodeIndex*)dtAlloc(sizeof(dtNodeIndex)*hashSize, DT_ALLOC_PERM);
 
 //        dtAssert(m_nodes);
 //        dtAssert(m_next);
@@ -62,8 +63,9 @@ public class dtNodePoolImpl extends dtNodePool {
 //
 //        memset(m_first, 0xff, sizeof(dtNodeIndex)*m_hashSize);
 //        memset(m_next, 0xff, sizeof(dtNodeIndex)*m_maxNodes);
-    }
-//
+	}
+
+	//
 //    ~dtNodePool()
 //    {
 //        dtFree(m_nodes);
@@ -71,14 +73,14 @@ public class dtNodePoolImpl extends dtNodePool {
 //        dtFree(m_first);
 //    }
 //
-    public void clear()
-    {
+	public void clear()
+	{
 //        memset(m_first, 0xff, sizeof(dtNodeIndex)*m_hashSize);
-        m_nodeCount = 0;
-    }
+		m_nodeCount = 0;
+	}
 
-    public dtNode findNode(dtPoly id)
-    {
+	public dtNode findNode(dtPoly id)
+	{
 //        int bucket = dtHashRef(id) & (m_hashSize-1);
 //        dtNodeIndex i = m_first[bucket];
 //        while (i.v != DetourNavMesh.DT_NULL_IDX)
@@ -87,11 +89,11 @@ public class dtNodePoolImpl extends dtNodePool {
 //                return m_nodes[i.v];
 //            i = m_next[i.v];
 //        }
-        return null;
-    }
+		return null;
+	}
 
-    public dtNode getNode(dtPoly id)
-    {
+	public dtNode getNode(dtPoly id)
+	{
 //        unsigned int bucket = dtHashRef(id) & (m_hashSize-1);
 //        dtNodeIndex i = m_first[bucket];
 //        dtNode* node = 0;
@@ -120,8 +122,8 @@ public class dtNodePoolImpl extends dtNodePool {
 //        m_first[bucket] = i;
 //
 //        return node;
-        return null;
-    }
+		return null;
+	}
 
 
 }

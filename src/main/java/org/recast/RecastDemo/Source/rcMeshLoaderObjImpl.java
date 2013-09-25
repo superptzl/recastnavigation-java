@@ -29,25 +29,25 @@ public class rcMeshLoaderObjImpl extends rcMeshLoaderObj
 	//    misrepresented as being the original software.
 	// 3. This notice may not be removed or altered from any source distribution.
 	//
-	
+
 //	#include "MeshLoaderObj.h"
 //	#include <stdio.h>
 //	#include <stdlib.h>
 //	#include <string.h>
 //	#define _USE_MATH_DEFINES
 //	#include <math.h>
-	
+
 	public rcMeshLoaderObjImpl()
 	{
 //		:
-				m_scale = 1.0f;
+		m_scale = 1.0f;
 //				m_verts(0),
 //				m_tris(0),
 //				m_normals(0),
 //				m_vertCount(0),
 //				m_triCount(0)
 	}
-	
+
 	/*~rcMeshLoaderObj()
 	{
 		delete [] m_verts;
@@ -57,13 +57,14 @@ public class rcMeshLoaderObjImpl extends rcMeshLoaderObj
 */
 	public void addVertex(float x, float y, float z, int[] cap)
 	{
-		if (m_vertCount+1 > cap[0])
+		if (m_vertCount + 1 > cap[0])
 		{
-			cap[0] = cap[0] == 0 ? 8 : cap[0]*2;
-			float[] nv = new float[cap[0]*3];
+			cap[0] = cap[0] == 0 ? 8 : cap[0] * 2;
+			float[] nv = new float[cap[0] * 3];
 //			if (m_verts)
-			if (m_verts != null) {
-			System.arraycopy(m_verts, 0, nv, 0, m_vertCount*3);
+			if (m_verts != null)
+			{
+				System.arraycopy(m_verts, 0, nv, 0, m_vertCount * 3);
 			}
 //			if (m_vertCount)
 //				memcpy(nv, m_verts, m_vertCount*3*sizeof(float));
@@ -71,23 +72,24 @@ public class rcMeshLoaderObjImpl extends rcMeshLoaderObj
 			m_verts = nv;
 		}
 //		float[] dst = m_verts[m_vertCount*3];
-		m_verts[m_vertCount*3 + 0] = x*m_scale;
-		m_verts[m_vertCount*3 + 1] = y*m_scale;
-		m_verts[m_vertCount*3 + 2] = z*m_scale;
+		m_verts[m_vertCount * 3 + 0] = x * m_scale;
+		m_verts[m_vertCount * 3 + 1] = y * m_scale;
+		m_verts[m_vertCount * 3 + 2] = z * m_scale;
 //		*dst++
 //		*dst++
 //		*dst++
 		m_vertCount++;
 	}
-	
+
 	public void addTriangle(int a, int b, int c, int[] cap)
 	{
-		if (m_triCount+1 > cap[0])
+		if (m_triCount + 1 > cap[0])
 		{
-			cap[0] = cap[0] == 0 ? 8 : cap[0]*2;
-			int[] nv = new int[cap[0]*3];
-			if (m_tris != null) {
-			System.arraycopy(m_tris, 0, nv, 0, m_triCount*3);
+			cap[0] = cap[0] == 0 ? 8 : cap[0] * 2;
+			int[] nv = new int[cap[0] * 3];
+			if (m_tris != null)
+			{
+				System.arraycopy(m_tris, 0, nv, 0, m_triCount * 3);
 			}
 //			if (m_triCount)
 //				memcpy(nv, m_tris, m_triCount*3*sizeof(int));
@@ -95,12 +97,12 @@ public class rcMeshLoaderObjImpl extends rcMeshLoaderObj
 			m_tris = nv;
 		}
 //		int* dst = m_tris[m_triCount*3];
-		m_tris[m_triCount*3 + 0] = a;
-		m_tris[m_triCount*3 + 1] = b;
-		m_tris[m_triCount*3 + 2] = c;
+		m_tris[m_triCount * 3 + 0] = a;
+		m_tris[m_triCount * 3 + 1] = b;
+		m_tris[m_triCount * 3 + 2] = c;
 		m_triCount++;
 	}
-	
+
 	public static String parseRow(String buf, String bufEnd, String row, int len)
 	{
 		boolean cont = false;
@@ -138,14 +140,15 @@ public class rcMeshLoaderObjImpl extends rcMeshLoaderObj
 //		row[n] = '\0';
 		return buf;
 	}
-	
+
 	public static int parseFace(String row, int[] data, int n, int vcnt)
 	{
 		String[] numbers = row.trim().split("[\\s]");
 		int i = 0;
-		for (String number : numbers) {
+		for (String number : numbers)
+		{
 			int vi = Integer.valueOf(number);
-			data[i++] = vi < 0 ? vi+vcnt : vi-1;
+			data[i++] = vi < 0 ? vi + vcnt : vi - 1;
 			if (i >= n) return i;
 		}
 		/*int j = 0;
@@ -173,7 +176,7 @@ public class rcMeshLoaderObjImpl extends rcMeshLoaderObj
 		}*/
 		return i;
 	}
-	
+
 	public boolean load(File file)
 	{
 //		char* buf = 0;
@@ -193,10 +196,10 @@ public class rcMeshLoaderObjImpl extends rcMeshLoaderObj
 //		fread(buf, bufSize, 1, fp);
 //		fclose(fp);
 		int face[] = new int[32];
-				float x,y,z;
-				int nv;
-				int vcap[] = new int[]{0};
-				int tcap[] = new int[]{0};
+		float x, y, z;
+		int nv;
+		int vcap[] = new int[]{0};
+		int tcap[] = new int[]{0};
 //		File fp = new File(filename);
 		try (BufferedReader br = new BufferedReader(new FileReader(file)))
 		{
@@ -226,7 +229,7 @@ public class rcMeshLoaderObjImpl extends rcMeshLoaderObj
 					for (int i = 2; i < nv; ++i)
 					{
 						int a = face[0];
-						int b = face[i-1];
+						int b = face[i - 1];
 						int c = face[i];
 						if (a < 0 || a >= m_vertCount || b < 0 || b >= m_vertCount || c < 0 || c >= m_vertCount)
 							continue;
@@ -249,12 +252,12 @@ public class rcMeshLoaderObjImpl extends rcMeshLoaderObj
 //		{
 //
 //		}
-	
+
 //		delete [] buf;
-	
+
 		// Calculate normals.
-		m_normals = new float[m_triCount*3];
-		for (int i = 0; i < m_triCount*3; i += 3)
+		m_normals = new float[m_triCount * 3];
+		for (int i = 0; i < m_triCount * 3; i += 3)
 		{
 //			float v0 = m_verts[m_tris[i] * 3];
 //			float v1 = m_verts[m_tris[i + 1] * 3];
@@ -266,13 +269,13 @@ public class rcMeshLoaderObjImpl extends rcMeshLoaderObj
 				e1[j] = m_verts[m_tris[i + 2] * 3 + j] - m_verts[m_tris[i] * 3 + j];
 			}
 //			float[] n = m_normals[i];
-			m_normals[i + 0] = e0[1]*e1[2] - e0[2]*e1[1];
-			m_normals[i + 1] = e0[2]*e1[0] - e0[0]*e1[2];
-			m_normals[i + 2] = e0[0]*e1[1] - e0[1]*e1[0];
-			double d = Math.sqrt(m_normals[i + 0]*m_normals[i + 0] + m_normals[i + 1]*m_normals[i + 1] + m_normals[i + 2]*m_normals[i + 2]);
+			m_normals[i + 0] = e0[1] * e1[2] - e0[2] * e1[1];
+			m_normals[i + 1] = e0[2] * e1[0] - e0[0] * e1[2];
+			m_normals[i + 2] = e0[0] * e1[1] - e0[1] * e1[0];
+			double d = Math.sqrt(m_normals[i + 0] * m_normals[i + 0] + m_normals[i + 1] * m_normals[i + 1] + m_normals[i + 2] * m_normals[i + 2]);
 			if (d > 0)
 			{
-				d = 1.0f/d;
+				d = 1.0f / d;
 				m_normals[i + 0] *= d;
 				m_normals[i + 1] *= d;
 				m_normals[i + 2] *= d;
@@ -281,8 +284,8 @@ public class rcMeshLoaderObjImpl extends rcMeshLoaderObj
 //		m_filename = filename;
 //		strncpy(m_filename, filename, sizeof(m_filename));
 //		m_filename[sizeof(m_filename)-1] = '\0';
-		
+
 		return true;
 	}
-	
+
 }

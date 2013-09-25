@@ -5,8 +5,9 @@ import org.recast.Recast.Include.rcLogCategory;
 
 import java.text.MessageFormat;
 
-public class rcContextImpl extends rcContext {
-    //
+public class rcContextImpl extends rcContext
+{
+	//
 // Copyright (c) 2009-2010 Mikko Mononen memon@inside.org
 //
 // This software is provided 'as-is', without any express or implied
@@ -35,11 +36,10 @@ public class rcContextImpl extends rcContext {
 //            #include "RecastAlloc.h"
 //            #include "RecastAssert.h"
 
-
-    public static float rcSqrt(float x)
-    {
-        return (float)Math.sqrt(x);
-    }
+	public static float rcSqrt(float x)
+	{
+		return (float)Math.sqrt(x);
+	}
 
 /// @class rcContext
 /// @par
@@ -54,19 +54,19 @@ public class rcContextImpl extends rcContext {
 /// class through the Recast build process.
 ///
 
-    /// @par
+	/// @par
 ///
 /// Example:
 /// @code
 /// // Where ctx is an instance of rcContext and filepath is a char array.
 /// ctx->log(RC_LOG_ERROR, "buildTiledNavigation: Could not load '%s'", filepath);
 /// @endcode
-    public void log(rcLogCategory category, String format, Object ... args)
-    {
-        if (!m_logEnabled)
-            return;
-        doLog(category, String.format(format, args));
-    }
+	public void log(rcLogCategory category, String format, Object... args)
+	{
+		if (!m_logEnabled)
+			return;
+		doLog(category, String.format(format, args));
+	}
 //
 //
 //    void rcCalcBounds(const float* verts, int nv, float* bmin, float* bmax)
@@ -99,7 +99,7 @@ public class rcContextImpl extends rcContext {
 //        rcVnormalize(norm);
 //    }
 
-    /// @par
+	/// @par
 ///
 /// Only sets the aread id's for the walkable triangles.  Does not alter the
 /// area id's for unwalkable triangles.
@@ -129,7 +129,7 @@ public class rcContextImpl extends rcContext {
 //        }
 //    }
 
-    /// @par
+	/// @par
 ///
 /// Only sets the aread id's for the unwalkable triangles.  Does not alter the
 /// area id's for walkable triangles.
@@ -181,7 +181,7 @@ public class rcContextImpl extends rcContext {
 //        return spanCount;
 //    }
 
-    /// @par
+	/// @par
 ///
 /// This is just the beginning of the process of fully building a compact heightfield.
 /// Various filters may be applied applied, then the distance field and regions built.

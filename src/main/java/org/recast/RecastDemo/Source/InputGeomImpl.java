@@ -27,7 +27,7 @@ public class InputGeomImpl extends InputGeom
 	//    misrepresented as being the original software.
 	// 3. This notice may not be removed or altered from any source distribution.
 	//
-	
+
 //	#define _USE_MATH_DEFINES
 //	#include <math.h>
 //	#include <stdio.h>
@@ -40,10 +40,10 @@ public class InputGeomImpl extends InputGeom
 //	#include "DebugDraw.h"
 //	#include "RecastDebugDraw.h"
 //	#include "DetourNavMesh.h"
-	
-	public static boolean intersectSegmentTriangle( float[] sp,  float[] sq,
-										  float[] a,  float[] b,  float[] c,
-										 float []t)
+
+	public static boolean intersectSegmentTriangle(float[] sp, float[] sq,
+												   float[] a, float[] b, float[] c,
+												   float[] t)
 	{
 //		float v, w;
 //		float ab[] = new float[3], ac[] = new float[3], qp[] = new float[3], ap[] = new float[3], norm[] = new float[3], e[] = new float[3];
@@ -77,10 +77,10 @@ public class InputGeomImpl extends InputGeom
 //
 //		// Segment/ray intersects triangle. Perform delayed division
 //		t[0] /= d;
-		
+
 		return true;
 	}
-	
+
 	public static String parseRow(String buf, String bufEnd, String row, int len)
 	{
 		boolean start = true;
@@ -113,9 +113,7 @@ public class InputGeomImpl extends InputGeom
 //		row[n] = '\0';
 		return buf;
 	}
-	
-	
-	
+
 	public InputGeomImpl()
 	{
 //		:
@@ -130,7 +128,7 @@ public class InputGeomImpl extends InputGeom
 		delete m_chunkyMesh;
 		delete m_mesh;
 	}*/
-			
+
 	public boolean loadMesh(/*rcContext* ctx, */File file)
 //	public boolean loadMesh(/*rcContext* ctx, */String filepath)
 	{
@@ -143,7 +141,7 @@ public class InputGeomImpl extends InputGeom
 		}*/
 		m_offMeshConCount = 0;
 		m_volumeCount = 0;
-		
+
 		m_mesh = new rcMeshLoaderObjImpl();
 		/*if (!m_mesh)
 		{
@@ -155,7 +153,7 @@ public class InputGeomImpl extends InputGeom
 //			ctx->log(RC_LOG_ERROR, "buildTiledNavigation: Could not load '%s'", filepath);
 			return false;
 		}
-	
+
 		rcCalcBounds(m_mesh.getVerts(), m_mesh.getVertCount(), m_meshBMin, m_meshBMax);
 
 		//todo
@@ -170,10 +168,10 @@ public class InputGeomImpl extends InputGeom
 //			ctx->log(RC_LOG_ERROR, "buildTiledNavigation: Failed to build chunky mesh.");
 			return false;
 		}
-	
+
 		return true;
 	}
-	
+
 	public boolean load(/*rcContext ctx, */String filePath)
 	{
 //		char* buf = 0;
@@ -256,10 +254,10 @@ public class InputGeomImpl extends InputGeom
 //		}
 //
 //		delete [] buf;
-		
+
 		return true;
 	}
-	
+
 	public boolean save(String filepath)
 	{
 //		if (!m_mesh) return false;
@@ -292,23 +290,23 @@ public class InputGeomImpl extends InputGeom
 //		}
 //
 //		fclose(fp);
-		
+
 		return true;
 	}
-	
-	public static boolean isectSegAABB( float[] sp,  float[] sq,
-							  float[] amin,  float[] amax,
-							 float[] tmin, float[] tmax)
+
+	public static boolean isectSegAABB(float[] sp, float[] sq,
+									   float[] amin, float[] amax,
+									   float[] tmin, float[] tmax)
 	{
 		final float EPS = 1e-6f;
-		
+
 		float d[] = new float[3];
 		d[0] = sq[0] - sp[0];
 		d[1] = sq[1] - sp[1];
 		d[2] = sq[2] - sp[2];
 		tmin[0] = 0.0f;
 		tmax[0] = 1.0f;
-		
+
 		for (int i = 0; i < 3; i++)
 		{
 			if (Math.abs(d[i]) < EPS)
@@ -321,17 +319,21 @@ public class InputGeomImpl extends InputGeom
 				float ood = 1.0f / d[i];
 				float t1 = (amin[i] - sp[i]) * ood;
 				float t2 = (amax[i] - sp[i]) * ood;
-				if (t1 > t2) { float tmp = t1; t1 = t2; t2 = tmp; }
+				if (t1 > t2)
+				{
+					float tmp = t1;
+					t1 = t2;
+					t2 = tmp;
+				}
 				if (t1 > tmin[0]) tmin[0] = t1;
 				if (t2 < tmax[0]) tmax[0] = t2;
 				if (tmin[0] > tmax[0]) return false;
 			}
 		}
-		
+
 		return true;
 	}
-	
-	
+
 	public boolean raycastMesh(float[] src, float[] dst, float[] tmin)
 	{
 //		float dir[3];
@@ -380,9 +382,9 @@ public class InputGeomImpl extends InputGeom
 //		return hit;
 		return false;
 	}
-	
-	public void addOffMeshConnection( float[] spos,  float[] epos,  float rad,
-										  char bidir,  char area,  int flags)
+
+	public void addOffMeshConnection(float[] spos, float[] epos, float rad,
+									 char bidir, char area, int flags)
 	{
 //		if (m_offMeshConCount >= MAX_OFFMESH_CONNECTIONS) return;
 //		float* v = &m_offMeshConVerts[m_offMeshConCount*3*2];
@@ -395,7 +397,7 @@ public class InputGeomImpl extends InputGeom
 //		rcVcopy(&v[3], epos);
 //		m_offMeshConCount++;
 	}
-	
+
 	public void deleteOffMeshConnection(int i)
 	{
 //		m_offMeshConCount--;
@@ -408,7 +410,7 @@ public class InputGeomImpl extends InputGeom
 //		m_offMeshConAreas[i] = m_offMeshConAreas[m_offMeshConCount];
 //		m_offMeshConFlags[i] = m_offMeshConFlags[m_offMeshConCount];
 	}
-	
+
 //	public void drawOffMeshConnections(duDebugDraw dd, bool hilight)
 //	{
 //		unsigned int conColor = duRGBA(192,0,128,192);
@@ -439,14 +441,14 @@ public class InputGeomImpl extends InputGeom
 //
 //		dd->depthMask(true);
 //	}
-	
+
 	public void addConvexVolume(float[] verts, int nverts,
-									float minh, float maxh, char area)
+								float minh, float maxh, char area)
 	{
 		if (m_volumeCount >= MAX_VOLUMES) return;
 		ConvexVolume vol = m_volumes[m_volumeCount++];
 //		memset(vol, 0, sizeof(ConvexVolume));
-		System.arraycopy(verts, 0, vol.verts, 0, nverts*3);
+		System.arraycopy(verts, 0, vol.verts, 0, nverts * 3);
 //		vol.verts
 //		memcpy(vol->verts, verts, sizeof(float)*3*nverts);
 		vol.hmin = minh;
@@ -454,13 +456,13 @@ public class InputGeomImpl extends InputGeom
 		vol.nverts = nverts;
 		vol.area = area;
 	}
-	
+
 	public void deleteConvexVolume(int i)
 	{
 		m_volumeCount--;
 		m_volumes[i] = m_volumes[m_volumeCount];
 	}
-	
+
 //	public void drawConvexVolumes(struct duDebugDraw* dd, bool /*hilight*/)
 //	{
 //		dd->depthMask(false);
@@ -537,14 +539,14 @@ public class InputGeomImpl extends InputGeom
 		for (int i = 1; i < nv; ++i)
 		{
 			float v[] = new float[3];
-			v[0] = verts[i*3];
-			v[1] = verts[i*3+1];
-			v[2] = verts[i*3+2];
+			v[0] = verts[i * 3];
+			v[1] = verts[i * 3 + 1];
+			v[2] = verts[i * 3 + 2];
 			rcVmin(bmin, v);
 			rcVmax(bmax, v);
-			verts[i*3] = v[0];
-			verts[i*3+1] = v[1];
-			verts[i*3+2] = v[2];
+			verts[i * 3] = v[0];
+			verts[i * 3 + 1] = v[1];
+			verts[i * 3 + 2] = v[2];
 		}
 	}
 }

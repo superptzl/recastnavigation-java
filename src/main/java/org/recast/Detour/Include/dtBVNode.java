@@ -9,7 +9,7 @@ package org.recast.Detour.Include;
 /// @see dtMeshTile
 public class dtBVNode
 {
-	public int bmin[] = new int[3];			///< Minimum bounds of the node's AABB. [(x, y, z)]
-	public int bmax[] = new int[3];			///< Maximum bounds of the node's AABB. [(x, y, z)]
-	public int i;							///< The node's index. (Negative for escape sequence.)
+	public int bmin[] = new int[3];            ///< Minimum bounds of the node's AABB. [(x, y, z)]
+	public int bmax[] = new int[3];            ///< Maximum bounds of the node's AABB. [(x, y, z)]
+	public int i;                            ///< The node's index. (Negative for escape sequence.)
 }

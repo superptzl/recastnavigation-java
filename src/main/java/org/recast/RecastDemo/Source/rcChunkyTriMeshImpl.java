@@ -11,18 +11,19 @@ import java.util.*;
 public class rcChunkyTriMeshImpl extends rcChunkyTriMesh
 {
 	public boolean rcCreateChunkyTriMesh(float[] verts, int[] tris, int ntris,
-							   int trisPerChunk, rcChunkyTriMesh cm)
+										 int trisPerChunk, rcChunkyTriMesh cm)
 	{
-		int nchunks = (ntris + trisPerChunk-1) / trisPerChunk;
+		int nchunks = (ntris + trisPerChunk - 1) / trisPerChunk;
 
-		cm.nodes = new rcChunkyTriMeshNode[nchunks*4];
-        for (int i = 0; i < cm.nodes.length; i++) {
-            cm.nodes[i] = new rcChunkyTriMeshNode();
-        }
+		cm.nodes = new rcChunkyTriMeshNode[nchunks * 4];
+		for (int i = 0; i < cm.nodes.length; i++)
+		{
+			cm.nodes[i] = new rcChunkyTriMeshNode();
+		}
 		/*if (!cm->nodes)
 			return false;
 */
-		cm.tris = new int[ntris*3];
+		cm.tris = new int[ntris * 3];
 		/*if (!cm->tris)
 			return false;*/
 
@@ -30,9 +31,10 @@ public class rcChunkyTriMeshImpl extends rcChunkyTriMesh
 
 		// Build tree
 		BoundsItem[] items = new BoundsItem[ntris];
-        for (int i = 0; i < ntris; i++) {
-            items[i] = new BoundsItem();
-        }
+		for (int i = 0; i < ntris; i++)
+		{
+			items[i] = new BoundsItem();
+		}
 //        for ()
 		/*if (!items)
 			return false;*/
@@ -43,22 +45,22 @@ public class rcChunkyTriMeshImpl extends rcChunkyTriMesh
 			BoundsItem it = items[i];
 			it.i = i;
 			// Calc triangle XZ bounds.
-			it.bmin[0] = it.bmax[0] = verts[tris[i*3 + 0]*3+0];
-			it.bmin[1] = it.bmax[1] = verts[tris[i*3 + 0]*3+2];
+			it.bmin[0] = it.bmax[0] = verts[tris[i * 3 + 0] * 3 + 0];
+			it.bmin[1] = it.bmax[1] = verts[tris[i * 3 + 0] * 3 + 2];
 			for (int j = 1; j < 3; ++j)
 			{
 //				float[] v = verts[tris[i*3 + j]*3];
-				if (verts[tris[i*3 + j]*3 + 0] < it.bmin[0]) it.bmin[0] = verts[tris[i*3 + j]*3 + 0];
-				if (verts[tris[i*3 + j]*3 + 2] < it.bmin[1]) it.bmin[1] = verts[tris[i*3 + j]*3 + 2];
+				if (verts[tris[i * 3 + j] * 3 + 0] < it.bmin[0]) it.bmin[0] = verts[tris[i * 3 + j] * 3 + 0];
+				if (verts[tris[i * 3 + j] * 3 + 2] < it.bmin[1]) it.bmin[1] = verts[tris[i * 3 + j] * 3 + 2];
 
-				if (verts[tris[i*3 + j]*3 + 0] > it.bmax[0]) it.bmax[0] = verts[tris[i*3 + j]*3 + 0];
-				if (verts[tris[i*3 + j]*3 + 2] > it.bmax[1]) it.bmax[1] = verts[tris[i*3 + j]*3 + 2];
+				if (verts[tris[i * 3 + j] * 3 + 0] > it.bmax[0]) it.bmax[0] = verts[tris[i * 3 + j] * 3 + 0];
+				if (verts[tris[i * 3 + j] * 3 + 2] > it.bmax[1]) it.bmax[1] = verts[tris[i * 3 + j] * 3 + 2];
 			}
 		}
 
 		int curTri[] = new int[]{0};
 		int curNode[] = new int[]{0};
-		subdivide(items, ntris, 0, ntris, trisPerChunk, curNode, cm.nodes, nchunks*4, curTri, cm.tris, tris);
+		subdivide(items, ntris, 0, ntris, trisPerChunk, curNode, cm.nodes, nchunks * 4, curTri, cm.tris, tris);
 
 //		delete [] items;
 
@@ -86,8 +88,8 @@ public class rcChunkyTriMeshImpl extends rcChunkyTriMesh
 	}
 
 	public static void subdivide(BoundsItem[] items, int nitems, int imin, int imax, int trisPerChunk,
-						  int[] curNode, rcChunkyTriMeshNode[] nodes, int maxNodes,
-						  int[] curTri, int[] outTris, int[] inTris)
+								 int[] curNode, rcChunkyTriMeshNode[] nodes, int maxNodes,
+								 int[] curTri, int[] outTris, int[] inTris)
 	{
 		int inum = imax - imin;
 		int icur = curNode[0];
@@ -111,12 +113,12 @@ public class rcChunkyTriMeshImpl extends rcChunkyTriMesh
 //				int[] src = inTris[items[i].i*3];
 //				int[] dst = outTris[curTri[0]*3];
 
-				outTris[curTri[0]*3 + 0] = inTris[items[i].i*3+0];
-				outTris[curTri[0]*3 + 1] = inTris[items[i].i*3+1];
-				outTris[curTri[0]*3 + 2] = inTris[items[i].i*3+2];
+				outTris[curTri[0] * 3 + 0] = inTris[items[i].i * 3 + 0];
+				outTris[curTri[0] * 3 + 1] = inTris[items[i].i * 3 + 1];
+				outTris[curTri[0] * 3 + 2] = inTris[items[i].i * 3 + 2];
 
-                curTri[0]++;
-                /*int[] src = inTris[items[i].i*3];
+				curTri[0]++;
+				/*int[] src = inTris[items[i].i*3];
                 int[] dst = outTris[curTri[0]*3];
                 curTri++;
                 dst[0] = src[0];
@@ -129,37 +131,37 @@ public class rcChunkyTriMeshImpl extends rcChunkyTriMesh
 			// Split
 			calcExtends(items, nitems, imin, imax, node.bmin, node.bmax);
 
-			int	axis = longestAxis(node.bmax[0] - node.bmin[0],
+			int axis = longestAxis(node.bmax[0] - node.bmin[0],
 								   node.bmax[1] - node.bmin[1]);
 
 			if (axis == 0)
 			{
 				// Sort along x-axis
-                Arrays.sort(items, imin, imin + inum, new Comparator<BoundsItem>()
-                {
-                    @Override
-                    public int compare(BoundsItem o1, BoundsItem o2)
-                    {
-                        return compareItemX(o1, o2);
-                    }
-                });
+				Arrays.sort(items, imin, imin + inum, new Comparator<BoundsItem>()
+				{
+					@Override
+					public int compare(BoundsItem o1, BoundsItem o2)
+					{
+						return compareItemX(o1, o2);
+					}
+				});
 //				qsort(items + imin, inum, sizeof(BoundsItem), compareItemX);
 			}
 			else if (axis == 1)
 			{
 				// Sort along y-axis
-                Arrays.sort(items, imin, imin + inum, new Comparator<BoundsItem>()
-                {
-                    @Override
-                    public int compare(BoundsItem o1, BoundsItem o2)
-                    {
-                        return compareItemY(o1, o2);
-                    }
-                });
+				Arrays.sort(items, imin, imin + inum, new Comparator<BoundsItem>()
+				{
+					@Override
+					public int compare(BoundsItem o1, BoundsItem o2)
+					{
+						return compareItemY(o1, o2);
+					}
+				});
 //				qsort(items+imin, inum, sizeof(BoundsItem), compareItemY);
 			}
 
-			int isplit = imin+inum/2;
+			int isplit = imin + inum / 2;
 
 			// Left
 			subdivide(items, nitems, imin, isplit, trisPerChunk, curNode, nodes, maxNodes, curTri, outTris, inTris);
@@ -178,8 +180,8 @@ public class rcChunkyTriMeshImpl extends rcChunkyTriMesh
 	}
 
 	public static void calcExtends(BoundsItem[] items, int nitems,
-							int imin, int imax,
-							float[] bmin, float[] bmax)
+								   int imin, int imax,
+								   float[] bmin, float[] bmax)
 	{
 		bmin[0] = items[imin].bmin[0];
 		bmin[1] = items[imin].bmin[1];
@@ -187,7 +189,7 @@ public class rcChunkyTriMeshImpl extends rcChunkyTriMesh
 		bmax[0] = items[imin].bmax[0];
 		bmax[1] = items[imin].bmax[1];
 
-		for (int i = imin+1; i < imax; ++i)
+		for (int i = imin + 1; i < imax; ++i)
 		{
 			BoundsItem it = items[i];
 			if (it.bmin[0] < bmin[0]) bmin[0] = it.bmin[0];
