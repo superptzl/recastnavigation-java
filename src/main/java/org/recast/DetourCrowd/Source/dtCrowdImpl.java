@@ -820,7 +820,7 @@ public     int getAgentCount()
 
                 // Adjust the path over the off-mesh connection.
                 dtPoly refs[] = new dtPoly[2];
-                if (ag.corridor.moveOverOffmeshConnection(ag.cornerPolys[ag.ncorners-1], refs[0],
+                if (ag.corridor.moveOverOffmeshConnection(ag.cornerPolys[ag.ncorners-1], refs,
                         anim.startPos, anim.endPos, m_navquery))
                 {
                     DetourCommon.dtVcopy(anim.initPos, ag.npos);

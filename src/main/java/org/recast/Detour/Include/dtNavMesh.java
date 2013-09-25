@@ -209,14 +209,14 @@ public abstract class dtNavMesh {
 //    ///  @param[out]	it		The index of the tile.
 //    ///  @param[out]	ip		The index of the polygon within the tile.
 //    ///  @see #encodePolyId
-//    public void decodePolyId(dtPoly ref, int[] salt, int[] it, int[] ip) {
+    public void decodePolyId(dtPoly ref, int[] salt, int[] it, int[] ip) {
 //        dtPoly saltMask = ((dtPoly) 1 << m_saltBits) - 1;
 //        dtPoly tileMask = ((dtPoly) 1 << m_tileBits) - 1;
 //        dtPoly polyMask = ((dtPoly) 1 << m_polyBits) - 1;
 //        salt[0] = (int) ((ref >> (m_polyBits + m_tileBits)) & saltMask);
 //        it[0] = (int) ((ref >> m_polyBits) & tileMask);
 //        ip[0] = (int) (ref & polyMask);
-//    }
+    }
 //
 //    /// Extracts a tile's salt value from the specified polygon reference.
 //    ///  @note This function is generally meant for internal use only.

@@ -28,9 +28,9 @@ public abstract class CrowdTool extends SampleTool {
 //    public abstract void reset();
     public abstract void handleMenu();
     public abstract void handleClick(float[] s, float[] p, boolean shift);
-//    public abstract void handleToggle();
+    public abstract void handleToggle();
     public abstract void handleStep();
-//    public abstract void handleUpdate(const float dt);
+    public abstract void handleUpdate(float dt);
 //    public abstract void handleRender();
 //    public abstract void handleRenderOverlay(double* proj, double* model, int* view);
 

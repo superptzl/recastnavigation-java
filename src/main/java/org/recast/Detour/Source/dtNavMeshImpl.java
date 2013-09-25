@@ -1032,13 +1032,13 @@ public class dtNavMeshImpl extends dtNavMesh {
 
     public dtStatus getTileAndPolyByRef(dtPoly ref, dtMeshTile[] tile, dtPoly[] poly) {
         if (ref == null) return new dtStatus(dtStatus.DT_FAILURE);
-        int salt, it, ip;
+		int salt[] = new int[1], it[] = new int[1], ip[] = new int[1];
         decodePolyId(ref, salt, it, ip);
-        if (it >= (int)m_maxTiles)return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
-        if (m_tiles[it].salt != salt || m_tiles[it].header == null) return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
-        if (ip >= (int)m_tiles[it].header.polyCount)return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
-        tile[0] = m_tiles[it];
-        poly[0] = m_tiles[it].polys[ip];
+        if (it[0] >= (int)m_maxTiles)return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
+        if (m_tiles[it[0]].salt != salt[0] || m_tiles[it[0]].header == null) return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
+        if (ip[0] >= (int)m_tiles[it[0]].header.polyCount)return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
+        tile[0] = m_tiles[it[0]];
+        poly[0] = m_tiles[it[0]].polys[ip[0]];
         return new dtStatus(dtStatus.DT_SUCCESS);
     }
 
@@ -1048,19 +1048,19 @@ public class dtNavMeshImpl extends dtNavMesh {
     /// reference is valid. This function is faster than #getTileAndPolyByRef, but
     /// it does not validate the reference.
     public void getTileAndPolyByRefUnsafe(dtPoly ref, dtMeshTile[] tile, dtPoly[] poly) {
-        int salt, it, ip;
+        int salt[] = new int[1], it[] = new int[1], ip[] = new int[1];
         decodePolyId(ref, salt, it, ip);
-        tile[0] = m_tiles[it];
-        poly[0] = m_tiles[it].polys[ip];
+        tile[0] = m_tiles[it[0]];
+        poly[0] = m_tiles[it[0]].polys[ip[0]];
     }
 
     public boolean isValidPolyRef(dtPoly ref) {
         if (ref == null) return false;
-        int salt, it, ip;
+		int salt[] = new int[1], it[] = new int[1], ip[] = new int[1];
         decodePolyId(ref, salt, it, ip);
-        if (it >= (int)m_maxTiles)return false;
-        if (m_tiles[it].salt != salt || m_tiles[it].header == 0) return false;
-        if (ip >= (int)m_tiles[it].header.polyCount)return false;
+        if (it[0] >= (int)m_maxTiles)return false;
+        if (m_tiles[it[0]].salt != salt[0] || m_tiles[it[0]].header == null) return false;
+        if (ip[0] >= (int)m_tiles[it[0]].header.polyCount)return false;
         return true;
     }
 
@@ -1278,18 +1278,18 @@ public class dtNavMeshImpl extends dtNavMesh {
     /// normal polygon at one of its endpoints. This is the polygon identified by
     /// the prevRef parameter.
     public dtStatus getOffMeshConnectionPolyEndPoints(dtPoly prevRef, dtPoly polyRef, float[] startPos, float[] endPos) {
-        int salt, it, ip;
+		int salt[] = new int[1], it[] = new int[1], ip[] = new int[1];
 
         if (polyRef == null)
             return new dtStatus(dtStatus.DT_FAILURE);
 
         // Get current polygon
         decodePolyId(polyRef, salt, it, ip);
-        if (it >= (int)m_maxTiles)return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
-        if (m_tiles[it].salt != salt || m_tiles[it].header == null) return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
-        dtMeshTile tile = m_tiles[it];
-        if (ip >= (int)tile.header.polyCount)return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
-        dtPoly  poly = tile.polys[ip];
+        if (it[0] >= (int)m_maxTiles)return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
+        if (m_tiles[it[0]].salt != salt[0] || m_tiles[it[0]].header == null) return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
+        dtMeshTile tile = m_tiles[it[0]];
+        if (ip[0] >= (int)tile.header.polyCount)return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_INVALID_PARAM);
+        dtPoly  poly = tile.polys[ip[0]];
 
         // Make sure that the current poly is indeed off-mesh link.
         if (poly.getType() != dtPolyTypes.DT_POLYTYPE_OFFMESH_CONNECTION)

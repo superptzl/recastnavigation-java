@@ -16,5 +16,5 @@ public abstract class SampleTool
 //	public abstract void handleRenderOverlay(double* proj, double* model, int* view);
 //	public abstract void handleToggle();
 	public abstract void handleStep();
-//	public abstract void handleUpdate(float dt);
+	public abstract void handleUpdate(float dt);
 }

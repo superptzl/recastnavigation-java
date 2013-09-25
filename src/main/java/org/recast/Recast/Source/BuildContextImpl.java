@@ -284,7 +284,7 @@ public class BuildContextImpl extends BuildContext {
 
     public int getPerfDeltaTimeUsec(long start, long end)
     {
-//        long freq = 0;
+        long freq = 100;
 //        if (freq == 0)
 //            QueryPerformanceFrequency((LARGE_INTEGER*)&freq);
         long elapsed = end - start;

@@ -39,6 +39,7 @@ public class AgentsTest {
 
         crowdTool.m_mode = CrowdTool.ToolMode.TOOLMODE_MOVE_TARGET;
         sample.handleClick(new float[]{76.728340f,84.241943f,24.204132f}, new float[]{38.056499f, 9.9981785f, 1.7914636f}, false);
-        sample.handleStep();
+//        sample.handleStep();
+		sample.handleUpdate(10);
     }
 }

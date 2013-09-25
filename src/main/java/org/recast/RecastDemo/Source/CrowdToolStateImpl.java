@@ -48,6 +48,8 @@ public class CrowdToolStateImpl extends CrowdToolState {
 //        memset(&m_agentDebug, 0, sizeof(m_agentDebug));
         m_agentDebug.idx = -1;
         m_agentDebug.vod = m_vod;
+		m_crowdSampleCount = new ValueHistoryImpl();
+		m_crowdTotalTime = new ValueHistoryImpl();
     }
 //
 //    ~CrowdToolState()

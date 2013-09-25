@@ -209,17 +209,19 @@ public class CrowdToolImpl extends CrowdTool {
         m_state.setRunning(false);
     }
 
-    /*void handleToggle()
+	public void handleUpdate(float dt)
+	 {
+	 }
+
+
+    public void handleToggle()
     {
-        if (!m_state) return;
+        if (m_state == null) return;
         m_state.setRunning(!m_state.isRunning());
     }
 
-    void handleUpdate(const float dt)
-    {
-    }
 
-    void handleRender()
+    /*void handleRender()
     {
     }
 

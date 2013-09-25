@@ -4,6 +4,7 @@ import org.recast.Detour.Include.DrawNavMeshFlags;
 import org.recast.RecastDemo.Include.InputGeom;
 import org.recast.RecastDemo.Include.Sample;
 import org.recast.RecastDemo.Include.SampleTool;
+import org.recast.RecastDemo.Include.SampleToolType;
 
 public abstract class SampleImpl extends Sample {
     //
@@ -213,9 +214,9 @@ public abstract class SampleImpl extends Sample {
         return true;
     }
 
-   /* public void handleUpdate(float dt)
+    public void handleUpdate(float dt)
     {
-        if (m_tool)
+        if (m_tool != null)
             m_tool.handleUpdate(dt);
         updateToolStates(dt);
     }
@@ -223,14 +224,14 @@ public abstract class SampleImpl extends Sample {
 
     public void updateToolStates(float dt)
     {
-        for (int i = 0; i < MAX_TOOLS; i++)
+        for (SampleToolType i : SampleToolType.values())
         {
-            if (m_toolStates[i])
-                m_toolStates[i].handleUpdate(dt);
+            if (m_toolStates.get(i) != null)
+                m_toolStates.get(i).handleUpdate(dt);
         }
     }
 
-    public void initToolStates(Sample sample)
+   /* public void initToolStates(Sample sample)
     {
         for (int i = 0; i < MAX_TOOLS; i++)
         {

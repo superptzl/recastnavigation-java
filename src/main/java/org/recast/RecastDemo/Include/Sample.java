@@ -57,7 +57,7 @@ public abstract class Sample {
 //    public abstract void handleRenderOverlay(double[] proj, double[] model, int[] view);
     public abstract void handleMeshChanged(InputGeom geom);
     public abstract boolean handleBuild();
-//    public abstract void handleUpdate(float dt);
+    public abstract void handleUpdate(float dt);
 
     public InputGeom getInputGeom() { return m_geom; }
     public dtNavMesh getNavMesh() { return m_navMesh; }
@@ -72,7 +72,7 @@ public abstract class Sample {
     public char getNavMeshDrawFlags() { return m_navMeshDrawFlags; }
     public void setNavMeshDrawFlags(char flags) { m_navMeshDrawFlags = flags; }
 
-//    public abstract void updateToolStates(float dt);
+    public abstract void updateToolStates(float dt);
 //    public abstract void initToolStates(Sample sample);
 //    public abstract void resetToolStates();
 //    public abstract void renderToolStates();

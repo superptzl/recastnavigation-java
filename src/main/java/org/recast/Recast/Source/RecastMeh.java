@@ -126,7 +126,6 @@ public class RecastMeh {
 //		int[] tmpPoly = Recast.createN(polys, maxVertsPerCont * nvp, nvp);
 		int[] tmpPolyIndex = new int[]{maxVertsPerCont * nvp};
 
-		int sum = 0;
         for (int i = 0; i < cset.nconts; ++i)
         {
             rcContour cont = cset.conts[i];
@@ -159,7 +158,6 @@ public class RecastMeh {
 
             // Add and merge vertices.
 //			assert cont.nverts == 15;
-			sum += cont.nverts;
             for (int j = 0; j < cont.nverts; ++j)
             {
 //                    int[] v = cont.verts[j*4];
@@ -268,7 +266,6 @@ public class RecastMeh {
                 }
             }
         }
-		System.out.println("sum = " + sum);
 
 		assert mesh.nverts == 223;
         // Remove edge vertices.

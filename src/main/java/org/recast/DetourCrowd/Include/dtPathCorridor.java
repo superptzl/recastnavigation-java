@@ -52,7 +52,7 @@ public abstract class dtPathCorridor {
 //    ///  @param[in]		filter		The filter to apply to the operation.
     public abstract  boolean optimizePathTopology(dtNavMeshQuery navquery,  dtQueryFilter filter);
 //
-    public abstract boolean moveOverOffmeshConnection(dtPoly offMeshConRef, dtPoly refs,
+    public abstract boolean moveOverOffmeshConnection(dtPoly offMeshConRef, dtPoly[] refs,
                                    float[] startPos, float[] endPos,
                                    dtNavMeshQuery navquery);
 //

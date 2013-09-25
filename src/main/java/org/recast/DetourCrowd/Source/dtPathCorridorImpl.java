@@ -262,9 +262,9 @@ public class dtPathCorridorImpl extends dtPathCorridor {
         m_npath = dtMergeCorridorStartMoved(m_path, m_npath, m_maxPath, visited, nvisited[0]);
 
         // Adjust the position to stay on top of the navmesh.
-        float h = m_pos[1];
+        float h[] = new float[]{m_pos[1]};
         navquery.getPolyHeight(m_path[0], result, h);
-        result[1] = h;
+        result[1] = h[0];
         DetourCommon.dtVcopy(m_pos, result);
     }
 //
