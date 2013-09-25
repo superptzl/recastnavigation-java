@@ -153,6 +153,11 @@ public abstract class DetourCommon
 ///  @param[in]		v2		The vector to add to @p v1. [(x, y, z)]
 	public static void dtVadd(float[] dest, float[] v1, float[] v2)
 	{
+		dtVadd(dest, v1, 0, v2, 0);
+	}
+
+	public static void dtVadd(float[] dest, float[] v1, int v1Index, float[] v2, int v2Index)
+	{
 		dest[0] = v1[0] + v2[0];
 		dest[1] = v1[1] + v2[1];
 		dest[2] = v1[2] + v2[2];

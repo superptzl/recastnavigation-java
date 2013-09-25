@@ -298,12 +298,12 @@ public abstract class dtNavMesh
 //                                            dtPoly[] polys, int maxPolys);
 //
 //    /// Find nearest polygon within a tile.
-//    public abstract dtPoly findNearestPolyInTile(dtMeshTile tile, float[] center,
-//                                                 float[] extents, float[] nearestPt);
+    public abstract dtPoly findNearestPolyInTile(dtMeshTile tile, float[] center,
+                                                 float[] extents, float[] nearestPt);
 //
 //    /// Returns closest point on polygon.
-//    public abstract void closestPointOnPolyInTile(dtMeshTile tile, int ip,
-//                                                  float[] pos, float[] closest);
+    public abstract void closestPointOnPolyInTile(dtMeshTile tile, int ip,
+                                                  float[] pos, float[] closest);
 
 	public dtNavMeshParams m_params;            ///< Current initialization params. TODO: do not store this info twice.
 	public float m_orig[] = new float[3];                    ///< Origin of the tile (0,0)

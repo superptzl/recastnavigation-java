@@ -1,4 +1,4 @@
-package com.recast;
+package org.recast;
 
 import org.junit.Test;
 import org.recast.Recast.Source.BuildContextImpl;

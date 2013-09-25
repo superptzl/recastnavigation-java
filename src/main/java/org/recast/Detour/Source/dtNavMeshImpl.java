@@ -313,22 +313,23 @@ public class dtNavMeshImpl extends dtNavMesh
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////
-	public int findConnectingPolys(float[] va, float[] vb,
+	public int findConnectingPolys(float[] va, int vaIndex,
+								   float[] vb, int vbIndex,
 								   dtMeshTile tile, int side,
 								   dtPoly[] con, float[] conarea, int maxcon)
 	{
 		if (tile == null) return 0;
 
 		float amin[] = new float[2], amax[] = new float[2];
-		calcSlabEndPoints(va, 0, vb, 0, amin, amax, side);
-		float apos = getSlabCoord(va, 0, side);
+		calcSlabEndPoints(va, vaIndex, vb, vbIndex, amin, amax, side);
+		float apos = getSlabCoord(va, vaIndex, side);
 
 		// Remove links pointing to 'side' and compact the links array.
 		float bmin[] = new float[2], bmax[] = new float[2];
 		int m = DetourNavMesh.DT_EXT_LINK | (int)side;
 		int n = 0;
 
-//        dtPoly base = getPolyRefBase(tile);
+        dtPoly base = getPolyRefBase(tile);
 
 		for (int i = 0; i < tile.header.polyCount; ++i)
 		{
@@ -350,7 +351,7 @@ public class dtNavMeshImpl extends dtNavMesh
 					continue;
 
 				// Check if the segments touch.
-				calcSlabEndPoints(vc, vcIndex, vd, vcIndex, bmin, bmax, side);
+				calcSlabEndPoints(vc, vcIndex, vd, vdIndex, bmin, bmax, side);
 
 				if (!overlapSlabs(amin, amax, bmin, bmax, 0.01f, tile.header.walkableClimb)) continue;
 
@@ -359,7 +360,7 @@ public class dtNavMeshImpl extends dtNavMesh
 				{
 					conarea[n * 2 + 0] = DetourCommon.dtMax(amin[0], bmin[0]);
 					conarea[n * 2 + 1] = DetourCommon.dtMin(amax[0], bmax[0]);
-//                    con[n] = base | (dtPoly) i;
+                    con[n] = base | (dtPoly) i;
 					n++;
 				}
 				break;
@@ -399,385 +400,407 @@ public class dtNavMeshImpl extends dtNavMesh
 
 	public void connectExtLinks(dtMeshTile tile, dtMeshTile target, int side)
 	{
-//        if (tile == null) return;
-//
-//        // Connect border links.
-//        for (int i = 0; i < tile.header.polyCount; ++i) {
-//            dtPoly poly = tile.polys[i];
-//
-//            // Create new links.
-//            //		unsigned short m = DT_EXT_LINK | (unsigned short)side;
-//
-//            int nv = poly.vertCount;
-//            for (int j = 0; j < nv; ++j) {
-//                // Skip non-portal edges.
-//                if ((poly.neis[j] & DetourNavMesh.DT_EXT_LINK) == 0)
-//                    continue;
-//
-//                int dir = (int) (poly.neis[j] & 0xff);
-//                if (side != -1 && dir != side)
-//                    continue;
-//
-//                // Create new links
-//                float*va =&tile.verts[poly.verts[j] * 3];
-//                float*vb =&tile.verts[poly.verts[(j + 1) % nv] * 3];
-//                dtPoly nei[] = new dtPoly[4];
-//                float neia[] = new float[ 4 * 2];
-//                int nnei = findConnectingPolys(va, vb, target, dtOppositeTile(dir), nei, neia, 4);
-//                for (int k = 0; k < nnei; ++k) {
-//                    int idx = allocLink(tile);
-//                    if (idx != DetourNavMesh.DT_NULL_LINK) {
-//                        dtLink link = tile.links[idx];
-//                        link.ref = nei[k];
-//                        link.edge = (char)j;
-//                        link.side = (char)dir;
-//
-//                        link.next = poly.firstLink;
-//                        poly.firstLink = idx;
-//
-//                        // Compress portal limits to a byte value.
-//                        if (dir == 0 || dir == 4) {
-//                            float tmin = (neia[k * 2 + 0] - va[2]) / (vb[2] - va[2]);
-//                            float tmax = (neia[k * 2 + 1] - va[2]) / (vb[2] - va[2]);
-//                            if (tmin > tmax)
+        if (tile == null) return;
+
+        // Connect border links.
+        for (int i = 0; i < tile.header.polyCount; ++i) {
+            dtPoly poly = tile.polys[i];
+
+            // Create new links.
+//            		unsigned short m = DT_EXT_LINK | (unsigned short)side;
+
+            int nv = poly.vertCount;
+            for (int j = 0; j < nv; ++j) {
+                // Skip non-portal edges.
+                if ((poly.neis[j] & DetourNavMesh.DT_EXT_LINK) == 0)
+                    continue;
+
+                int dir = (int) (poly.neis[j] & 0xff);
+                if (side != -1 && dir != side)
+                    continue;
+
+                // Create new links
+                float[] va = tile.verts;//[poly.verts[j] * 3];
+				int vaIndex = poly.verts[j] * 3;
+                float[] vb = tile.verts;//[poly.verts[(j + 1) % nv] * 3];
+				int vbIndex = poly.verts[(j + 1) % nv] * 3;
+                dtPoly nei[] = new dtPoly[4];
+                float neia[] = new float[ 4 * 2];
+                int nnei = findConnectingPolys(va, vaIndex, vb, vbIndex, target, DetourCommon.dtOppositeTile(dir), nei, neia, 4);
+                for (int k = 0; k < nnei; ++k) {
+                    int idx = allocLink(tile);
+                    if (idx != DetourNavMesh.DT_NULL_LINK) {
+                        dtLink link = tile.links[idx];
+                        link.ref = nei[k];
+                        link.edge = (char)j;
+                        link.side = (char)dir;
+
+                        link.next = poly.firstLink;
+                        poly.firstLink = idx;
+
+                        // Compress portal limits to a byte value.
+                        if (dir == 0 || dir == 4) {
+                            float tmin = (neia[k * 2 + 0] - va[vaIndex+2]) / (vb[vbIndex+2] - va[vaIndex+2]);
+                            float tmax = (neia[k * 2 + 1] - va[vaIndex+2]) / (vb[vbIndex+2] - va[vaIndex+2]);
+                            if (tmin > tmax) {
+								float tmp = tmax;
+								tmax = tmin;
+								tmin = tmp;
 //                                dtSwap(tmin, tmax);
-//                            link.bmin = (unsigned char)(dtClamp(tmin, 0.0f, 1.0f) * 255.0f);
-//                            link.bmax = (unsigned char)(dtClamp(tmax, 0.0f, 1.0f) * 255.0f);
-//                        } else if (dir == 2 || dir == 6) {
-//                            float tmin = (neia[k * 2 + 0] - va[0]) / (vb[0] - va[0]);
-//                            float tmax = (neia[k * 2 + 1] - va[0]) / (vb[0] - va[0]);
-//                            if (tmin > tmax)
+							}
+                            link.bmin = (char)(DetourCommon.dtClamp(tmin, 0.0f, 1.0f) * 255.0f);
+                            link.bmax = (char)(DetourCommon.dtClamp(tmax, 0.0f, 1.0f) * 255.0f);
+                        } else if (dir == 2 || dir == 6) {
+                            float tmin = (neia[k * 2 + 0] - va[vaIndex+0]) / (vb[vbIndex+0] - va[vaIndex+0]);
+                            float tmax = (neia[k * 2 + 1] - va[vaIndex+0]) / (vb[vbIndex+0] - va[vaIndex+0]);
+                            if (tmin > tmax)  {
+								float tmp = tmax;
+								tmax = tmin;
+								tmin = tmp;
+							}
 //                                dtSwap(tmin, tmax);
-//                            link.bmin = (unsigned char)(dtClamp(tmin, 0.0f, 1.0f) * 255.0f);
-//                            link.bmax = (unsigned char)(dtClamp(tmax, 0.0f, 1.0f) * 255.0f);
-//                        }
-//                    }
-//                }
-//            }
-//        }
+                            link.bmin = (char)(DetourCommon.dtClamp(tmin, 0.0f, 1.0f) * 255.0f);
+                            link.bmax = (char)(DetourCommon.dtClamp(tmax, 0.0f, 1.0f) * 255.0f);
+                        }
+                    }
+                }
+            }
+        }
 	}
 
 	//
 	public void connectExtOffMeshLinks(dtMeshTile tile, dtMeshTile target, int side)
 	{
-//        if (tile == null) return;
-//
-//        // Connect off-mesh links.
-//        // We are interested on links which land from target tile to this tile.
-//        char oppositeSide = (side == -1) ? 0xff : (char)dtOppositeTile(side);
-//
-//        for (int i = 0; i < target.header.offMeshConCount; ++i) {
-//            dtOffMeshConnection targetCon = target.offMeshCons[i];
-//            if (targetCon.side != oppositeSide)
-//                continue;
-//
-//            dtPoly targetPoly = target.polys[targetCon.poly];
-//            // Skip off-mesh connections which start location could not be connected at all.
-//            if (targetPoly.firstLink == DetourNavMesh.DT_NULL_LINK)
-//                continue;
-//
-//            float ext[]={
-//                targetCon.rad, target.header.walkableClimb, targetCon.rad
-//            } ;
-//
-//            // Find polygon to connect to.
-//            float*p =&targetCon.pos[3];
-//            float nearestPt[] = new float[3];
-//            dtPoly ref = findNearestPolyInTile(tile, p, ext, nearestPt);
-//            if (ref == null)
-//                continue;
-//            // findNearestPoly may return too optimistic results, further check to make sure.
-//            if (DetourCommon.dtSqr(nearestPt[0] - p[0]) + DetourCommon.dtSqr(nearestPt[2] - p[2]) > DetourCommon.dtSqr(targetCon.rad))
-//                continue;
-//            // Make sure the location is on current mesh.
-//            float*v =&target.verts[targetPoly.verts[1] * 3];
-//            DetourCommon.dtVcopy(v, nearestPt);
-//
-//            // Link off-mesh connection to target poly.
-//            int idx = allocLink(target);
-//            if (idx != DetourNavMesh.DT_NULL_LINK) {
-//                dtLink link = target.links[idx];
-//                link.ref = ref;
-//                link.edge = (char)1;
-//                link.side = oppositeSide;
-//                link.bmin = link.bmax = 0;
-//                // Add to linked list.
-//                link.next = targetPoly.firstLink;
-//                targetPoly.firstLink = idx;
-//            }
-//
-//            // Link target poly to off-mesh connection.
-//            if (targetCon.flags & DT_OFFMESH_CON_BIDIR) {
-//                int tidx = allocLink(tile);
-//                if (tidx != DetourNavMesh.DT_NULL_LINK) {
-//                    int landPolyIdx = (int)decodePolyIdPoly(ref);
-//                    dtPoly landPoly = tile.polys[landPolyIdx];
-//                    dtLink link = tile.links[tidx];
-//                    link.ref = getPolyRefBase(target) | (dtPoly) (targetCon.poly);
-//                    link.edge = 0xff;
-//                    link.side = (char)(side == -1 ? 0xff : side);
-//                    link.bmin = link.bmax = 0;
-//                    // Add to linked list.
-//                    link.next = landPoly.firstLink;
-//                    landPoly.firstLink = tidx;
-//                }
-//            }
-//        }
-//
+        if (tile == null) return;
+
+        // Connect off-mesh links.
+        // We are interested on links which land from target tile to this tile.
+        char oppositeSide = (side == -1) ? 0xff : (char)DetourCommon.dtOppositeTile(side);
+
+        for (int i = 0; i < target.header.offMeshConCount; ++i) {
+            dtOffMeshConnection targetCon = target.offMeshCons[i];
+            if (targetCon.side != oppositeSide)
+                continue;
+
+            dtPoly targetPoly = target.polys[targetCon.poly];
+            // Skip off-mesh connections which start location could not be connected at all.
+            if (targetPoly.firstLink == DetourNavMesh.DT_NULL_LINK)
+                continue;
+
+            float ext[]={
+                targetCon.rad, target.header.walkableClimb, targetCon.rad
+            } ;
+
+            // Find polygon to connect to.
+            float[] p = targetCon.pos;
+			int pIndex = 3;
+            float nearestPt[] = new float[3];
+            dtPoly ref = findNearestPolyInTile(tile, p, pIndex, ext, nearestPt);
+            if (ref == null)
+                continue;
+            // findNearestPoly may return too optimistic results, further check to make sure.
+            if (DetourCommon.dtSqr(nearestPt[0] - p[pIndex+0]) + DetourCommon.dtSqr(nearestPt[2] - p[pIndex+2]) > DetourCommon.dtSqr(targetCon.rad))
+                continue;
+            // Make sure the location is on current mesh.
+            float[] v = target.verts;
+			int vIndex = targetPoly.verts[1] * 3;
+            DetourCommon.dtVcopy(v, vIndex, nearestPt, 0);
+
+            // Link off-mesh connection to target poly.
+            int idx = allocLink(target);
+            if (idx != DetourNavMesh.DT_NULL_LINK) {
+                dtLink link = target.links[idx];
+                link.ref = ref;
+                link.edge = (char)1;
+                link.side = oppositeSide;
+                link.bmin = link.bmax = 0;
+                // Add to linked list.
+                link.next = targetPoly.firstLink;
+                targetPoly.firstLink = idx;
+            }
+
+            // Link target poly to off-mesh connection.
+            if ((targetCon.flags & DetourNavMesh.DT_OFFMESH_CON_BIDIR) != 0) {
+                int tidx = allocLink(tile);
+                if (tidx != DetourNavMesh.DT_NULL_LINK) {
+                    int landPolyIdx = (int)decodePolyIdPoly(ref);
+                    dtPoly landPoly = tile.polys[landPolyIdx];
+                    dtLink link = tile.links[tidx];
+                    link.ref = getPolyRefBase(target) | (dtPoly) (targetCon.poly);
+                    link.edge = 0xff;
+                    link.side = (char)(side == -1 ? 0xff : side);
+                    link.bmin = link.bmax = 0;
+                    // Add to linked list.
+                    link.next = landPoly.firstLink;
+                    landPoly.firstLink = tidx;
+                }
+            }
+        }
+
 	}
 
 	public void connectIntLinks(dtMeshTile tile)
 	{
 		if (tile == null) return;
 
-//        dtPoly base = getPolyRefBase(tile);
+        dtPoly base = getPolyRefBase(tile);
 
-//        for (int i = 0; i < tile.header.polyCount; ++i) {
-//            dtPoly poly = tile.polys[i];
-//            poly.firstLink = DetourNavMesh.DT_NULL_LINK;
-//
-//            if (poly.getType() == DT_POLYTYPE_OFFMESH_CONNECTION)
-//                continue;
-//
-//            // Build edge links backwards so that the links will be
-//            // in the linked list from lowest index to highest.
-//            for (int j = poly.vertCount - 1; j >= 0; --j) {
-//                // Skip hard and non-internal edges.
-//                if (poly.neis[j] == 0 || (poly.neis[j] & DetourNavMesh.DT_EXT_LINK)) continue;
-//
-//                int idx = allocLink(tile);
-//                if (idx != DetourNavMesh.DT_NULL_LINK) {
-//                    dtLink link = tile.links[idx];
-//                    link.ref = base | (dtPoly) (poly.neis[j] - 1);
-//                    link.edge = (char)j;
-//                    link.side = 0xff;
-//                    link.bmin = link.bmax = 0;
-//                    // Add to linked list.
-//                    link.next = poly.firstLink;
-//                    poly.firstLink = idx;
-//                }
-//            }
-//        }
+        for (int i = 0; i < tile.header.polyCount; ++i) {
+            dtPoly poly = tile.polys[i];
+            poly.firstLink = DetourNavMesh.DT_NULL_LINK;
+
+            if (poly.getType() == dtPolyTypes.DT_POLYTYPE_OFFMESH_CONNECTION)
+                continue;
+
+            // Build edge links backwards so that the links will be
+            // in the linked list from lowest index to highest.
+            for (int j = poly.vertCount - 1; j >= 0; --j) {
+                // Skip hard and non-internal edges.
+                if (poly.neis[j] == 0 || (poly.neis[j] & DetourNavMesh.DT_EXT_LINK) != 0) continue;
+
+                int idx = allocLink(tile);
+                if (idx != DetourNavMesh.DT_NULL_LINK) {
+                    dtLink link = tile.links[idx];
+                    link.ref = base | (dtPoly) (poly.neis[j] - 1);
+                    link.edge = (char)j;
+                    link.side = 0xff;
+                    link.bmin = link.bmax = 0;
+                    // Add to linked list.
+                    link.next = poly.firstLink;
+                    poly.firstLink = idx;
+                }
+            }
+        }
 	}
 
 	public void baseOffMeshLinks(dtMeshTile tile)
 	{
-//        if (tile == null) return;
-//
-//        dtPoly base = getPolyRefBase(tile);
-//
-//        // Base off-mesh connection start points.
-//        for (int i = 0; i < tile.header.offMeshConCount; ++i) {
-//            dtOffMeshConnection con = tile.offMeshCons[i];
-//            dtPoly  poly = tile.polys[con.poly];
-//
-//            float ext[]={
-//                con.rad, tile.header.walkableClimb, con.rad
-//            } ;
-//
-//            // Find polygon to connect to.
-//            float*p = con.pos[0]; // First vertex
-//            float nearestPt[] = new float[3];
-//            dtPoly ref = findNearestPolyInTile(tile, p, ext, nearestPt);
-//            if (ref == null) continue;
-//            // findNearestPoly may return too optimistic results, further check to make sure.
-//            if (DetourCommon.dtSqr(nearestPt[0] - p[0]) + DetourCommon.dtSqr(nearestPt[2] - p[2]) > DetourCommon.dtSqr(con.rad))
-//                continue;
-//            // Make sure the location is on current mesh.
-//            float*v =&tile.verts[poly.verts[0] * 3];
-//            DetourCommon.dtVcopy(v, nearestPt);
-//
-//            // Link off-mesh connection to target poly.
-//            int idx = allocLink(tile);
-//            if (idx != DetourNavMesh.DT_NULL_LINK) {
-//                dtLink link = tile.links[idx];
-//                link.ref = ref;
-//                link.edge = (char)0;
-//                link.side = 0xff;
-//                link.bmin = link.bmax = 0;
-//                // Add to linked list.
-//                link.next = poly.firstLink;
-//                poly.firstLink = idx;
-//            }
-//
-//            // Start end-point is always connect back to off-mesh connection.
-//            int tidx = allocLink(tile);
-//            if (tidx != DetourNavMesh.DT_NULL_LINK) {
-//                int landPolyIdx = (int)decodePolyIdPoly(ref);
-//                dtPoly landPoly = tile.polys[landPolyIdx];
-//                dtLink link = tile.links[tidx];
-//                link.ref = base | (dtPoly) (con.poly);
-//                link.edge = 0xff;
-//                link.side = 0xff;
-//                link.bmin = link.bmax = 0;
-//                // Add to linked list.
-//                link.next = landPoly.firstLink;
-//                landPoly.firstLink = tidx;
-//            }
-//        }
+        if (tile == null) return;
+
+        dtPoly base = getPolyRefBase(tile);
+
+        // Base off-mesh connection start points.
+        for (int i = 0; i < tile.header.offMeshConCount; ++i) {
+            dtOffMeshConnection con = tile.offMeshCons[i];
+            dtPoly  poly = tile.polys[con.poly];
+
+            float ext[]={
+                con.rad, tile.header.walkableClimb, con.rad
+            } ;
+
+            // Find polygon to connect to.
+            float[] p = con.pos;//[0]; // First vertex
+            float nearestPt[] = new float[3];
+            dtPoly ref = findNearestPolyInTile(tile, p, ext, nearestPt);
+            if (ref == null) continue;
+            // findNearestPoly may return too optimistic results, further check to make sure.
+            if (DetourCommon.dtSqr(nearestPt[0] - p[0]) + DetourCommon.dtSqr(nearestPt[2] - p[2]) > DetourCommon.dtSqr(con.rad))
+                continue;
+            // Make sure the location is on current mesh.
+//            float*v =&[];
+            DetourCommon.dtVcopy(tile.verts, poly.verts[0] * 3, nearestPt, 0);
+
+            // Link off-mesh connection to target poly.
+            int idx = allocLink(tile);
+            if (idx != DetourNavMesh.DT_NULL_LINK) {
+                dtLink link = tile.links[idx];
+                link.ref = ref;
+                link.edge = (char)0;
+                link.side = 0xff;
+                link.bmin = link.bmax = 0;
+                // Add to linked list.
+                link.next = poly.firstLink;
+                poly.firstLink = idx;
+            }
+
+            // Start end-point is always connect back to off-mesh connection.
+            int tidx = allocLink(tile);
+            if (tidx != DetourNavMesh.DT_NULL_LINK) {
+                int landPolyIdx = (int)decodePolyIdPoly(ref);
+                dtPoly landPoly = tile.polys[landPolyIdx];
+                dtLink link = tile.links[tidx];
+                link.ref = base | (dtPoly) (con.poly);
+                link.edge = 0xff;
+                link.side = 0xff;
+                link.bmin = link.bmax = 0;
+                // Add to linked list.
+                link.next = landPoly.firstLink;
+                landPoly.firstLink = tidx;
+            }
+        }
 	}
 
-//    public void closestPointOnPolyInTile(dtMeshTile tile, int ip,
-//                                         float[] pos, float[] closest) {
-//        dtPoly poly = tile.polys[ip];
-//        // Off-mesh connections don't have detail polygons.
-//        if (poly.getType() == DT_POLYTYPE_OFFMESH_CONNECTION) {
-//            float*v0 =&tile.verts[poly.verts[0] * 3];
-//            float*v1 =&tile.verts[poly.verts[1] * 3];
-//            float d0 = dtVdist(pos, v0);
-//            float d1 = dtVdist(pos, v1);
-//            float u = d0 / (d0 + d1);
-//            dtVlerp(closest, v0, v1, u);
-//            return;
-//        }
-//
-//        dtPolyDetail pd = tile.detailMeshes[ip];
-//
-//        // Clamp point to be inside the polygon.
-//        float verts[ ] = new float[DetourNavMesh.DT_VERTS_PER_POLYGON * 3];
-//        float edged[ ] = new float[DetourNavMesh.DT_VERTS_PER_POLYGON];
-//        float edget[ ] = new float[DetourNavMesh.DT_VERTS_PER_POLYGON];
-//        int nv = poly.vertCount;
-//        for (int i = 0; i < nv; ++i)
-//            DetourCommon.dtVcopy( & verts[i * 3],&tile.verts[poly.verts[i] * 3]);
-//
-//        DetourCommon.dtVcopy(closest, pos);
-//        if (!dtDistancePtPolyEdgesSqr(pos, verts, nv, edged, edget)) {
-//            // Point is outside the polygon, dtClamp to nearest edge.
-//            float dmin = Float.MAX_VALUE;
-//            int imin = -1;
-//            for (int i = 0; i < nv; ++i) {
-//                if (edged[i] < dmin) {
-//                    dmin = edged[i];
-//                    imin = i;
-//                }
-//            }
-//            float*va =&verts[imin * 3];
-//            float*vb =&verts[((imin + 1) % nv) * 3];
-//            dtVlerp(closest, va, vb, edget[imin]);
-//        }
-//
-//        // Find height at the location.
-//        for (int j = 0; j < pd.triCount; ++j) {
-//            unsigned char*t =&tile.detailTris[(pd.triBase + j) * 4];
-//            float*v[3];
-//            for (int k = 0; k < 3; ++k) {
-//                if (t[k] < poly.vertCount)
-//                    v[k] =&tile.verts[poly.verts[t[k]] * 3];
-//                else
-//                v[k] =&tile.detailVerts[(pd.vertBase + (t[k] - poly.vertCount)) * 3];
-//            }
-//            float h;
-//            if (dtClosestHeightPointTriangle(pos, v[0], v[1], v[2], h)) {
-//                closest[1] = h;
-//                break;
-//            }
-//        }
-//    }
+    public void closestPointOnPolyInTile(dtMeshTile tile, int ip,
+                                         float[] pos, float[] closest) {
+        dtPoly poly = tile.polys[ip];
+        // Off-mesh connections don't have detail polygons.
+        if (poly.getType() == dtPolyTypes.DT_POLYTYPE_OFFMESH_CONNECTION) {
+            float[] v0 = tile.verts;
+			int v0Index = poly.verts[0] * 3;
+            float[] v1 = tile.verts;
+			int v1Index = poly.verts[1] * 3;
+            float d0 = DetourCommon.dtVdist(pos, 0, v0, v0Index);
+            float d1 = DetourCommon.dtVdist(pos, 0, v1, v1Index);
+            float u = d0 / (d0 + d1);
+			DetourCommon.dtVlerp(closest, v0, v0Index, v1, v1Index, u);
+            return;
+        }
 
-//    public dtPoly findNearestPolyInTile(dtMeshTile tile,
-//                                        float[] center, float[] extents,
-//                                        float[] nearestPt) {
-//        float bmin[ 3],bmax[3];
-//        dtVsub(bmin, center, extents);
-//        dtVadd(bmax, center, extents);
-//
-//        // Get nearby polygons from proximity grid.
-//        dtPoly polys[ 128];
-//        int polyCount = queryPolygonsInTile(tile, bmin, bmax, polys, 128);
-//
-//        // Find nearest polygon amongst the nearby polygons.
-//        dtPoly nearest = 0;
-//        float nearestDistanceSqr = FLT_MAX;
-//        for (int i = 0; i < polyCount; ++i) {
-//            dtPoly ref = polys[i];
-//            float closestPtPoly[ 3];
-//            closestPointOnPolyInTile(tile, decodePolyIdPoly(ref), center, closestPtPoly);
-//            float d = dtVdistSqr(center, closestPtPoly);
-//            if (d < nearestDistanceSqr) {
-//                if (nearestPt)
-//                    dtVcopy(nearestPt, closestPtPoly);
-//                nearestDistanceSqr = d;
-//                nearest = ref;
-//            }
-//        }
-//
-//        return nearest;
-//    }
+        dtPolyDetail pd = tile.detailMeshes[ip];
 
-//    public int queryPolygonsInTile(dtMeshTile tile, float[] qmin, float[] qmax,
-//                                   dtPoly[] polys, int maxPolys) {
-//        if (tile.bvTree) {
-//            dtBVNode * node =&tile.bvTree[0];
-//            dtBVNode * end =&tile.bvTree[tile.header.bvNodeCount];
-//            float*tbmin = tile.header.bmin;
-//            float*tbmax = tile.header.bmax;
-//            float qfac = tile.header.bvQuantFactor;
-//
-//            // Calculate quantized box
-//            unsigned short bmin[ 3],bmax[3];
-//            // dtClamp query box to world box.
-//            float minx = dtClamp(qmin[0], tbmin[0], tbmax[0]) - tbmin[0];
-//            float miny = dtClamp(qmin[1], tbmin[1], tbmax[1]) - tbmin[1];
-//            float minz = dtClamp(qmin[2], tbmin[2], tbmax[2]) - tbmin[2];
-//            float maxx = dtClamp(qmax[0], tbmin[0], tbmax[0]) - tbmin[0];
-//            float maxy = dtClamp(qmax[1], tbmin[1], tbmax[1]) - tbmin[1];
-//            float maxz = dtClamp(qmax[2], tbmin[2], tbmax[2]) - tbmin[2];
-//            // Quantize
-//            bmin[0] = (unsigned short)(qfac * minx) & 0xfffe;
-//            bmin[1] = (unsigned short)(qfac * miny) & 0xfffe;
-//            bmin[2] = (unsigned short)(qfac * minz) & 0xfffe;
-//            bmax[0] = (unsigned short)(qfac * maxx + 1) | 1;
-//            bmax[1] = (unsigned short)(qfac * maxy + 1) | 1;
-//            bmax[2] = (unsigned short)(qfac * maxz + 1) | 1;
-//
-//            // Traverse tree
-//            dtPoly base = getPolyRefBase(tile);
-//            int n = 0;
-//            while (node < end) {
-//                bool overlap = dtOverlapQuantBounds(bmin, bmax, node.bmin, node.bmax);
-//                bool isLeafNode = node.i >= 0;
-//
-//                if (isLeafNode && overlap) {
-//                    if (n < maxPolys)
-//                        polys[n++] = base | (dtPoly) node.i;
-//                }
-//
-//                if (overlap || isLeafNode)
+        // Clamp point to be inside the polygon.
+        float verts[ ] = new float[DetourNavMesh.DT_VERTS_PER_POLYGON * 3];
+        float edged[ ] = new float[DetourNavMesh.DT_VERTS_PER_POLYGON];
+        float edget[ ] = new float[DetourNavMesh.DT_VERTS_PER_POLYGON];
+        int nv = poly.vertCount;
+        for (int i = 0; i < nv; ++i)
+            DetourCommon.dtVcopy(verts, i * 3, tile.verts, poly.verts[i] * 3);
+
+        DetourCommon.dtVcopy(closest, pos);
+        if (!new DetourCommonImpl().dtDistancePtPolyEdgesSqr(pos, verts, nv, edged, edget)) {
+            // Point is outside the polygon, dtClamp to nearest edge.
+            float dmin = Float.MAX_VALUE;
+            int imin = -1;
+            for (int i = 0; i < nv; ++i) {
+                if (edged[i] < dmin) {
+                    dmin = edged[i];
+                    imin = i;
+                }
+            }
+			DetourCommon.dtVlerp(closest, verts, imin * 3, verts, ((imin + 1) % nv) * 3, edget[imin]);
+        }
+
+        // Find height at the location.
+        for (int j = 0; j < pd.triCount; ++j) {
+            char[] t = tile.detailTris;
+			int tIndex = (pd.triBase + j) * 4;
+            float v[] = new float[3];
+            for (int k = 0; k < 3; ++k) {
+                if (t[tIndex+k] < poly.vertCount)
+                    v[k] = tile.verts[poly.verts[t[tIndex+k]] * 3];
+                else
+                v[k] = tile.detailVerts[(pd.vertBase + (t[tIndex+k] - poly.vertCount)) * 3];
+            }
+            float h[] = new float[1];
+            if (new DetourCommonImpl().dtClosestHeightPointTriangle(pos, v, 0, v, 1, v, 2, h)) {
+                closest[1] = h[0];
+                break;
+            }
+        }
+    }
+
+    public dtPoly findNearestPolyInTile(dtMeshTile tile,
+                                        float[] center, int centerIndex,
+										float[] extents,
+                                        float[] nearestPt) {
+        float bmin[] = new float[3], bmax[] = new float[3];
+		DetourCommon.dtVsub(bmin, center, centerIndex, extents, 0);
+		DetourCommon.dtVadd(bmax, center, centerIndex, extents, 0);
+
+        // Get nearby polygons from proximity grid.
+        dtPoly polys[] = new dtPoly[128];
+        int polyCount = queryPolygonsInTile(tile, bmin, bmax, polys, 128);
+
+        // Find nearest polygon amongst the nearby polygons.
+        dtPoly nearest = null;
+        float nearestDistanceSqr = Float.MAX_VALUE;
+        for (int i = 0; i < polyCount; ++i) {
+            dtPoly ref = polys[i];
+            float closestPtPoly[] = new float[3];
+            closestPointOnPolyInTile(tile, decodePolyIdPoly(ref), center, closestPtPoly);
+            float d = DetourCommon.dtVdistSqr(center, closestPtPoly);
+            if (d < nearestDistanceSqr) {
+                if (nearestPt != null)
+					DetourCommon.dtVcopy(nearestPt, closestPtPoly);
+                nearestDistanceSqr = d;
+                nearest = ref;
+            }
+        }
+
+        return nearest;
+    }
+
+    public int queryPolygonsInTile(dtMeshTile tile, float[] qmin, float[] qmax,
+                                   dtPoly[] polys, int maxPolys) {
+        if (tile.bvTree != null) {
+            dtBVNode node = tile.bvTree[0];
+			int nodeIndex = 0;
+            dtBVNode end = tile.bvTree[tile.header.bvNodeCount];
+            float[] tbmin = tile.header.bmin;
+            float[] tbmax = tile.header.bmax;
+            float qfac = tile.header.bvQuantFactor;
+
+            // Calculate quantized box
+            int bmin[] = new int[3],bmax[] = new int[3];
+            // dtClamp query box to world box.
+            float minx = DetourCommon.dtClamp(qmin[0], tbmin[0], tbmax[0]) - tbmin[0];
+            float miny = DetourCommon.dtClamp(qmin[1], tbmin[1], tbmax[1]) - tbmin[1];
+            float minz = DetourCommon.dtClamp(qmin[2], tbmin[2], tbmax[2]) - tbmin[2];
+            float maxx = DetourCommon.dtClamp(qmax[0], tbmin[0], tbmax[0]) - tbmin[0];
+            float maxy = DetourCommon.dtClamp(qmax[1], tbmin[1], tbmax[1]) - tbmin[1];
+            float maxz = DetourCommon.dtClamp(qmax[2], tbmin[2], tbmax[2]) - tbmin[2];
+            // Quantize
+            bmin[0] = (int)(qfac * minx) & 0xfffe;
+            bmin[1] = (int)(qfac * miny) & 0xfffe;
+            bmin[2] = (int)(qfac * minz) & 0xfffe;
+            bmax[0] = (int)(qfac * maxx + 1) | 1;
+            bmax[1] = (int)(qfac * maxy + 1) | 1;
+            bmax[2] = (int)(qfac * maxz + 1) | 1;
+
+            // Traverse tree
+            dtPoly base = getPolyRefBase(tile);
+            int n = 0;
+            while (nodeIndex < end) {
+                boolean overlap = DetourCommon.dtOverlapQuantBounds(bmin, bmax, node.bmin, node.bmax);
+                boolean isLeafNode = node.i >= 0;
+
+                if (isLeafNode && overlap) {
+                    if (n < maxPolys)
+                        polys[n++] = base | (dtPoly) node.i;
+                }
+
+                if (overlap || isLeafNode) {
 //                    node++;
-//                else {
-//                    int escapeIndex = -node.i;
+					nodeIndex++;
+					node = tile.bvTree[nodeIndex];
+				}
+                else {
+                    int escapeIndex = -node.i;
+					nodeIndex += escapeIndex;
+					node = tile.bvTree[nodeIndex];
 //                    node += escapeIndex;
-//                }
-//            }
-//
-//            return n;
-//        } else {
-//            float bmin[ 3],bmax[3];
-//            int n = 0;
-//            dtPoly base = getPolyRefBase(tile);
-//            for (int i = 0; i < tile.header.polyCount; ++i) {
-//                dtPoly * p =&tile.polys[i];
-//                // Do not return off-mesh connection polygons.
-//                if (p.getType() == DT_POLYTYPE_OFFMESH_CONNECTION)
-//                    continue;
-//                // Calc polygon bounds.
-//                float*v =&tile.verts[p.verts[0] * 3];
-//                dtVcopy(bmin, v);
-//                dtVcopy(bmax, v);
-//                for (int j = 1; j < p.vertCount; ++j) {
-//                    v =&tile.verts[p.verts[j] * 3];
-//                    dtVmin(bmin, v);
-//                    dtVmax(bmax, v);
-//                }
-//                if (dtOverlapBounds(qmin, qmax, bmin, bmax)) {
-//                    if (n < maxPolys)
-//                        polys[n++] = base | (dtPoly) i;
-//                }
-//            }
-//            return n;
-//        }
-//    }
+                }
+            }
+
+            return n;
+        } else {
+            float bmin[] = new float[3],bmax[] = new float[3];
+            int n = 0;
+            dtPoly base = getPolyRefBase(tile);
+            for (int i = 0; i < tile.header.polyCount; ++i) {
+                dtPoly p = tile.polys[i];
+                // Do not return off-mesh connection polygons.
+                if (p.getType() == dtPolyTypes.DT_POLYTYPE_OFFMESH_CONNECTION)
+                    continue;
+                // Calc polygon bounds.
+                float[] v =tile.verts;
+				int vIndex = p.verts[0] * 3;
+				DetourCommon.dtVcopy(bmin, 0, v, vIndex);
+				DetourCommon.dtVcopy(bmax, 0, v, vIndex);
+                for (int j = 1; j < p.vertCount; ++j) {
+                    v = tile.verts;
+					vIndex = p.verts[j] * 3;
+					DetourCommon.dtVmin(bmin, 0, v, vIndex);
+					DetourCommon.dtVmax(bmax, 0, v, vIndex);
+                }
+                if (DetourCommon.dtOverlapBounds(qmin, qmax, bmin, bmax)) {
+                    if (n < maxPolys)
+                        polys[n++] = base | (dtPoly) i;
+                }
+            }
+            return n;
+        }
+    }
 
 	/// @par
 	///
@@ -818,28 +841,28 @@ public class dtNavMeshImpl extends dtNavMesh
 		else
 		{
 			// Try to relocate the tile to specific index with same salt.
-//            int tileIndex = (int) decodePolyIdTile((dtPoly) lastRef);
-//            if (tileIndex >= m_maxTiles)
-//                return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_OUT_OF_MEMORY);
-//            // Try to find the specific tile id from the free list.
-//            dtMeshTile target = m_tiles[tileIndex];
-//            dtMeshTile prev = null;
-//            tile = m_nextFree;
-//            while (tile != null && tile != target) {
-//                prev = tile;
-//                tile = tile.next;
-//            }
-//            // Could not find the correct location.
-//            if (tile != target)
-//                return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_OUT_OF_MEMORY);
-//            // Remove from freelist
-//            if (prev == null)
-//                m_nextFree = tile.next;
-//            else
-//                prev.next = tile.next;
+            int tileIndex = (int) decodePolyIdTile((dtPoly) lastRef);
+            if (tileIndex >= m_maxTiles)
+                return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_OUT_OF_MEMORY);
+            // Try to find the specific tile id from the free list.
+            dtMeshTile target = m_tiles[tileIndex];
+            dtMeshTile prev = null;
+            tile = m_nextFree;
+            while (tile != null && tile != target) {
+                prev = tile;
+                tile = tile.next;
+            }
+            // Could not find the correct location.
+            if (tile != target)
+                return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_OUT_OF_MEMORY);
+            // Remove from freelist
+            if (prev == null)
+                m_nextFree = tile.next;
+            else
+                prev.next = tile.next;
 
-			// Restore salt.
-//            tile.salt = decodePolyIdSalt((dtPoly) lastRef);
+//			Restore salt.
+            tile.salt = decodePolyIdSalt((dtPoly) lastRef);
 		}
 
 		// Make sure we could allocate a tile.
@@ -1072,12 +1095,6 @@ public class dtNavMeshImpl extends dtNavMesh
 	{
 		return m_tiles[i];
 	}
-
-/*    dtMeshTile*
-
-    getTile(int i) {
-        return&m_tiles[i];
-    }*/
 
 	public void calcTileLoc(float[] pos, int[] tx, int[] ty)
 	{
@@ -1471,3 +1488,4 @@ public class dtNavMeshImpl extends dtNavMesh
 
 
 }
+

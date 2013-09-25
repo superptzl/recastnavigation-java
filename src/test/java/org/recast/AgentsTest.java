@@ -1,4 +1,4 @@
-package com.recast;
+package org.recast;
 
 import org.junit.Test;
 import org.recast.DetourCrowd.Source.dtCrowdImpl;
@@ -31,11 +31,12 @@ public class AgentsTest {
 		sample.m_tool = crowdTool;
         sample.m_tool.init(sample);
         sample.m_crowd = new dtCrowdImpl();
-        sample.m_crowd.init(10, 1, sample.getNavMesh());
+        sample.m_crowd.init(10, 0.6f, sample.getNavMesh());
 
         crowdTool.m_mode = CrowdTool.ToolMode.TOOLMODE_CREATE;
 
-		sample.handleClick(new float[]{76.728340f,84.241943f,24.204132f}, new float[]{38.056499f, 9.9981785f, 1.7914636f}, false);
+//		sample.handleClick(new float[]{76.728340f,84.241943f,24.204132f}, new float[]{38.056499f, 9.9981785f, 1.7914636f}, false);
+		sample.handleClick(new float[]{76.728340f,84.241943f,24.204132f}, new float[]{40f, 10f, 2f}, false);
 
         crowdTool.m_mode = CrowdTool.ToolMode.TOOLMODE_MOVE_TARGET;
         sample.handleClick(new float[]{76.728340f,84.241943f,24.204132f}, new float[]{38.056499f, 9.9981785f, 1.7914636f}, false);

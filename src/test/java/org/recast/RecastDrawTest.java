@@ -1,4 +1,4 @@
-package com.recast;
+package org.recast;
 
 import com.sun.j3d.utils.applet.MainFrame;
 import org.draw.DrawingApplet;
