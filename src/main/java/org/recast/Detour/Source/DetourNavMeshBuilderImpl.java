@@ -302,7 +302,7 @@ public class DetourNavMeshBuilderImpl extends DetourNavMeshBuilder
 	/// mesh.
 	///
 	/// @see dtNavMesh, dtNavMesh::addTile()
-	public boolean dtCreateNavMeshData(dtNavMeshCreateParams params, dtMeshHeader header, dtMeshTile meshTile)
+	public boolean dtCreateNavMeshData(dtNavMeshCreateParams params, dtMeshTile meshTile)
 	{
 		if (params.nvp > DetourNavMesh.DT_VERTS_PER_POLYGON)
 			return false;
@@ -483,6 +483,7 @@ public class DetourNavMeshBuilderImpl extends DetourNavMeshBuilder
 		meshTile.offMeshCons = new dtOffMeshConnection[storedOffMeshConCount];
 
 		// Store header
+		dtMeshHeader header = meshTile.header;
 		header.magic = DetourNavMesh.DT_NAVMESH_MAGIC;
 		header.version = DetourNavMesh.DT_NAVMESH_VERSION;
 		header.x = params.tileX;

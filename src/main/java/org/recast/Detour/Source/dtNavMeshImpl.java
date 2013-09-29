@@ -280,10 +280,10 @@ public class dtNavMeshImpl extends dtNavMesh
 		return new dtStatus(dtStatus.DT_SUCCESS);
 	}
 
-	public dtStatus init(dtMeshHeader header, int flags)
+	public dtStatus init(dtMeshTile tile, int flags)
 	{
 		// Make sure the data is in right format.
-//		dtMeshHeader* header = (dtMeshHeader*)data;
+		dtMeshHeader header = tile.header;
 		if (header.magic != DetourNavMesh.DT_NAVMESH_MAGIC)
 			return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_WRONG_MAGIC);
 		if (header.version != DetourNavMesh.DT_NAVMESH_VERSION)
@@ -300,7 +300,7 @@ public class dtNavMeshImpl extends dtNavMesh
 		if (dtStatus.dtStatusFailed(status))
 			return status;
 
-		return addTile(header, flags, null, null);
+		return addTile(tile, flags, null, null);
 	}
 
 	/// @par
@@ -563,7 +563,7 @@ public class dtNavMeshImpl extends dtNavMesh
                 int idx = allocLink(tile);
                 if (idx != DetourNavMesh.DT_NULL_LINK) {
                     dtLink link = tile.links[idx];
-//                    link.ref = base | (dtPoly) (poly.neis[j] - 1);
+                    link.ref = base | (dtPoly) (poly.neis[j] - 1);
                     link.edge = (char)j;
                     link.side = 0xff;
                     link.bmin = link.bmax = 0;
@@ -822,11 +822,11 @@ public class dtNavMeshImpl extends dtNavMesh
 	/// removed.
 	///
 	/// @see dtCreateNavMeshData, #removeTile
-	public dtStatus addTile(dtMeshHeader header, int flags,
+	public dtStatus addTile(dtMeshTile data, int flags,
 							dtMeshTile lastRef, dtMeshTile[] result)
 	{
 		// Make sure the data is in right format.
-//		dtMeshHeader* header = (dtMeshHeader*)data;
+		dtMeshHeader header = data.header;
 		if (header.magic != DetourNavMesh.DT_NAVMESH_MAGIC)
 			return new dtStatus(dtStatus.DT_FAILURE | dtStatus.DT_WRONG_MAGIC);
 		if (header.version != DetourNavMesh.DT_NAVMESH_VERSION)
@@ -887,32 +887,32 @@ public class dtNavMeshImpl extends dtNavMesh
 		// Patch header pointers.
 
 //		unsigned char* d = data + headerSize;
-		tile.verts = new float[3 * header.vertCount];
-		tile.polys = new dtPoly[header.polyCount];
-		for (int i = 0; i < tile.polys.length; i++) {
+		tile.verts = data.verts;//new float[3 * header.vertCount];
+		tile.polys = data.polys;//new dtPoly[header.polyCount];
+		/*for (int i = 0; i < tile.polys.length; i++) {
 			tile.polys[i] = new dtPoly(tile);
-		}
-		tile.links = new dtLink[header.maxLinkCount];
-		for (int i = 0; i < tile.links.length; i++)
+		}*/
+		tile.links = data.links;//new dtLink[header.maxLinkCount];
+		/*for (int i = 0; i < tile.links.length; i++)
 		{
 			tile.links[i] = new dtLink();
-		}
-		tile.detailMeshes = new dtPolyDetail[header.detailMeshCount];
-		tile.detailVerts = new float[3 * header.detailVertCount];
-		tile.detailTris = new char[4 * header.detailTriCount];
-		tile.bvTree = new dtBVNode[header.bvNodeCount];
-		for (int i = 0; i < tile.bvTree.length; i++)
-		{
-			tile.bvTree[i] = new dtBVNode();
-		}
-		tile.offMeshCons = new dtOffMeshConnection[header.offMeshConCount];
+		}*/
+		tile.detailMeshes = data.detailMeshes;//new dtPolyDetail[header.detailMeshCount];
+		tile.detailVerts = data.detailVerts;//new float[3 * header.detailVertCount];
+		tile.detailTris = data.detailTris;//new char[4 * header.detailTriCount];
+		tile.bvTree = data.bvTree;//new dtBVNode[header.bvNodeCount];
+//		for (int i = 0; i < tile.bvTree.length; i++)
+//		{
+//			tile.bvTree[i] = new dtBVNode();
+//		}
+		tile.offMeshCons = data.offMeshCons;//new dtOffMeshConnection[header.offMeshConCount];
 
 		// If there are no items in the bvtree, reset the tree pointer.
 //		if (!bvtreeSize)
 //			tile.bvTree = 0;
 
 		// Build links freelist
-		tile.linksFreeList = 0;
+		tile.linksFreeList = data.linksFreeList;
 		tile.links[header.maxLinkCount - 1].next = DetourNavMesh.DT_NULL_LINK;
 		for (int i = 0; i < header.maxLinkCount - 1; ++i)
 			tile.links[i].next = i + 1;

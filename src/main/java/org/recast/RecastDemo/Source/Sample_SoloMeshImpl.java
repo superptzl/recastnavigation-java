@@ -553,7 +553,9 @@ public class Sample_SoloMeshImpl extends Sample_SoloMesh
 			m_ctx.log(rcLogCategory.RC_LOG_ERROR, "buildNavigation: Could not build detail mesh.");
 			return false;
 		}
-
+		assert m_dmesh.ntris == 292;
+		assert m_dmesh.nmeshes == 120;
+		assert m_dmesh.nverts == 515;
 		if (!m_keepInterResults)
 		{
 //            recast.rcFreeCompactHeightfield(m_chf);
@@ -578,6 +580,7 @@ public class Sample_SoloMeshImpl extends Sample_SoloMesh
 //			unsigned char* navData = 0;
 			dtMeshHeader header = new dtMeshHeader();
 			dtMeshTile meshTile = new dtMeshTile();
+			meshTile.header = header;
 
 			// Update poly flags from areas.
 			for (int i = 0; i < m_pmesh.npolys; ++i)
@@ -631,7 +634,7 @@ public class Sample_SoloMeshImpl extends Sample_SoloMesh
 			params.ch = m_cfg.ch;
 			params.buildBvTree = true;
 
-			if (!new DetourNavMeshBuilderImpl().dtCreateNavMeshData(params, header, meshTile))
+			if (!new DetourNavMeshBuilderImpl().dtCreateNavMeshData(params, meshTile))
 			{
 				m_ctx.log(rcLogCategory.RC_LOG_ERROR, "Could not build Detour navmesh.");
 				return false;
@@ -647,7 +650,7 @@ public class Sample_SoloMeshImpl extends Sample_SoloMesh
 
 			dtStatus status;
 
-			status = m_navMesh.init(header, DetourNavMesh.dtTileFlags.DT_TILE_FREE_DATA);
+			status = m_navMesh.init(meshTile, DetourNavMesh.dtTileFlags.DT_TILE_FREE_DATA);
 			if (dtStatus.dtStatusFailed(status))
 			{
 //				dtFree(navData);

@@ -29,7 +29,7 @@ public abstract class dtNavMesh
 	///  @param[in]	flags		The tile flags. (See: #dtTileFlags)
 	/// @return The status flags for the operation.
 	///  @see dtCreateNavMeshData
-	public abstract dtStatus init(dtMeshHeader header, int flags);
+	public abstract dtStatus init(dtMeshTile tile, int flags);
 
 	/// The navigation mesh initialization params.
 	public abstract dtNavMeshParams getParams();
@@ -41,7 +41,7 @@ public abstract class dtNavMesh
 	///  @param[in]		lastRef		The desired reference for the tile. (When reloading a tile.) [opt] [Default: 0]
 	///  @param[out]	result		The tile reference. (If the tile was succesfully added.) [opt]
 	/// @return The status flags for the operation.
-	public abstract dtStatus addTile(dtMeshHeader header, int flags, dtMeshTile lastRef, dtMeshTile[] result);
+	public abstract dtStatus addTile(dtMeshTile tile, int flags, dtMeshTile lastRef, dtMeshTile[] result);
 
 	/// Removes the specified tile from the navigation mesh.
 	///  @param[in]		ref			The reference of the tile to remove.

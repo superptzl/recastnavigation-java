@@ -374,7 +374,7 @@ public class RecastMeshDetail extends RecastImpl
 			}
 		}
 
-		Arrays.fill(hp.data, 0, hp.width * hp.height, Integer.MAX_VALUE);
+		Arrays.fill(hp.data, 0, hp.width * hp.height, RC_UNSET_HEIGHT);
 //        memset(hp.data, 0xff, sizeof(unsigned int)*hp.width*hp.height);
 
 		// Mark start locations.
@@ -1166,7 +1166,7 @@ public class RecastMeshDetail extends RecastImpl
 	static int overlapSegSeg2d(float[] a, int aIndex, float[] b, int bIndex, float[] c, int cIndex, float[] d, int dIndex)
 	{
 		float a1 = vcross2(a, aIndex, b, bIndex, d, dIndex);
-		float a2 = vcross2(a, 0, b, bIndex, c, cIndex);
+		float a2 = vcross2(a, aIndex, b, bIndex, c, cIndex);
 		if (a1 * a2 < 0.0f)
 		{
 			float a3 = vcross2(c, cIndex, d, dIndex, a, aIndex);

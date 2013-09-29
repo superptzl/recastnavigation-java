@@ -37,7 +37,7 @@ public abstract class DetourNavMeshBuilder extends DetourCommonImpl
 	///  @param[out]	outData		The resulting tile data.
 	///  @param[out]	outDataSize	The size of the tile data array.
 	/// @return True if the tile data was successfully created.
-	public abstract boolean dtCreateNavMeshData(dtNavMeshCreateParams params, dtMeshHeader header, dtMeshTile tile);
+	public abstract boolean dtCreateNavMeshData(dtNavMeshCreateParams params, dtMeshTile tile);
 
 	/// Swaps the endianess of the tile data's header (#dtMeshHeader).
 	///  @param[in,out]	data		The tile data array.
